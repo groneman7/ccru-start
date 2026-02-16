@@ -1,3 +1,4 @@
+import { usePostHog } from '@posthog/react';
 import { createFileRoute, redirect } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import {
@@ -36,6 +37,7 @@ export const Route = createFileRoute('/sign-in')({
 });
 
 function RouteComponent() {
+  const posthog = usePostHog();
   const time = dayjs().hour();
   const isNight = time >= 19 || time <= 7;
 
@@ -53,10 +55,18 @@ function RouteComponent() {
         },
         onSuccess: () => {
           setOtpLoading(false);
+          posthog.capture('user_signed_in', {
+            provider: 'google',
+          });
         },
         onError: (ctx) => {
           setOtpLoading(false);
           console.log(ctx.error);
+          posthog.capture('sign_in_failed', {
+            provider: 'google',
+            error_message: ctx.error.message,
+          });
+          posthog.captureException(ctx.error);
           alert(ctx.error.message);
         },
       },

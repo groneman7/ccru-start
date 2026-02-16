@@ -1,3 +1,4 @@
+import { usePostHog } from '@posthog/react';
 import { Link, useNavigate, useRouteContext } from '@tanstack/react-router';
 // import { SignedOut } from '~/components';
 import {
@@ -20,6 +21,7 @@ import { cn } from '~/lib/utils';
 import { CircleUserRound } from 'lucide-react';
 
 export function AppSidebar() {
+  const posthog = usePostHog();
   const { currentUser } = useRouteContext({ from: '/_authed' });
   const { signOut } = authClient;
   const nav = useNavigate();
@@ -123,6 +125,7 @@ export function AppSidebar() {
                       const response =
                         await authClient.admin.stopImpersonating();
                       if (response.error) return;
+                      posthog.capture('impersonation_stopped');
                       nav({ reloadDocument: true });
                     }}
                   >
@@ -131,6 +134,8 @@ export function AppSidebar() {
                 ) : (
                   <DropdownMenuItem
                     onClick={() => {
+                      posthog.capture('user_signed_out');
+                      posthog.reset();
                       signOut();
                       nav({ to: '/sign-in' });
                     }}
