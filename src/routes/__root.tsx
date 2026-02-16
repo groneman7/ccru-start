@@ -7,6 +7,7 @@ import {
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import type { ReactNode } from 'react';
+import { Toaster } from 'sonner';
 import TanStackQueryDevtools from '../lib/tanstack-query/devtools';
 import appCss from '../styles.css?url';
 
@@ -46,6 +47,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
+        <Toaster richColors />
         {children}
         <TanStackDevtools
           config={{

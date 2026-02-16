@@ -1,0 +1,677 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 1000 1000">
+  <defs>
+    <style>
+      .cls-1 {
+        mask: url(#mask);
+      }
+
+      .cls-2 {
+        filter: url(#luminosity-noclip);
+      }
+
+      .cls-3 {
+        opacity: .4;
+      }
+
+      .cls-3, .cls-4, .cls-5, .cls-6, .cls-7, .cls-8, .cls-9, .cls-10, .cls-11, .cls-12, .cls-13, .cls-14, .cls-15, .cls-16 {
+        mix-blend-mode: multiply;
+      }
+
+      .cls-3, .cls-17 {
+        fill: #d88228;
+      }
+
+      .cls-18 {
+        fill: #f9ed20;
+      }
+
+      .cls-19 {
+        filter: url(#luminosity-noclip-13);
+      }
+
+      .cls-20 {
+        filter: url(#luminosity-noclip-11);
+      }
+
+      .cls-21 {
+        filter: url(#luminosity-noclip-3);
+      }
+
+      .cls-22 {
+        filter: url(#luminosity-noclip-9);
+      }
+
+      .cls-23 {
+        filter: url(#luminosity-noclip-7);
+      }
+
+      .cls-24 {
+        filter: url(#luminosity-noclip-5);
+      }
+
+      .cls-25 {
+        fill: url(#radial-gradient-2);
+      }
+
+      .cls-26 {
+        fill: #492e1f;
+      }
+
+      .cls-4 {
+        fill: url(#radial-gradient);
+      }
+
+      .cls-27 {
+        fill: url(#linear-gradient-8);
+      }
+
+      .cls-28 {
+        fill: url(#linear-gradient-5);
+      }
+
+      .cls-29 {
+        fill: url(#linear-gradient-2);
+      }
+
+      .cls-5 {
+        fill: url(#linear-gradient-3);
+      }
+
+      .cls-6 {
+        fill: url(#linear-gradient-9);
+      }
+
+      .cls-7 {
+        fill: url(#linear-gradient-6);
+      }
+
+      .cls-30 {
+        fill: url(#linear-gradient);
+      }
+
+      .cls-31 {
+        fill: #b25f27;
+      }
+
+      .cls-32 {
+        fill: #efa139;
+      }
+
+      .cls-33 {
+        fill: #3e6731;
+      }
+
+      .cls-34 {
+        isolation: isolate;
+      }
+
+      .cls-35 {
+        mask: url(#mask-2);
+      }
+
+      .cls-36 {
+        mask: url(#mask-3);
+      }
+
+      .cls-37 {
+        mask: url(#mask-4);
+      }
+
+      .cls-38 {
+        mask: url(#mask-5);
+      }
+
+      .cls-39 {
+        mask: url(#mask-7);
+      }
+
+      .cls-40 {
+        mask: url(#mask-6);
+      }
+
+      .cls-41 {
+        mask: url(#mask-1);
+      }
+
+      .cls-42 {
+        mask: url(#mask-9);
+      }
+
+      .cls-43 {
+        mask: url(#mask-8);
+      }
+
+      .cls-8 {
+        fill: url(#linear-gradient-11);
+      }
+
+      .cls-9 {
+        fill: url(#linear-gradient-13);
+      }
+
+      .cls-10 {
+        fill: url(#linear-gradient-12);
+      }
+
+      .cls-11 {
+        fill: url(#linear-gradient-14);
+      }
+
+      .cls-12 {
+        fill: url(#linear-gradient-16);
+      }
+
+      .cls-13 {
+        fill: url(#linear-gradient-15);
+      }
+
+      .cls-14 {
+        fill: url(#linear-gradient-7);
+      }
+
+      .cls-14, .cls-15, .cls-16 {
+        opacity: .6;
+      }
+
+      .cls-15 {
+        fill: url(#linear-gradient-4);
+      }
+
+      .cls-44 {
+        fill: #f9ed32;
+      }
+
+      .cls-45 {
+        fill: #fff;
+      }
+
+      .cls-46 {
+        fill: #a4c43f;
+      }
+
+      .cls-47 {
+        fill: url(#linear-gradient-19);
+      }
+
+      .cls-48 {
+        fill: url(#linear-gradient-21);
+      }
+
+      .cls-49 {
+        fill: url(#linear-gradient-20);
+      }
+
+      .cls-50 {
+        fill: url(#linear-gradient-22);
+      }
+
+      .cls-51 {
+        fill: url(#linear-gradient-23);
+      }
+
+      .cls-52 {
+        fill: url(#linear-gradient-25);
+      }
+
+      .cls-53 {
+        fill: url(#linear-gradient-17);
+      }
+
+      .cls-54 {
+        fill: url(#linear-gradient-18);
+      }
+
+      .cls-55 {
+        fill: url(#linear-gradient-24);
+      }
+
+      .cls-56 {
+        fill: #fcc948;
+      }
+
+      .cls-57 {
+        fill: #81aa38;
+      }
+
+      .cls-16 {
+        fill: url(#linear-gradient-10);
+      }
+
+      .cls-58 {
+        fill: #d68128;
+      }
+
+      .cls-59 {
+        fill: #633c1b;
+      }
+
+      .cls-60 {
+        mask: url(#mask-10);
+      }
+
+      .cls-61 {
+        mask: url(#mask-11);
+      }
+
+      .cls-62 {
+        mask: url(#mask-13);
+      }
+
+      .cls-63 {
+        mask: url(#mask-12);
+      }
+
+      .cls-64 {
+        fill: #b9883e;
+      }
+
+      .cls-65 {
+        fill: #754c29;
+      }
+
+      .cls-66 {
+        fill: #cc7429;
+      }
+    </style>
+    <linearGradient id="linear-gradient" x1="500" y1="1001.63" x2="500" y2="-1.2" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fffcdf"/>
+      <stop offset=".32" stop-color="#eef6e9"/>
+      <stop offset=".45" stop-color="#e0f1e7"/>
+      <stop offset=".77" stop-color="#c5e7e4"/>
+      <stop offset=".96" stop-color="#bce4e3"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-2" x1="4815.66" y1="1013.52" x2="4815.66" y2="130.78" gradientTransform="translate(5318.55) rotate(-180) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset=".2" stop-color="#729fa5"/>
+      <stop offset=".46" stop-color="#83acb1"/>
+      <stop offset=".98" stop-color="#b0ced1"/>
+      <stop offset="1" stop-color="#b2d0d3"/>
+    </linearGradient>
+    <filter id="luminosity-noclip" x="502.89" y="130.78" width="292.49" height="505.83" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <filter id="luminosity-noclip-2" x="502.89" y="-8692" width="292.49" height="32766" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <mask id="mask-1" x="502.89" y="-8692" width="292.49" height="32766" maskUnits="userSpaceOnUse"/>
+    <linearGradient id="linear-gradient-3" x1="649.13" y1="636.61" x2="649.13" y2="130.78" gradientUnits="userSpaceOnUse">
+      <stop offset=".16" stop-color="#000"/>
+      <stop offset=".89" stop-color="#fff"/>
+    </linearGradient>
+    <mask id="mask" x="502.89" y="130.78" width="292.49" height="505.83" maskUnits="userSpaceOnUse">
+      <g class="cls-2">
+        <g class="cls-41">
+          <polygon class="cls-5" points="795.38 636.61 502.89 130.78 502.89 636.61 795.38 636.61"/>
+        </g>
+      </g>
+    </mask>
+    <linearGradient id="linear-gradient-4" x1="649.13" y1="636.61" x2="649.13" y2="130.78" gradientUnits="userSpaceOnUse">
+      <stop offset=".16" stop-color="#fff"/>
+      <stop offset=".89" stop-color="#d3d8db"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-5" x1="5011.43" y1="890.76" x2="5011.43" y2="295.53" gradientTransform="translate(5318.55) rotate(-180) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset=".07" stop-color="#729fa5"/>
+      <stop offset=".42" stop-color="#8bb2b7"/>
+      <stop offset="1" stop-color="#b2d0d3"/>
+    </linearGradient>
+    <filter id="luminosity-noclip-3" x="307.12" y="295.53" width="197.23" height="341.08" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <filter id="luminosity-noclip-4" x="307.12" y="-8692" width="197.23" height="32766" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <mask id="mask-3" x="307.12" y="-8692" width="197.23" height="32766" maskUnits="userSpaceOnUse"/>
+    <linearGradient id="linear-gradient-6" x1="4912.82" y1="890.76" x2="4912.82" y2="295.53" gradientTransform="translate(5318.55) rotate(-180) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset=".66" stop-color="#000"/>
+      <stop offset=".71" stop-color="#3b3b3b"/>
+      <stop offset=".77" stop-color="#757575"/>
+      <stop offset=".83" stop-color="#a6a6a6"/>
+      <stop offset=".88" stop-color="#cdcdcd"/>
+      <stop offset=".93" stop-color="#e8e8e8"/>
+      <stop offset=".97" stop-color="#f9f9f9"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <mask id="mask-2" x="307.12" y="295.53" width="197.23" height="341.08" maskUnits="userSpaceOnUse">
+      <g class="cls-21">
+        <g class="cls-36">
+          <polygon class="cls-7" points="504.34 636.61 307.12 295.53 307.12 636.61 504.34 636.61"/>
+        </g>
+      </g>
+    </mask>
+    <linearGradient id="linear-gradient-7" x1="4912.82" y1="890.76" x2="4912.82" y2="295.53" gradientTransform="translate(5318.55) rotate(-180) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset=".66" stop-color="#fff"/>
+      <stop offset=".78" stop-color="#e9ebed"/>
+      <stop offset=".9" stop-color="#d8dddf"/>
+      <stop offset="1" stop-color="#d3d8db"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-8" x1="4664.86" y1="942.42" x2="4664.86" y2="226.2" xlink:href="#linear-gradient-5"/>
+    <filter id="luminosity-noclip-5" x="653.69" y="226.2" width="237.32" height="410.41" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <filter id="luminosity-noclip-6" x="653.69" y="-8692" width="237.32" height="32766" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <mask id="mask-5" x="653.69" y="-8692" width="237.32" height="32766" maskUnits="userSpaceOnUse"/>
+    <linearGradient id="linear-gradient-9" x1="4546.2" y1="942.42" x2="4546.2" y2="226.2" gradientTransform="translate(5318.55) rotate(-180) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset=".47" stop-color="#000"/>
+      <stop offset=".88" stop-color="#fff"/>
+    </linearGradient>
+    <mask id="mask-4" x="653.69" y="226.2" width="237.32" height="410.41" maskUnits="userSpaceOnUse">
+      <g class="cls-24">
+        <g class="cls-38">
+          <polygon class="cls-6" points="891.01 636.61 653.69 226.2 653.69 636.61 891.01 636.61"/>
+        </g>
+      </g>
+    </mask>
+    <linearGradient id="linear-gradient-10" x1="4546.2" y1="942.42" x2="4546.2" y2="226.2" gradientTransform="translate(5318.55) rotate(-180) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset=".47" stop-color="#fff"/>
+      <stop offset=".88" stop-color="#d3d8db"/>
+    </linearGradient>
+    <filter id="luminosity-noclip-7" x="668.12" y="370.12" width="244.3" height="122.02" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <filter id="luminosity-noclip-8" x="668.12" y="-8692" width="244.3" height="32766" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <mask id="mask-7" x="668.12" y="-8692" width="244.3" height="32766" maskUnits="userSpaceOnUse"/>
+    <linearGradient id="linear-gradient-11" x1="790.27" y1="504.96" x2="790.27" y2="361" gradientUnits="userSpaceOnUse">
+      <stop offset=".38" stop-color="#000"/>
+      <stop offset=".49" stop-color="#2a2a2a"/>
+      <stop offset=".75" stop-color="#949494"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <mask id="mask-6" x="668.12" y="370.12" width="244.3" height="122.02" maskUnits="userSpaceOnUse">
+      <g class="cls-23">
+        <g class="cls-39">
+          <polygon class="cls-8" points="841.86 370.12 668.12 370.12 738.68 492.15 912.42 492.15 841.86 370.12"/>
+        </g>
+      </g>
+    </mask>
+    <linearGradient id="linear-gradient-12" x1="790.27" y1="504.96" x2="790.27" y2="361" gradientUnits="userSpaceOnUse">
+      <stop offset=".38" stop-color="#f1f2f2"/>
+      <stop offset="1" stop-color="#c7c8ca"/>
+    </linearGradient>
+    <filter id="luminosity-noclip-9" x="326.04" y="269.93" width="296.57" height="122.02" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <filter id="luminosity-noclip-10" x="326.04" y="-8692" width="296.57" height="32766" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <mask id="mask-9" x="326.04" y="-8692" width="296.57" height="32766" maskUnits="userSpaceOnUse"/>
+    <linearGradient id="linear-gradient-13" x1="474.33" y1="404.77" x2="474.33" y2="260.8" gradientUnits="userSpaceOnUse">
+      <stop offset=".38" stop-color="#000"/>
+      <stop offset=".49" stop-color="#2a2a2a"/>
+      <stop offset=".75" stop-color="#949494"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <mask id="mask-8" x="326.04" y="269.93" width="296.57" height="122.02" maskUnits="userSpaceOnUse">
+      <g class="cls-22">
+        <g class="cls-42">
+          <polygon class="cls-9" points="552.06 269.93 326.04 269.93 396.6 391.95 622.62 391.95 552.06 269.93"/>
+        </g>
+      </g>
+    </mask>
+    <linearGradient id="linear-gradient-14" x1="474.33" y1="404.77" x2="474.33" y2="260.8" xlink:href="#linear-gradient-12"/>
+    <filter id="luminosity-noclip-11" x="132.42" y="428.12" width="222.99" height="116.36" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <filter id="luminosity-noclip-12" x="132.42" y="-8692" width="222.99" height="32766" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <mask id="mask-11" x="132.42" y="-8692" width="222.99" height="32766" maskUnits="userSpaceOnUse"/>
+    <linearGradient id="linear-gradient-15" x1="243.92" y1="556.7" x2="243.92" y2="419.42" gradientUnits="userSpaceOnUse">
+      <stop offset=".38" stop-color="#000"/>
+      <stop offset=".49" stop-color="#2a2a2a"/>
+      <stop offset=".75" stop-color="#949494"/>
+      <stop offset="1" stop-color="#fff"/>
+    </linearGradient>
+    <mask id="mask-10" x="132.42" y="428.12" width="222.99" height="116.36" maskUnits="userSpaceOnUse">
+      <g class="cls-20">
+        <g class="cls-61">
+          <polygon class="cls-13" points="288.13 428.12 132.42 428.12 199.71 544.48 355.41 544.48 288.13 428.12"/>
+        </g>
+      </g>
+    </mask>
+    <linearGradient id="linear-gradient-16" x1="243.92" y1="556.7" x2="243.92" y2="419.42" xlink:href="#linear-gradient-12"/>
+    <filter id="luminosity-noclip-13" x="167.91" y="168.94" width="139.21" height="139.21" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <filter id="luminosity-noclip-14" x="167.91" y="-8692" width="139.21" height="32766" color-interpolation-filters="sRGB" filterUnits="userSpaceOnUse">
+      <feFlood flood-color="#fff" result="bg"/>
+      <feBlend in="SourceGraphic" in2="bg"/>
+    </filter>
+    <mask id="mask-13" x="167.91" y="-8692" width="139.21" height="32766" maskUnits="userSpaceOnUse"/>
+    <radialGradient id="radial-gradient" cx="237.51" cy="238.54" fx="237.51" fy="238.54" r="69.6" gradientUnits="userSpaceOnUse">
+      <stop offset=".4" stop-color="#fff"/>
+      <stop offset=".52" stop-color="#aeaeae"/>
+      <stop offset=".66" stop-color="#585858"/>
+      <stop offset=".73" stop-color="#363636"/>
+      <stop offset=".9" stop-color="#101010"/>
+      <stop offset=".99" stop-color="#000"/>
+    </radialGradient>
+    <mask id="mask-12" x="167.91" y="168.94" width="139.21" height="139.21" maskUnits="userSpaceOnUse">
+      <g class="cls-19">
+        <g class="cls-62">
+          <path class="cls-4" d="M237.51,168.94c-38.44,0-69.6,31.16-69.6,69.6s31.16,69.6,69.6,69.6,69.6-31.16,69.6-69.6-31.16-69.6-69.6-69.6Z"/>
+        </g>
+      </g>
+    </mask>
+    <radialGradient id="radial-gradient-2" cx="237.51" cy="238.54" fx="237.51" fy="238.54" r="69.6" gradientUnits="userSpaceOnUse">
+      <stop offset=".4" stop-color="#f5be35"/>
+      <stop offset=".6" stop-color="#f5dd6d"/>
+      <stop offset=".73" stop-color="#f6f190"/>
+      <stop offset=".81" stop-color="#e4edb0"/>
+      <stop offset=".93" stop-color="#cee9da"/>
+      <stop offset=".99" stop-color="#c6e8eb"/>
+    </radialGradient>
+    <linearGradient id="linear-gradient-17" x1="494.54" y1="691.91" x2="494.54" y2="878.53" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#47b0b8"/>
+      <stop offset=".78" stop-color="#86d2da"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-18" x1="500" y1="691.91" x2="500" y2="878.53" xlink:href="#linear-gradient-17"/>
+    <linearGradient id="linear-gradient-19" x1="346.36" y1="664.76" x2="346.36" y2="362.72" gradientUnits="userSpaceOnUse">
+      <stop offset=".12" stop-color="#3e6731"/>
+      <stop offset=".46" stop-color="#4e7a34"/>
+      <stop offset="1" stop-color="#70a23b"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-20" x1="440.27" y1="636.61" x2="440.27" y2="316.67" gradientUnits="userSpaceOnUse">
+      <stop offset=".23" stop-color="#3e6731"/>
+      <stop offset=".53" stop-color="#4e7a34"/>
+      <stop offset="1" stop-color="#70a23b"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-21" x1="588.8" y1="660.12" x2="588.8" y2="407.87" xlink:href="#linear-gradient-20"/>
+    <linearGradient id="linear-gradient-22" x1="8091.02" y1="528.97" x2="8091.02" y2="618.05" gradientTransform="translate(2920.13 8380.37) rotate(-101.62) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset=".19" stop-color="#a4c43f"/>
+      <stop offset="1" stop-color="#647d24"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-23" x1="8510.82" y1="596.91" x2="8510.82" y2="486.23" gradientTransform="translate(7791.12 4640.11) rotate(-147.63) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#647d24"/>
+      <stop offset=".29" stop-color="#79952d"/>
+      <stop offset=".75" stop-color="#98b73a"/>
+      <stop offset="1" stop-color="#a4c43f"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-24" x1="8562.22" y1="610.37" x2="8562.22" y2="537.21" gradientTransform="translate(8823.35) rotate(-180) scale(1 -1)" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#75902c"/>
+      <stop offset="1" stop-color="#a4c43f"/>
+    </linearGradient>
+    <linearGradient id="linear-gradient-25" x1="664.4" y1="648.75" x2="664.4" y2="599.6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f15a29"/>
+      <stop offset=".12" stop-color="#f2742b"/>
+      <stop offset=".31" stop-color="#f4992f"/>
+      <stop offset=".49" stop-color="#f5b431"/>
+      <stop offset=".65" stop-color="#f6c433"/>
+      <stop offset=".78" stop-color="#f7ca34"/>
+    </linearGradient>
+  </defs>
+  <g class="cls-34">
+    <g id="bg">
+      <rect class="cls-30" width="1000" height="1000"/>
+    </g>
+    <g id="Layer_1" data-name="Layer 1">
+      <g>
+        <g>
+          <g>
+            <polygon class="cls-29" points="795.38 636.61 502.89 130.78 210.4 636.61 795.38 636.61"/>
+            <g class="cls-1">
+              <polygon class="cls-15" points="795.38 636.61 502.89 130.78 502.89 636.61 795.38 636.61"/>
+            </g>
+          </g>
+          <g>
+            <polygon class="cls-28" points="504.34 636.61 307.12 295.53 109.89 636.61 504.34 636.61"/>
+            <g class="cls-35">
+              <polygon class="cls-14" points="504.34 636.61 307.12 295.53 307.12 636.61 504.34 636.61"/>
+            </g>
+          </g>
+          <g>
+            <polygon class="cls-27" points="891.01 636.61 653.69 226.2 416.37 636.61 891.01 636.61"/>
+            <g class="cls-37">
+              <polygon class="cls-16" points="891.01 636.61 653.69 226.2 653.69 636.61 891.01 636.61"/>
+            </g>
+          </g>
+        </g>
+        <g>
+          <g>
+            <path class="cls-45" d="M825.18,354.96c-2.56,0-4.97.59-7.13,1.62-2.67-15.57-16.23-27.43-32.57-27.43-13.62,0-25.31,8.24-30.38,20.01-3.09-1.71-6.64-2.68-10.41-2.68-10.78,0-19.69,7.91-21.3,18.24-1.94-3.68-5.79-6.19-10.24-6.19-3.99,0-7.5,2.02-9.58,5.09-3.47-5.39-9.5-8.96-16.38-8.96-9.39,0-17.22,6.64-19.07,15.48h173.63c-.75-8.5-7.88-15.17-16.57-15.17Z"/>
+            <g class="cls-40">
+              <polygon class="cls-10" points="841.86 370.12 668.12 370.12 738.68 492.15 912.42 492.15 841.86 370.12"/>
+            </g>
+          </g>
+          <g>
+            <g class="cls-43">
+              <polygon class="cls-11" points="552.06 269.93 326.04 269.93 396.6 391.95 622.62 391.95 552.06 269.93"/>
+            </g>
+            <path class="cls-45" d="M326.04,269.93c1.19-5.54,6.11-9.7,12.01-9.7,4,0,7.54,1.92,9.78,4.87,2.62-8.49,10.53-14.67,19.89-14.67,3.37,0,6.55.82,9.37,2.25.28-15.25,12.72-27.53,28.03-27.53,13.28,0,24.39,9.23,27.3,21.62,3.83-3.03,8.66-4.85,13.92-4.85,10.65,0,19.54,7.42,21.86,17.36,2.75-2.34,6.3-3.76,10.19-3.76,5.91,0,11.05,3.26,13.74,8.08,2.28-9.02,10.43-15.7,20.15-15.7s18.01,6.79,20.21,15.93c2.02-1.46,4.5-2.34,7.19-2.34,5.44,0,10.05,3.54,11.66,8.44h-225.31Z"/>
+          </g>
+          <g>
+            <g class="cls-60">
+              <polygon class="cls-12" points="288.13 428.12 132.42 428.12 199.71 544.48 355.41 544.48 288.13 428.12"/>
+            </g>
+            <path class="cls-45" d="M277.36,419.45c-3.66,0-6.89,1.78-8.9,4.52-.04-.08-.06-.16-.05-.24.31-3.15-.88-7.4-.88-7.4-2.8-8.57-10.84-14.78-20.34-14.78-5.02,0-9.62,1.74-13.27,4.63-2.77-11.82-13.37-20.62-26.03-20.62-14.61,0-26.47,11.71-26.73,26.25-2.69-1.36-5.72-2.14-8.93-2.14-8.92,0-16.47,5.89-18.97,13.99-2.14-2.82-5.52-4.65-9.33-4.65-5.62,0-10.32,3.97-11.45,9.25h155.71c-1.03-5.03-5.47-8.81-10.81-8.81Z"/>
+          </g>
+          <g>
+            <g class="cls-63">
+              <path class="cls-25" d="M237.51,168.94c-38.44,0-69.6,31.16-69.6,69.6s31.16,69.6,69.6,69.6,69.6-31.16,69.6-69.6-31.16-69.6-69.6-69.6Z"/>
+            </g>
+            <path class="cls-18" d="M237.51,209.41c-16.09,0-29.13,13.04-29.13,29.13s13.04,29.13,29.13,29.13,29.13-13.04,29.13-29.13-13.04-29.13-29.13-29.13Z"/>
+          </g>
+        </g>
+        <g>
+          <g>
+            <rect class="cls-53" x="469.77" y="864.37" width="49.54" height="17.56" rx="8.4" ry="8.4"/>
+            <path class="cls-54" d="M893.16,688.89H106.84c-4.83,0-8.78,3.95-8.78,8.78s3.95,8.78,8.78,8.78h201.17c4.51.35,8.1,4.15,8.1,8.75s-3.56,8.37-8.05,8.74h-125.57c-4.83,0-8.78,3.95-8.78,8.78s3.95,8.78,8.78,8.78h83.83c-4.77.07-8.65,3.99-8.65,8.77s3.95,8.78,8.78,8.78h88.85c4.83,0,8.78,3.95,8.78,8.78s-3.95,8.78-8.78,8.78h-106.39c-4.83,0-8.78,3.95-8.78,8.78h0c0,4.83,3.95,8.78,8.78,8.78h202.28c4.83,0,8.78,3.95,8.78,8.78h0c0,4.83-3.95,8.78-8.78,8.78h-74.65c-4.83,0-8.78,3.95-8.78,8.78s3.95,8.78,8.78,8.78h167.44c-4.38.48-7.82,4.22-7.82,8.73,0,4.83,3.95,8.78,8.78,8.78h82.52c4.83,0,8.78-3.95,8.78-8.78s-3.95-8.78-8.78-8.78h-30.87c-4.38-.48-7.82-4.22-7.82-8.73,0-4.83,3.95-8.78,8.78-8.78h100.21c4.83,0,8.78-3.95,8.78-8.78h0c0-4.83-3.95-8.78-8.78-8.78h-161.47c-4.83,0-8.78-3.95-8.78-8.78h0c0-4.83,3.95-8.78,8.78-8.78h222.79c4.83,0,8.78-3.95,8.78-8.78s-3.95-8.78-8.78-8.78h61.31c4.83,0,8.78-3.95,8.78-8.78s-3.95-8.78-8.78-8.78h-80.21c-4.77-.07-8.65-3.99-8.65-8.77s3.56-8.37,8.05-8.74h93.49c4.83,0,8.78-3.95,8.78-8.78s-3.59-8.4-8.1-8.75h59.43c4.83,0,8.78-3.95,8.78-8.78s-3.95-8.78-8.78-8.78ZM393.33,759.06c-4.83,0-8.78-3.95-8.78-8.78s3.88-8.7,8.65-8.77h38.52c4.77.07,8.65,3.99,8.65,8.77s-3.95,8.78-8.78,8.78h-38.25ZM713.5,732.72c0,4.79-3.88,8.7-8.65,8.77h-32.24c-4.77-.07-8.65-3.99-8.65-8.77s3.56-8.37,8.06-8.74h33.43c4.49.37,8.06,4.16,8.06,8.74Z"/>
+          </g>
+          <rect class="cls-46" x="60.95" y="636.62" width="878.11" height="52.27" rx="25" ry="25"/>
+        </g>
+        <g>
+          <g>
+            <g>
+              <polygon class="cls-33" points="326.44 589.78 296.21 636.61 496.79 636.61 466.56 589.78 490.68 589.78 451.85 529.62 469.83 529.62 436.63 478.17 453.63 478.17 420.79 427.29 438.18 427.29 396.5 362.72 354.83 427.29 372.22 427.29 339.38 478.17 356.37 478.17 323.17 529.62 341.15 529.62 302.32 589.78 326.44 589.78"/>
+              <polygon class="cls-47" points="330.09 584.12 296.21 636.61 396.5 636.61 396.5 362.72 354.83 427.29 375.64 421.98 339.38 478.17 360.2 472.25 323.17 529.62 345.68 522.6 302.32 589.78 330.09 584.12"/>
+            </g>
+            <g>
+              <polygon class="cls-33" points="628.48 636.61 577.22 557.18 602.77 557.18 561.63 493.46 580.69 493.46 545.51 438.96 563.52 438.96 528.73 385.06 547.15 385.06 503.01 316.67 458.86 385.06 477.28 385.06 442.49 438.96 460.5 438.96 425.32 493.46 444.38 493.46 403.24 557.18 428.79 557.18 377.53 636.61 628.48 636.61"/>
+              <polygon class="cls-49" points="503.01 636.61 503.01 316.67 458.86 385.06 480.91 379.44 442.49 438.96 464.55 432.69 425.32 493.46 449.17 486.03 403.24 557.18 432.66 551.19 377.53 636.61 503.01 636.61"/>
+            </g>
+            <g>
+              <polygon class="cls-33" points="572.16 597.5 546.92 636.61 714.43 636.61 689.19 597.5 709.33 597.5 676.9 547.25 691.92 547.25 664.19 504.29 678.38 504.29 650.96 461.8 665.48 461.8 630.67 407.87 595.87 461.8 610.39 461.8 582.97 504.29 597.16 504.29 569.43 547.25 584.45 547.25 552.02 597.5 572.16 597.5"/>
+              <polygon class="cls-48" points="575.21 592.77 546.92 636.61 630.67 636.61 630.67 407.87 595.87 461.8 613.26 457.36 582.97 504.29 600.35 499.34 569.43 547.25 588.23 541.4 552.02 597.5 575.21 592.77"/>
+            </g>
+          </g>
+          <g>
+            <path class="cls-33" d="M324.38,636.61v-15.92c8.2-2.9,14.08-10.7,14.08-19.9,0-11.67-9.46-21.13-21.13-21.13-5.85,0-11.15,2.38-14.97,6.22-2.39-5.95-8.2-10.15-15-10.15-5.37,0-10.12,2.63-13.06,6.66-3.36-2.25-7.4-3.57-11.75-3.57-10.07,0-18.47,7.05-20.6,16.47-2.95-3.09-7.09-5.03-11.7-5.03-4.34,0-8.28,1.72-11.18,4.51-2.59-8.74-10.67-15.12-20.25-15.12-11.67,0-21.13,9.46-21.13,21.13,0,.56.04,1.11.08,1.66-.03,0-.06,0-.08,0-4.48,0-8.54,1.83-11.47,4.77-3-5.2-8.61-8.71-15.05-8.71-5.88,0-11.07,2.93-14.21,7.4-3.32-2.18-7.29-3.46-11.57-3.46-10.69,0-19.51,7.95-20.91,18.25-.39-.03-.78-.06-1.18-.06-8.86,0-16.05,7.13-16.16,15.97h237.21Z"/>
+            <path class="cls-33" d="M674.19,636.61v-15.92c-8.2-2.9-14.08-10.7-14.08-19.9,0-11.67,9.46-21.13,21.13-21.13,5.85,0,11.15,2.38,14.97,6.22,2.39-5.95,8.2-10.15,15-10.15,5.37,0,10.12,2.63,13.06,6.66,3.36-2.25,7.4-3.57,11.75-3.57,10.07,0,18.47,7.05,20.6,16.47,2.95-3.09,7.09-5.03,11.7-5.03,4.34,0,8.28,1.72,11.18,4.51,2.59-8.74,10.67-15.12,20.25-15.12,11.67,0,21.13,9.46,21.13,21.13,0,.56-.04,1.11-.08,1.66.03,0,.06,0,.08,0,4.48,0,8.54,1.83,11.47,4.77,3-5.2,8.61-8.71,15.05-8.71,5.88,0,11.07,2.93,14.21,7.4,3.32-2.18,7.29-3.46,11.57-3.46,10.69,0,19.51,7.95,20.91,18.25.39-.03.78-.06,1.18-.06,8.86,0,16.05,7.13,16.16,15.97h-237.21Z"/>
+          </g>
+          <g>
+            <circle class="cls-50" cx="732.34" cy="569.94" r="40.64" transform="translate(26.58 1172.48) rotate(-78.38)"/>
+            <path class="cls-59" d="M753.76,577.5h-3.67c-1.53,2.89-5.44,9.33-12.18,14.12v-.02s-1.28.93-2.23.58c-1.09-.4-1.59-1.62-1.71-5.82v-16.6h-3.29v15.37c-.06,5.2-.54,6.62-1.73,7.05-.96.35-2.24-.58-2.24-.58h0c-6.71-4.77-10.64-11.2-12.17-14.1h-3.67c.69,1.53,4.53,9.45,12.43,15.66l-.03.02s5.2,3.9,5.2,8.86v34.57h7.71v-34.97c.27-4.77,5.18-8.46,5.18-8.46l-.03-.02c7.89-6.21,11.74-14.13,12.43-15.66Z"/>
+          </g>
+          <g>
+            <g>
+              <circle class="cls-51" cx="312.53" cy="541.57" r="55.34" transform="translate(-241.36 251.43) rotate(-32.37)"/>
+              <path class="cls-59" d="M341.7,551.87h-4.99c-2.08,3.94-7.41,12.7-16.58,19.22v-.02s-1.74,1.26-3.04.79c-1.49-.54-2.16-2.21-2.33-7.92v-22.61h-4.47v20.93c-.08,7.08-.74,9.01-2.36,9.6-1.3.47-3.05-.79-3.05-.79v.02c-9.13-6.52-14.47-15.27-16.56-19.22h-5c.94,2.08,6.17,12.87,16.92,21.32l-.04.02s7.08,5.31,7.08,12.07v51.33h10.5v-51.88c.37-6.49,7.05-11.52,7.05-11.52l-.04-.02c10.74-8.45,15.98-19.23,16.92-21.32Z"/>
+            </g>
+            <g>
+              <circle class="cls-55" cx="261.13" cy="573.79" r="36.58"/>
+              <path class="cls-59" d="M280.42,580.6h-3.3c-1.37,2.6-4.9,8.39-10.96,12.71v-.02s-1.15.83-2.01.52c-.98-.36-1.43-1.46-1.54-5.24v-14.94h-2.96v13.83c-.05,4.68-.49,5.96-1.56,6.34-.86.31-2.02-.52-2.02-.52h0c-6.04-4.29-9.57-10.08-10.95-12.69h-3.3c.62,1.38,4.08,8.5,11.18,14.09l-.03.02s4.68,3.51,4.68,7.98v33.93h6.94v-34.29c.24-4.29,4.66-7.61,4.66-7.61l-.03-.02c7.1-5.59,10.56-12.71,11.18-14.09Z"/>
+            </g>
+          </g>
+        </g>
+        <g>
+          <g>
+            <g>
+              <g>
+                <polygon class="cls-32" points="610.83 593.41 502.96 472.22 395.74 593.41 409.11 637.16 597.46 637.16 610.83 593.41"/>
+                <polygon class="cls-66" points="610.83 593.41 502.96 472.22 502.96 637.16 597.46 637.16 610.83 593.41"/>
+              </g>
+              <g>
+                <g>
+                  <g>
+                    <path class="cls-26" d="M355.05,636.73v-4.58c0-.75-.61-1.36-1.36-1.36s-1.36.61-1.36,1.36v4.58h2.72Z"/>
+                    <path class="cls-17" d="M352.33,637.18h3.56l51.32-55.05c.34-.37.32-.94-.04-1.29-.37-.34-.95-.32-1.29.05l-50.78,54.47h-2.77c-.5,0-.91.41-.91.91s.41.91.91.91Z"/>
+                  </g>
+                  <g>
+                    <polygon class="cls-3" points="502.96 519 502.96 497.49 383.63 604.75 502.96 519"/>
+                    <polygon class="cls-56" points="383.48 604.87 502.96 508.95 502.96 472.22 383.48 604.87"/>
+                    <polygon class="cls-58" points="383.48 604.87 398.41 602.14 396.14 594.71 383.48 604.87"/>
+                  </g>
+                </g>
+                <g>
+                  <g>
+                    <path class="cls-26" d="M650.95,636.8v-4.58c0-.75.61-1.36,1.36-1.36s1.36.61,1.36,1.36v4.58h-2.72Z"/>
+                    <path class="cls-31" d="M650.1,637.26h3.57c.51,0,.93-.41.93-.93s-.41-.93-.93-.93h-2.76l-50.77-54.47c-.35-.38-.94-.4-1.31-.05-.37.35-.39.94-.05,1.31l51.32,55.06Z"/>
+                  </g>
+                  <g>
+                    <polygon class="cls-3" points="502.96 519 502.96 497.49 622.36 604.79 502.96 519"/>
+                    <polygon class="cls-32" points="622.41 604.83 502.96 508.95 502.96 472.22 622.41 604.83"/>
+                    <polygon class="cls-31" points="622.41 604.83 608.1 602.36 610.31 595.13 622.41 604.83"/>
+                  </g>
+                </g>
+              </g>
+            </g>
+            <g>
+              <path class="cls-26" d="M542.52,637.16c-30.67-43.56-38.04-97.26-39.32-109.02l-.22-2.23c0-.08-.01-.13-.01-.13h0s0-.01,0-.01c0,0-.01.13-.03.38l-.17,1.66c-1.19,11.08-8.4,65.38-39.36,109.34h79.12Z"/>
+              <path class="cls-31" d="M502.96,525.77s4.32,64.92,39.56,111.37c0,0,13.53-4.37,20.12-14.1,0,0-41.95-34.75-59.68-97.28Z"/>
+              <path class="cls-66" d="M502.96,525.77s-4.32,64.92-39.56,111.37c0,0-13.53-4.37-20.12-14.1,0,0,41.95-34.75,59.68-97.28Z"/>
+            </g>
+          </g>
+          <g>
+            <path class="cls-57" d="M731.47,663.8c0,3.21-30.23,5.81-67.51,5.81s-67.51-2.6-67.51-5.81,30.23-5.81,67.51-5.81,67.51,2.6,67.51,5.81Z"/>
+            <g>
+              <g>
+                <path class="cls-44" d="M693.5,622.16c.03-13.54-10.79-21.84-20.45-39.96-2.67-5.01-7.25-12.4-8.62-25.18-3.4,10.63-14.57,25.54-7.26,45.62-3.99-4.07-7.73-9.29-7.9-15.05-5.07,8.86-14.75,23.86-13.6,39.68.14,1.88.66,3.64,1.25,5.32h.05c3.9,11.45,14.73,16.61,27.51,16.61,16.05,0,29.05-9.92,29.05-25.97,0-.36-.02-.72-.03-1.07Z"/>
+                <path class="cls-52" d="M682.24,631.61c0-.24.04-.48.04-.73,0-.08,0-.15,0-.23,0-.05,0-.09,0-.14,0-12.71-7.08-21.69-15.78-30.91.15,5.05.72,24.41-4.67,26.95-6.2,2.92-9.73-8.42-9.44-12.55-3.81,5.39-5.34,10-5.58,13.88-.17.98-.27,1.98-.27,3.01,0,9.87,8,17.87,17.87,17.87s17.29-7.47,17.82-16.86c0-.09,0-.19.01-.28Z"/>
+              </g>
+              <g>
+                <g>
+                  <path class="cls-59" d="M694.5,664.34v-8.83s-45.11,0-45.11,0c-4.22,0-7.65,3.69-7.66,8.83h52.77Z"/>
+                  <path class="cls-64" d="M702.14,664.34c-.21-4.91-3.54-8.82-7.63-8.83-4.09,0-7.43,3.91-7.64,8.83h15.27Z"/>
+                </g>
+                <g>
+                  <path class="cls-65" d="M686.3,655.51v-8.83s-45.11,0-45.11,0c-4.22,0-7.65,3.69-7.66,8.83h52.77Z"/>
+                  <path class="cls-64" d="M693.94,655.51c-.21-4.91-3.54-8.82-7.63-8.83-4.09,0-7.43,3.91-7.64,8.83h15.27Z"/>
+                </g>
+                <g>
+                  <path class="cls-59" d="M678.18,664.34v-8.83s-45.11,0-45.11,0c-4.22,0-7.65,3.69-7.66,8.83h52.77Z"/>
+                  <path class="cls-64" d="M685.81,664.34c-.21-4.91-3.54-8.82-7.63-8.83-4.09,0-7.43,3.91-7.64,8.83h15.27Z"/>
+                </g>
+              </g>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>
