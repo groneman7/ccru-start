@@ -1,6 +1,7 @@
 import { InputDecoration } from '~/components/ui/index';
 import { cn } from '~/lib/utils/index';
-import { cva, type VariantProps } from 'class-variance-authority';
+import { cva  } from 'class-variance-authority';
+import type {VariantProps} from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 
 const inputVariants = cva(
