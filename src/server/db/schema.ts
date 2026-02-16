@@ -1,4 +1,4 @@
-import { sql } from 'drizzle-orm'
+import { sql } from 'drizzle-orm';
 import {
   boolean,
   foreignKey,
@@ -10,19 +10,19 @@ import {
   timestamp,
   unique,
   uuid,
-} from 'drizzle-orm/pg-core'
+} from 'drizzle-orm/pg-core';
 
-export const calendar = pgSchema('calendar')
-export const authz = pgSchema('authz')
-export const betterAuth = pgSchema('better-auth')
+export const calendar = pgSchema('calendar');
+export const authz = pgSchema('authz');
+export const betterAuth = pgSchema('better-auth');
 export const accountStatus = pgEnum('account_status', [
   'active',
   'inactive',
   'invited',
-])
-export const shiftStatus = pgEnum('shift_status', ['active', 'deleted'])
-export const singleMultiple = pgEnum('single_multiple', ['single', 'multiple'])
-export const slotStatus = pgEnum('slot_status', ['active', 'deleted'])
+]);
+export const shiftStatus = pgEnum('shift_status', ['active', 'deleted']);
+export const singleMultiple = pgEnum('single_multiple', ['single', 'multiple']);
+export const slotStatus = pgEnum('slot_status', ['active', 'deleted']);
 
 export const eventsInCalendar = calendar.table(
   'events',
@@ -45,7 +45,7 @@ export const eventsInCalendar = calendar.table(
       name: 'created_by',
     }).onUpdate('cascade'),
   ],
-)
+);
 
 export const systemRolesInAuthz = authz.table(
   'system_roles',
@@ -58,7 +58,7 @@ export const systemRolesInAuthz = authz.table(
     display: text().notNull(),
   },
   (table) => [unique('system_roles_name_key').on(table.name)],
-)
+);
 
 export const sessionInBetterAuth = betterAuth.table(
   'session',
@@ -86,7 +86,7 @@ export const sessionInBetterAuth = betterAuth.table(
     }).onDelete('cascade'),
     unique('session_token_unique').on(table.token),
   ],
-)
+);
 
 export const junctionTemplatePositionsInCalendar = calendar.table(
   'junction_template_positions',
@@ -111,7 +111,7 @@ export const junctionTemplatePositionsInCalendar = calendar.table(
       name: 'position_id_fkey',
     }),
   ],
-)
+);
 
 export const userInBetterAuth = betterAuth.table(
   'user',
@@ -157,7 +157,7 @@ export const userInBetterAuth = betterAuth.table(
     }).onDelete('restrict'),
     unique('user_email_unique').on(table.email),
   ],
-)
+);
 
 export const positionsInCalendar = calendar.table(
   'positions',
@@ -171,7 +171,7 @@ export const positionsInCalendar = calendar.table(
     description: text(),
   },
   (table) => [unique('positions_name_key').on(table.name)],
-)
+);
 
 export const userTypesInAuthz = authz.table(
   'user_types',
@@ -184,7 +184,7 @@ export const userTypesInAuthz = authz.table(
     display: text().notNull(),
   },
   (table) => [unique('user_types_name_key').on(table.name)],
-)
+);
 
 export const templatesInCalendar = calendar.table(
   'templates',
@@ -201,7 +201,7 @@ export const templatesInCalendar = calendar.table(
     location: text(),
   },
   (table) => [unique('templates_name_key').on(table.name)],
-)
+);
 
 export const junctionShiftsInCalendar = calendar.table(
   'junction_shifts',
@@ -231,7 +231,7 @@ export const junctionShiftsInCalendar = calendar.table(
       .onUpdate('cascade')
       .onDelete('cascade'),
   ],
-)
+);
 
 export const certificationsInAuthz = authz.table(
   'certifications',
@@ -244,7 +244,7 @@ export const certificationsInAuthz = authz.table(
     display: text().notNull(),
   },
   (table) => [unique('certifications_name_key').on(table.name)],
-)
+);
 
 export const accountInBetterAuth = betterAuth.table('account', {
   id: uuid()
@@ -267,7 +267,7 @@ export const accountInBetterAuth = betterAuth.table('account', {
   password: text(),
   createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'string' }).notNull(),
-})
+});
 
 export const verificationInBetterAuth = betterAuth.table('verification', {
   id: uuid()
@@ -279,7 +279,7 @@ export const verificationInBetterAuth = betterAuth.table('verification', {
   expiresAt: timestamp('expires_at', { mode: 'string' }).notNull(),
   createdAt: timestamp('created_at', { mode: 'string' }).defaultNow().notNull(),
   updatedAt: timestamp('updated_at', { mode: 'string' }).defaultNow().notNull(),
-})
+});
 
 export const junctionSlotsInCalendar = calendar.table(
   'junction_slots',
@@ -308,4 +308,4 @@ export const junctionSlotsInCalendar = calendar.table(
       .onUpdate('cascade')
       .onDelete('set null'),
   ],
-)
+);
