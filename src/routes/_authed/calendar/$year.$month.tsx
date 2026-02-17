@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { WorkspaceContent } from '~/components';
 import { Calendar } from '~/components/calendar';
-import { getEventsByMonth } from '~/features/calendar/calendar.queries';
+import { getEventsByMonthQuery } from '~/features/calendar/calendar.queries';
 import dayjs from 'dayjs';
 
 export const Route = createFileRoute('/_authed/calendar/$year/$month')({
@@ -12,7 +12,7 @@ export const Route = createFileRoute('/_authed/calendar/$year/$month')({
   }),
   loader: async ({ context: { queryClient }, params: { month, year } }) => {
     await queryClient.ensureQueryData(
-      getEventsByMonth(Number(month), Number(year)),
+      getEventsByMonthQuery(Number(month), Number(year)),
     );
   },
 });
@@ -20,7 +20,7 @@ export const Route = createFileRoute('/_authed/calendar/$year/$month')({
 function CalendarComponent() {
   const { month, year } = Route.useParams();
   const { data: events } = useQuery(
-    getEventsByMonth(Number(month), Number(year)),
+    getEventsByMonthQuery(Number(month), Number(year)),
   );
 
   return (

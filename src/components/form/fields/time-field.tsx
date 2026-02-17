@@ -1,14 +1,12 @@
-import {
-  useFieldContext,
-  type CommonFieldProps,
-} from "~/client/components/form";
+import { useFieldContext } from '~/components/form';
+import type { CommonFieldProps } from '~/components/form';
 import {
   Field,
   FieldDescription,
   FieldError,
   FieldLabel,
   TimePicker,
-} from "~/client/components/ui";
+} from '~/components/ui';
 
 type TimeFieldProps = CommonFieldProps;
 export function TimeField({ description, label, placeholder }: TimeFieldProps) {
