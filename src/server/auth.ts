@@ -84,26 +84,23 @@ export const auth = betterAuth({
       updatedAt: 'timestampUpdatedAt',
     },
     additionalFields: {
-      nameFirst: { type: 'string', required: true, input: true },
-      nameMiddle: { type: 'string', required: true, input: true },
-      nameLast: { type: 'string', required: true, input: true },
+      nameFirst: { type: 'string', input: true },
+      nameMiddle: { type: 'string', input: true },
+      nameLast: { type: 'string', input: true },
       phoneNumber: { type: 'string' },
       phoneNumberVerified: { type: 'boolean' },
-      postNominals: { type: 'string', required: false, input: true },
+      postNominals: { type: 'string', input: true },
       status: {
         // IMPORTANT: Any changes to this enum need to be manually reflected in the database schema
         type: ['active', 'inactive', 'invited'],
-        required: false,
         input: false,
       },
       timestampFirstLogin: {
         type: 'date',
-        required: false,
         input: false,
       },
       timestampOnboardingCompleted: {
         type: 'date',
-        required: false,
         input: true,
       },
       systemRoleId: {

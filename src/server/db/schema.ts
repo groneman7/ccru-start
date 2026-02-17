@@ -143,6 +143,9 @@ export const userInBetterAuth = betterAuth.table(
       .notNull(),
     systemRoleId: uuid('system_role_id'),
     userTypeId: uuid('user_type_id'),
+    banned: boolean('banned').default(false),
+    banReason: text('ban_reason'),
+    banExpires: timestamp('ban_expires'),
   },
   (table) => [
     foreignKey({

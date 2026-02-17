@@ -8,6 +8,13 @@
       "when": 1771205165328,
       "tag": "0000_spooky_wendigo",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771367769285,
+      "tag": "0001_legal_magik",
+      "breakpoints": true
     }
   ]
 }
