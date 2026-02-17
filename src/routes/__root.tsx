@@ -1,4 +1,4 @@
-import { PostHogProvider } from '@posthog/react';
+// import { PostHogProvider } from '@posthog/react';
 import { TanStackDevtools } from '@tanstack/react-devtools';
 import type { QueryClient } from '@tanstack/react-query';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -50,7 +50,7 @@ function RootDocument({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <PostHogProvider
+        {/* <PostHogProvider
           apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
           options={{
             api_host: '/ingest',
@@ -61,24 +61,24 @@ function RootDocument({ children }: { children: ReactNode }) {
             capture_exceptions: true,
             debug: import.meta.env.DEV,
           }}
-        >
-          <QueryClientProvider client={queryClient}>
-            <Toaster richColors />
-            {children}
-            <TanStackDevtools
-              config={{
-                position: 'bottom-right',
-              }}
-              plugins={[
-                {
-                  name: 'Tanstack Router',
-                  render: <TanStackRouterDevtoolsPanel />,
-                },
-                TanStackQueryDevtools,
-              ]}
-            />
-          </QueryClientProvider>
-        </PostHogProvider>
+        > */}
+        <QueryClientProvider client={queryClient}>
+          <Toaster richColors />
+          {children}
+          <TanStackDevtools
+            config={{
+              position: 'bottom-right',
+            }}
+            plugins={[
+              {
+                name: 'Tanstack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+              TanStackQueryDevtools,
+            ]}
+          />
+        </QueryClientProvider>
+        {/* </PostHogProvider> */}
         <Scripts />
       </body>
     </html>
