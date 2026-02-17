@@ -23,6 +23,7 @@
     "@neondatabase/serverless": "^1.0.0",
     "@posthog/react": "^1.7.1",
     "@sentry/tanstackstart-react": "^10.34.0",
+    "@tabler/icons-react": "^3.36.1",
     "@tailwindcss/vite": "^4.1.18",
     "@tanstack/match-sorter-utils": "^8.19.4",
     "@tanstack/react-devtools": "^0.7.0",
