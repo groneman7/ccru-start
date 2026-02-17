@@ -63,7 +63,7 @@ export const eventRepository = {
 
 export const positionRepository = {
   all: async () => {
-    const [rows] = await db.select().from(positions);
+    const rows = await db.select().from(positions);
 
     return rows;
   },
@@ -163,6 +163,7 @@ export const slotRepository = {
     const rows = await db
       .select({
         shiftId: shifts.id,
+        eventId: shifts.eventId,
         quantity: shifts.quantity,
         positionId: positions.id,
         positionName: positions.name,
@@ -170,6 +171,8 @@ export const slotRepository = {
         positionDescription: positions.description,
         slotId: slots.id,
         userId: users.id,
+        userFirstName: users.nameFirst,
+        userLastName: users.nameLast,
         userDisplayName: users.displayName,
         userImage: users.image,
       })

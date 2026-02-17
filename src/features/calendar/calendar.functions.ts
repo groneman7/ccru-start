@@ -93,9 +93,16 @@ export const deleteShiftServerFn = createServerFn()
     return await shift.delete({ shiftId });
   });
 
+export const updateSlotQuantityServerFn = createServerFn()
+  .inputValidator(object({ shiftId: uuidv7(), quantity: number() }))
+  .handler(async ({ data }) => {
+    return await shift.updateSlotQuantity(data);
+  });
+
 export const shiftServerFns = {
   create: createShiftServerFn,
   delete: deleteShiftServerFn,
+  updateSlotQuantity: updateSlotQuantityServerFn,
 };
 
 // Slots ----------------------------------------------------------------------

@@ -1,3 +1,4 @@
+import { userSchema } from '~/features/admin/users.schema';
 import { array, number, object, string, uuidv7 } from 'zod';
 
 // Events ---------------------------------------------------------------------
@@ -92,11 +93,22 @@ export const updateShiftSchema = object({
 export const slotSchema = object({
   id: uuidv7(),
   shiftId: uuidv7(),
-  userId: uuidv7(),
+  user: userSchema.pick({
+    id: true,
+    displayName: true,
+    image: true,
+    nameFirst: true,
+    nameLast: true,
+  }),
   status: string(),
 });
 
-export const createSlotSchema = slotSchema.pick({
-  shiftId: true,
-  userId: true,
+export const shiftSchemaWithSlots = shiftSchema.omit({ status: true }).extend({
+  position: positionSchema,
+  slots: array(slotSchema.omit({ shiftId: true, status: true })),
+});
+
+export const createSlotSchema = object({
+  shiftId: uuidv7(),
+  userId: uuidv7(),
 });

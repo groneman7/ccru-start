@@ -3,18 +3,18 @@ import {
   eventServerFns as event,
   positionServerFns as position,
   slotServerFns as slot,
-} from '~/features/calendar/calendar.server';
+} from '~/features/calendar/calendar.functions';
 
 // Events ---------------------------------------------------------------------
 
-export function getEventsByMonth(month: number, year: number) {
+export function getEventsByMonthQuery(month: number, year: number) {
   return queryOptions({
     queryKey: ['eventsByMonth', month, year],
     queryFn: () => event.byMonth({ data: { month, year } }),
   });
 }
 
-export function getEventDetails(eventId: string) {
+export function getEventDetailsQuery(eventId: string) {
   return queryOptions({
     queryKey: ['eventDetails', eventId],
     queryFn: () => event.byId({ data: { eventId } }),
@@ -23,7 +23,7 @@ export function getEventDetails(eventId: string) {
 
 // Positions ------------------------------------------------------------------
 
-export function allPositions() {
+export function allPositionsQuery() {
   return queryOptions({
     queryKey: ['allPositions'],
     queryFn: () => position.all(),
@@ -32,7 +32,7 @@ export function allPositions() {
 
 // Slots ----------------------------------------------------------------------
 
-export function getSlotsByEvent(eventId: string) {
+export function getSlotsByEventQuery(eventId: string) {
   return queryOptions({
     queryKey: ['slotsByEvent', eventId],
     queryFn: () => slot.byEventId({ data: { eventId } }),

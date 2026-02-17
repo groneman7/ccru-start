@@ -4,7 +4,7 @@ import {
   shiftRepository as shift,
   slotRepository as slot,
 } from '~/features/calendar/calendar.repository';
-import type { infer as Infer } from 'zod';
+import { shiftSchemaWithSlots } from '~/features/calendar/calendar.schema';
 import type {
   createEventSchema,
   createPositionSchema,
@@ -12,7 +12,9 @@ import type {
   createSlotSchema,
   updateEventSchema,
   updatePositionDetailsSchema,
-} from './calendar.schema';
+} from '~/features/calendar/calendar.schema';
+import { array } from 'zod';
+import type { infer as Infer } from 'zod';
 
 // BUSINESS LOGIC (e.g., authorization) GOES IN THIS LAYER!!!
 
@@ -61,6 +63,9 @@ export const shiftService = {
   delete: async (input: { shiftId: string }) => {
     return await shift.delete(input);
   },
+  updateSlotQuantity: async (input: { shiftId: string; quantity: number }) => {
+    return await shift.updateSlotQuantity(input);
+  },
 };
 
 // Slots ----------------------------------------------------------------------
@@ -80,72 +85,52 @@ export const slotService = {
 
     return newSlot;
   },
-  byEventId: async (input: { eventId: string }) => {
+  byEventId: async (input: {
+    eventId: string;
+  }): Promise<Infer<typeof shiftSchemaWithSlots>[]> => {
     // Returns a list of slots grouped by shift for a given event.
     const { eventId } = input;
     const data = await slot.byEventId({ eventId });
 
+    type ShiftDto = Infer<typeof shiftSchemaWithSlots>;
+    type SlotDto = ShiftDto['slots'][number];
+
     const dto = Array.from(
-      data.reduce(
-        (map, row) => {
-          const _shift = map.get(row.shiftId) ?? {
-            id: row.shiftId,
-            quantity: row.quantity,
-            position: {
-              id: row.positionId,
-              name: row.positionName,
-              display: row.positionDisplay,
-              description: row.positionDescription,
+      data.reduce((map, row) => {
+        const _shift: ShiftDto = map.get(row.shiftId) ?? {
+          id: row.shiftId,
+          eventId: row.eventId,
+          positionId: row.positionId,
+          quantity: row.quantity,
+          position: {
+            id: row.positionId,
+            name: row.positionName,
+            display: row.positionDisplay,
+            description: row.positionDescription,
+          },
+          slots: [],
+        };
+
+        if (row.slotId && row.userId && row.userDisplayName) {
+          const slotToAdd: SlotDto = {
+            id: row.slotId,
+            user: {
+              id: row.userId,
+              displayName: row.userDisplayName,
+              image: row.userImage,
+              nameFirst: row.userFirstName,
+              nameLast: row.userLastName,
             },
-            slots: [] as Array<{
-              id: string;
-              user: {
-                id: string;
-                displayName: string;
-                image: string | null;
-              };
-            }>,
           };
+          _shift.slots.push(slotToAdd);
+        }
 
-          if (row.slotId && row.userId && row.userDisplayName) {
-            _shift.slots.push({
-              id: row.slotId,
-              user: {
-                id: row.userId,
-                displayName: row.userDisplayName,
-                image: row.userImage,
-              },
-            });
-          }
-
-          map.set(row.shiftId, _shift);
-          return map;
-        },
-        new Map<
-          string,
-          {
-            id: string;
-            quantity: number;
-            position: {
-              id: string;
-              name: string;
-              display: string;
-              description: string | null;
-            };
-            slots: Array<{
-              id: string;
-              user: {
-                id: string;
-                displayName: string;
-                image: string | null;
-              };
-            }>;
-          }
-        >(),
-      ),
+        map.set(row.shiftId, _shift);
+        return map;
+      }, new Map<string, ShiftDto>()),
     ).map(([, _shift]) => _shift);
 
-    return dto;
+    return array(shiftSchemaWithSlots).parse(dto);
   },
   create: async (input: Infer<typeof createSlotSchema>) => {
     return await slot.create(input);
