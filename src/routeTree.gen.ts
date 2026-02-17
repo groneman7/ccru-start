@@ -12,7 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
+import { Route as AuthedCalendarIndexRouteImport } from './routes/_authed/calendar/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
+import { Route as AuthedCalendarEventsEventIdRouteImport } from './routes/_authed/calendar/events.$eventId'
+import { Route as AuthedCalendarYearMonthRouteImport } from './routes/_authed/calendar/$year.$month'
 
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
@@ -28,21 +31,43 @@ const AuthedIndexRoute = AuthedIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
+const AuthedCalendarIndexRoute = AuthedCalendarIndexRouteImport.update({
+  id: '/calendar/',
+  path: '/calendar/',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthedCalendarEventsEventIdRoute =
+  AuthedCalendarEventsEventIdRouteImport.update({
+    id: '/calendar/events/$eventId',
+    path: '/calendar/events/$eventId',
+    getParentRoute: () => AuthedRouteRoute,
+  } as any)
+const AuthedCalendarYearMonthRoute = AuthedCalendarYearMonthRouteImport.update({
+  id: '/calendar/$year/$month',
+  path: '/calendar/$year/$month',
+  getParentRoute: () => AuthedRouteRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
   '/sign-in': typeof SignInRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/calendar/': typeof AuthedCalendarIndexRoute
+  '/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
+  '/calendar/events/$eventId': typeof AuthedCalendarEventsEventIdRoute
 }
 export interface FileRoutesByTo {
   '/sign-in': typeof SignInRoute
   '/': typeof AuthedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/calendar': typeof AuthedCalendarIndexRoute
+  '/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
+  '/calendar/events/$eventId': typeof AuthedCalendarEventsEventIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -50,13 +75,36 @@ export interface FileRoutesById {
   '/sign-in': typeof SignInRoute
   '/_authed/': typeof AuthedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
+  '/_authed/calendar/': typeof AuthedCalendarIndexRoute
+  '/_authed/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
+  '/_authed/calendar/events/$eventId': typeof AuthedCalendarEventsEventIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/sign-in' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/sign-in'
+    | '/api/auth/$'
+    | '/calendar/'
+    | '/calendar/$year/$month'
+    | '/calendar/events/$eventId'
   fileRoutesByTo: FileRoutesByTo
-  to: '/sign-in' | '/' | '/api/auth/$'
-  id: '__root__' | '/_authed' | '/sign-in' | '/_authed/' | '/api/auth/$'
+  to:
+    | '/sign-in'
+    | '/'
+    | '/api/auth/$'
+    | '/calendar'
+    | '/calendar/$year/$month'
+    | '/calendar/events/$eventId'
+  id:
+    | '__root__'
+    | '/_authed'
+    | '/sign-in'
+    | '/_authed/'
+    | '/api/auth/$'
+    | '/_authed/calendar/'
+    | '/_authed/calendar/$year/$month'
+    | '/_authed/calendar/events/$eventId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -88,6 +136,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedIndexRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
+    '/_authed/calendar/': {
+      id: '/_authed/calendar/'
+      path: '/calendar'
+      fullPath: '/calendar/'
+      preLoaderRoute: typeof AuthedCalendarIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -95,15 +150,35 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAuthSplatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authed/calendar/events/$eventId': {
+      id: '/_authed/calendar/events/$eventId'
+      path: '/calendar/events/$eventId'
+      fullPath: '/calendar/events/$eventId'
+      preLoaderRoute: typeof AuthedCalendarEventsEventIdRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/calendar/$year/$month': {
+      id: '/_authed/calendar/$year/$month'
+      path: '/calendar/$year/$month'
+      fullPath: '/calendar/$year/$month'
+      preLoaderRoute: typeof AuthedCalendarYearMonthRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
   }
 }
 
 interface AuthedRouteRouteChildren {
   AuthedIndexRoute: typeof AuthedIndexRoute
+  AuthedCalendarIndexRoute: typeof AuthedCalendarIndexRoute
+  AuthedCalendarYearMonthRoute: typeof AuthedCalendarYearMonthRoute
+  AuthedCalendarEventsEventIdRoute: typeof AuthedCalendarEventsEventIdRoute
 }
 
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
   AuthedIndexRoute: AuthedIndexRoute,
+  AuthedCalendarIndexRoute: AuthedCalendarIndexRoute,
+  AuthedCalendarYearMonthRoute: AuthedCalendarYearMonthRoute,
+  AuthedCalendarEventsEventIdRoute: AuthedCalendarEventsEventIdRoute,
 }
 
 const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(

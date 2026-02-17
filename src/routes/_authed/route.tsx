@@ -1,5 +1,5 @@
-import { createServerFn } from '@tanstack/react-start';
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
 import { AppSidebar, Workspace } from '~/components';
 import { SidebarProvider } from '~/components/ui';
 import { auth } from '~/server/auth';
@@ -28,14 +28,15 @@ export const Route = createFileRoute('/_authed')({
     return {
       currentUser: {
         ...session.user,
+        displayName: session.user.name,
         isImpersonated: !!session.session.impersonatedBy,
       },
     };
   },
-  component: RouteComponent,
+  component: AuthedRouteLayout,
 });
 
-function RouteComponent() {
+function AuthedRouteLayout() {
   return (
     <div className="bg-blue-50">
       <SidebarProvider>

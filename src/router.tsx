@@ -1,6 +1,8 @@
+import { QueryClient } from '@tanstack/react-query';
 import { createRouter as createTanStackRouter } from '@tanstack/react-router';
-import { getContext } from './lib/tanstack-query/root-provider';
 import { routeTree } from './routeTree.gen';
+
+export const queryClient = new QueryClient();
 
 export function getRouter() {
   const router = createTanStackRouter({
@@ -9,7 +11,9 @@ export function getRouter() {
     defaultPreloadStaleTime: 0,
     scrollRestoration: true,
 
-    context: getContext(),
+    context: {
+      queryClient,
+    },
     defaultPendingComponent: () => (
       <div className={`p-2 text-2xl`}>Pending component...</div>
     ),
