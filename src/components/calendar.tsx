@@ -1,13 +1,14 @@
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '~/components/ui';
+import type { eventSchema } from '~/features/calendar/calendar.schema';
 import { cn } from '~/lib/utils';
-import type { CalendarEvent } from '~/types';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import type { infer as Infer } from 'zod';
 
 type CalendarProps = {
-  events?: CalendarEvent[];
+  events?: Infer<typeof eventSchema>[];
   month: Dayjs;
 };
 
@@ -95,7 +96,7 @@ export function Calendar({ events, month }: CalendarProps) {
           )}
         >
           {DATES.map((date, index) => {
-            const eventsOnDate: CalendarEvent[] | undefined = events
+            const eventsOnDate: Infer<typeof eventSchema>[] | undefined = events
               ? events.filter(
                   (event) => dayjs(event.timeBegin).isSame(date, 'day'),
                   // || (event.timeEnd && date.isBetween(event.timeStart, event.timeEnd, "day", "[]"))
@@ -134,8 +135,7 @@ export function Calendar({ events, month }: CalendarProps) {
                     eventsOnDate.map((event) => (
                       <Link
                         key={event.id}
-                        // to="/calendar/events/$eventId"
-                        to="/"
+                        to="/calendar/events/$eventId"
                         params={{ eventId: String(event.id) }}
                         className="hover:bg-accent-hover active:bg-accent-active/75 flex cursor-pointer overflow-hidden rounded-sm bg-accent px-1 text-sm text-ellipsis whitespace-nowrap transition-colors duration-75 select-none"
                         // onClick={(e) => {

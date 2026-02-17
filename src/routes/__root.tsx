@@ -50,19 +50,19 @@ function RootDocument({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <QueryClientProvider client={queryClient}>
-          <PostHogProvider
-            apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
-            options={{
-              api_host: '/ingest',
-              ui_host:
-                import.meta.env.VITE_PUBLIC_POSTHOG_HOST ||
-                'https://us.posthog.com',
-              defaults: '2025-05-24',
-              capture_exceptions: true,
-              debug: import.meta.env.DEV,
-            }}
-          >
+        <PostHogProvider
+          apiKey={import.meta.env.VITE_PUBLIC_POSTHOG_KEY}
+          options={{
+            api_host: '/ingest',
+            ui_host:
+              import.meta.env.VITE_PUBLIC_POSTHOG_HOST ||
+              'https://us.posthog.com',
+            defaults: '2025-05-24',
+            capture_exceptions: true,
+            debug: import.meta.env.DEV,
+          }}
+        >
+          <QueryClientProvider client={queryClient}>
             <Toaster richColors />
             {children}
             <TanStackDevtools
@@ -77,8 +77,8 @@ function RootDocument({ children }: { children: ReactNode }) {
                 TanStackQueryDevtools,
               ]}
             />
-          </PostHogProvider>
-        </QueryClientProvider>
+          </QueryClientProvider>
+        </PostHogProvider>
         <Scripts />
       </body>
     </html>
