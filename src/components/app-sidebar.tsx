@@ -26,31 +26,8 @@ export function AppSidebar() {
   const { signOut } = authClient;
   const nav = useNavigate();
 
-  // if (!currentUser) {
-  //   // Shouldn't happen, if this actually renders, we should probably fire something on Sentry
-  //   return (
-  //     <Sidebar>
-  //       <SidebarHeader className="px-4 pt-4">
-  //         <span
-  //           className={cn(
-  //             'cursor-pointer !font-(family-name:--temp-logo-font) text-3xl font-black select-none',
-  //             'bg-clip-text text-transparent',
-  //             'bg-linear-120 from-sky-600 to-teal-400',
-  //           )}
-  //           onClick={() => nav({ to: '/' })}
-  //         >
-  //           CCRU
-  //         </span>
-  //       </SidebarHeader>
-  //       <SidebarContent>
-  //         <SignedOut />
-  //       </SidebarContent>
-  //     </Sidebar>
-  //   );
-  // }
-
   return (
-    <Sidebar>
+    <Sidebar variant="inset">
       <SidebarHeader className="px-4 pt-4">
         <span
           className={cn(
@@ -68,9 +45,9 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Link /* to="/calendar" */ to="/">Calendar</Link>
-                </SidebarMenuButton>
+                <Link to="/calendar">
+                  <SidebarMenuButton>Calendar</SidebarMenuButton>
+                </Link>
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton>
@@ -104,7 +81,7 @@ export function AppSidebar() {
                     </div>
                     <div className="flex flex-col justify-center text-left">
                       <span className="text-base leading-5 font-semibold">
-                        {currentUser.name}
+                        {currentUser.displayName}
                       </span>
                       <span className="text-xs text-slate-600">
                         {/* {currentUser.userType?.display} */}

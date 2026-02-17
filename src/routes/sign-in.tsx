@@ -76,7 +76,7 @@ function RouteComponent() {
   return (
     <div
       className={cn(
-        'flex h-screen flex-1 items-center justify-center bg-cover bg-center bg-no-repeat',
+        'flex h-screen flex-1 items-center justify-center bg-cover bg-center bg-no-repeat bg-origin-border',
         isNight
           ? 'bg-[url("/camping_vector_night.svg")]'
           : 'bg-[url("/camping_vector.svg")]',
