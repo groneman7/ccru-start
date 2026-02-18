@@ -1,25 +1,12 @@
 // import { usePostHog } from '@posthog/react';
 import { createFileRoute } from '@tanstack/react-router';
-import { WorkspaceHeader } from '~/components';
-import { Button } from '~/components/ui';
+import { WorkspaceContent, WorkspaceHeader } from '~/components';
 import dayjs from 'dayjs';
 
 export const Route = createFileRoute('/_authed/')({ component: App });
 
 function App() {
-  // const posthog = usePostHog();
-
-  // const handleDocumentationClick = () => {
-  //   posthog.capture('documentation_link_clicked', {
-  //     url: 'https://tanstack.com/start',
-  //     link_text: 'Documentation',
-  //   });
-  // };
   const { currentUser } = Route.useRouteContext();
-
-  // const completeOnboarding = useMutation(
-  //   trpc.users.completeOnboarding.mutationOptions(),
-  // );
 
   const t1 = dayjs(currentUser.timestampFirstLogin);
   const t2 = dayjs();
@@ -38,13 +25,12 @@ function App() {
       <WorkspaceHeader>
         {`${getGreeting(timeSinceFirstLogin < 24)}, ${currentUser.nameFirst}.`}
       </WorkspaceHeader>
-      {!currentUser.timestampOnboardingCompleted && (
-        <Button
-        // onClick={() => completeOnboarding.mutate({ userId: currentUser.id })}
-        >
-          Mark onboarding complete
-        </Button>
-      )}
+      <WorkspaceContent>
+        <div>Announcements</div>
+        <div>My Schedule</div>
+        <div>Upcoming Events</div>
+        <div>Training & Resources</div>
+      </WorkspaceContent>
     </>
   );
 }
