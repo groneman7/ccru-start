@@ -9,27 +9,38 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
+import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
+import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
+import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthedCalendarIndexRouteImport } from './routes/_authed/calendar/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthedCalendarEventsEventIdRouteImport } from './routes/_authed/calendar/events.$eventId'
 import { Route as AuthedCalendarYearMonthRouteImport } from './routes/_authed/calendar/$year.$month'
 
-const SignInRoute = SignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedIndexRoute = AuthedIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/register',
+  path: '/register',
+  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthedCalendarIndexRoute = AuthedCalendarIndexRouteImport.update({
   id: '/calendar/',
@@ -55,15 +66,17 @@ const AuthedCalendarYearMonthRoute = AuthedCalendarYearMonthRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
-  '/sign-in': typeof SignInRoute
+  '/register': typeof AuthRegisterRoute
+  '/sign-in': typeof AuthSignInRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/calendar/': typeof AuthedCalendarIndexRoute
   '/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
   '/calendar/events/$eventId': typeof AuthedCalendarEventsEventIdRoute
 }
 export interface FileRoutesByTo {
-  '/sign-in': typeof SignInRoute
   '/': typeof AuthedIndexRoute
+  '/register': typeof AuthRegisterRoute
+  '/sign-in': typeof AuthSignInRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/calendar': typeof AuthedCalendarIndexRoute
   '/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
@@ -71,8 +84,10 @@ export interface FileRoutesByTo {
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
+  '/_auth': typeof AuthRouteRouteWithChildren
   '/_authed': typeof AuthedRouteRouteWithChildren
-  '/sign-in': typeof SignInRoute
+  '/_auth/register': typeof AuthRegisterRoute
+  '/_auth/sign-in': typeof AuthSignInRoute
   '/_authed/': typeof AuthedIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authed/calendar/': typeof AuthedCalendarIndexRoute
@@ -83,6 +98,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/register'
     | '/sign-in'
     | '/api/auth/$'
     | '/calendar/'
@@ -90,16 +106,19 @@ export interface FileRouteTypes {
     | '/calendar/events/$eventId'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/sign-in'
     | '/'
+    | '/register'
+    | '/sign-in'
     | '/api/auth/$'
     | '/calendar'
     | '/calendar/$year/$month'
     | '/calendar/events/$eventId'
   id:
     | '__root__'
+    | '/_auth'
     | '/_authed'
-    | '/sign-in'
+    | '/_auth/register'
+    | '/_auth/sign-in'
     | '/_authed/'
     | '/api/auth/$'
     | '/_authed/calendar/'
@@ -108,25 +127,25 @@ export interface FileRouteTypes {
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
+  AuthRouteRoute: typeof AuthRouteRouteWithChildren
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
-  SignInRoute: typeof SignInRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/sign-in': {
-      id: '/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof SignInRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authed': {
       id: '/_authed'
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed/': {
@@ -135,6 +154,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/'
       preLoaderRoute: typeof AuthedIndexRouteImport
       parentRoute: typeof AuthedRouteRoute
+    }
+    '/_auth/sign-in': {
+      id: '/_auth/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_auth/register': {
+      id: '/_auth/register'
+      path: '/register'
+      fullPath: '/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof AuthRouteRoute
     }
     '/_authed/calendar/': {
       id: '/_authed/calendar/'
@@ -167,6 +200,20 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthRouteRouteChildren {
+  AuthRegisterRoute: typeof AuthRegisterRoute
+  AuthSignInRoute: typeof AuthSignInRoute
+}
+
+const AuthRouteRouteChildren: AuthRouteRouteChildren = {
+  AuthRegisterRoute: AuthRegisterRoute,
+  AuthSignInRoute: AuthSignInRoute,
+}
+
+const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
+  AuthRouteRouteChildren,
+)
+
 interface AuthedRouteRouteChildren {
   AuthedIndexRoute: typeof AuthedIndexRoute
   AuthedCalendarIndexRoute: typeof AuthedCalendarIndexRoute
@@ -186,8 +233,8 @@ const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
 )
 
 const rootRouteChildren: RootRouteChildren = {
+  AuthRouteRoute: AuthRouteRouteWithChildren,
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
-  SignInRoute: SignInRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
