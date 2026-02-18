@@ -1,21 +1,30 @@
+import type {
+  createEventFromTemplateSchema,
+  createEventSchema,
+  createPositionSchema,
+  createShiftSchema,
+  createSlotSchema,
+  createTemplateDetailsSchema,
+  createTemplatePositionsSchema,
+  createTemplateSchema,
+  updateEventSchema,
+  updatePositionDetailsSchema,
+  updateTemplateDetailsSchema,
+  updateTemplatePositionQuantitySchema,
+} from '~/features/calendar/calendar.schema';
 import { db } from '~/server/db';
 import {
   eventsInCalendar as events,
   positionsInCalendar as positions,
   junctionShiftsInCalendar as shifts,
   junctionSlotsInCalendar as slots,
+  junctionTemplatePositionsInCalendar as templatePositions,
+  templatesInCalendar as templates,
   userInBetterAuth as users,
 } from '~/server/db/schema';
+import dayjs from 'dayjs';
 import { and, count, eq, gte, lt } from 'drizzle-orm';
 import type { infer as Infer } from 'zod';
-import type {
-  createEventSchema,
-  createPositionSchema,
-  createShiftSchema,
-  createSlotSchema,
-  updateEventSchema,
-  updatePositionDetailsSchema,
-} from './calendar.schema';
 
 // Events ---------------------------------------------------------------------
 
@@ -214,5 +223,199 @@ export const slotRepository = {
       .returning({ id: slots.id });
 
     return row;
+  },
+};
+
+// Templates ------------------------------------------------------------------
+
+export const templateRepository = {
+  all: async () => {
+    const rows = await db.select().from(templates);
+
+    return rows;
+  },
+  byId: async (input: { templateId: string }) => {
+    const { templateId } = input;
+    const [row] = await db
+      .select()
+      .from(templates)
+      .where(eq(templates.id, templateId));
+
+    return row;
+  },
+  create: async (input: Infer<typeof createTemplateSchema>) => {
+    const [row] = await db
+      .insert(templates)
+      .values(input)
+      .returning({ id: templates.id });
+
+    return row;
+  },
+  createFromDetails: async (
+    input: Infer<typeof createTemplateDetailsSchema>,
+  ) => {
+    const normalizeTime = (value: string) =>
+      value.length === 5 ? `${value}:00` : value;
+
+    const name = `${input.eventName
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '')}-${crypto.randomUUID().slice(0, 8)}`;
+
+    const [row] = await db
+      .insert(templates)
+      .values({
+        name,
+        display: input.eventName.trim(),
+        description: input.description,
+        location: input.location,
+        timeBegin: normalizeTime(input.timeBegin),
+        timeEnd: input.timeEnd ? normalizeTime(input.timeEnd) : null,
+      })
+      .returning({ id: templates.id });
+
+    return row;
+  },
+  templatePositionsByTemplateId: async (input: { templateId: string }) => {
+    const { templateId } = input;
+    const rows = await db
+      .select({
+        id: templatePositions.id,
+        quantity: templatePositions.quantity,
+        positionId: positions.id,
+        positionName: positions.name,
+        positionDisplay: positions.display,
+        positionDescription: positions.description,
+      })
+      .from(templatePositions)
+      .innerJoin(positions, eq(templatePositions.positionId, positions.id))
+      .where(eq(templatePositions.templateId, templateId));
+
+    return rows.map((row) => ({
+      id: row.id,
+      quantity: row.quantity,
+      position: {
+        id: row.positionId,
+        name: row.positionName,
+        display: row.positionDisplay,
+        description: row.positionDescription,
+      },
+    }));
+  },
+  createTemplatePositions: async (
+    input: Infer<typeof createTemplatePositionsSchema>,
+  ) => {
+    const { templateId, templatePositionsToCreate } = input;
+    const existing = await db
+      .select({ positionId: templatePositions.positionId })
+      .from(templatePositions)
+      .where(eq(templatePositions.templateId, templateId));
+
+    const existingPositionIds = new Set(existing.map((row) => row.positionId));
+    const rowsToInsert = templatePositionsToCreate.filter(
+      (row) => !existingPositionIds.has(row.positionId),
+    );
+
+    if (rowsToInsert.length === 0) return [];
+
+    return await db
+      .insert(templatePositions)
+      .values(
+        rowsToInsert.map((row) => ({
+          templateId,
+          positionId: row.positionId,
+          quantity: row.quantity,
+        })),
+      )
+      .returning({ id: templatePositions.id });
+  },
+  deleteTemplatePosition: async (input: { templatePositionId: string }) => {
+    const { templatePositionId } = input;
+    const [row] = await db
+      .delete(templatePositions)
+      .where(eq(templatePositions.id, templatePositionId))
+      .returning({ id: templatePositions.id });
+
+    return row;
+  },
+  updateDetails: async (input: Infer<typeof updateTemplateDetailsSchema>) => {
+    const { templateId, name, eventName, timeBegin, timeEnd, ...rest } = input;
+    const normalizeTime = (value: string) =>
+      value.length === 5 ? `${value}:00` : value;
+
+    const [row] = await db
+      .update(templates)
+      .set({
+        ...rest,
+        ...(name ? { name: name.trim() } : {}),
+        ...(eventName ? { display: eventName.trim() } : {}),
+        ...(timeBegin ? { timeBegin: normalizeTime(timeBegin) } : {}),
+        ...(timeEnd !== undefined
+          ? { timeEnd: timeEnd ? normalizeTime(timeEnd) : null }
+          : {}),
+      })
+      .where(eq(templates.id, templateId))
+      .returning({ id: templates.id });
+
+    return row;
+  },
+  updatePositionQuantity: async (
+    input: Infer<typeof updateTemplatePositionQuantitySchema>,
+  ) => {
+    const { templatePositionId, quantity } = input;
+    const [row] = await db
+      .update(templatePositions)
+      .set({ quantity })
+      .where(eq(templatePositions.id, templatePositionId))
+      .returning({ id: templatePositions.id });
+
+    return row;
+  },
+  createEventFromTemplate: async (
+    input: Infer<typeof createEventFromTemplateSchema>,
+  ) => {
+    const { templateId, date, createdBy } = input;
+    const templateRows = await db
+      .select()
+      .from(templates)
+      .where(eq(templates.id, templateId));
+
+    if (templateRows.length === 0) throw new Error('Template not found.');
+    const [template] = templateRows;
+
+    const [eventRow] = await db
+      .insert(events)
+      .values({
+        name: template.display,
+        description: template.description,
+        location: template.location,
+        timeBegin: dayjs(`${date} ${template.timeBegin}`).toISOString(),
+        timeEnd: template.timeEnd
+          ? dayjs(`${date} ${template.timeEnd}`).toISOString()
+          : null,
+        createdBy,
+      })
+      .returning({ id: events.id });
+
+    const templatePositionRows = await db
+      .select({
+        positionId: templatePositions.positionId,
+        quantity: templatePositions.quantity,
+      })
+      .from(templatePositions)
+      .where(eq(templatePositions.templateId, templateId));
+
+    if (templatePositionRows.length > 0) {
+      await db.insert(shifts).values(
+        templatePositionRows.map((row) => ({
+          eventId: eventRow.id,
+          positionId: row.positionId,
+          quantity: row.quantity,
+        })),
+      );
+    }
+
+    return eventRow;
   },
 };

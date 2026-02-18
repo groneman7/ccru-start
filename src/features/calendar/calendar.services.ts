@@ -3,15 +3,24 @@ import {
   positionRepository as position,
   shiftRepository as shift,
   slotRepository as slot,
+  templateRepository as template,
 } from '~/features/calendar/calendar.repository';
-import { shiftSchemaWithSlots } from '~/features/calendar/calendar.schema';
+import {
+  shiftSchemaWithSlots,
+  templatePositionSchema,
+} from '~/features/calendar/calendar.schema';
 import type {
+  createEventFromTemplateSchema,
   createEventSchema,
   createPositionSchema,
   createShiftSchema,
   createSlotSchema,
+  createTemplateDetailsSchema,
+  createTemplatePositionsSchema,
   updateEventSchema,
   updatePositionDetailsSchema,
+  updateTemplateDetailsSchema,
+  updateTemplatePositionQuantitySchema,
 } from '~/features/calendar/calendar.schema';
 import { array } from 'zod';
 import type { infer as Infer } from 'zod';
@@ -140,5 +149,44 @@ export const slotService = {
   },
   reassignUser: async (input: { slotId: string; userId: string }) => {
     return await slot.reassignUser(input);
+  },
+};
+
+// Templates ------------------------------------------------------------------
+
+export const templateService = {
+  all: async () => {
+    return await template.all();
+  },
+  byId: async (input: { templateId: string }) => {
+    return await template.byId(input);
+  },
+  create: async (input: Infer<typeof createTemplateDetailsSchema>) => {
+    return await template.createFromDetails(input);
+  },
+  templatePositionsByTemplateId: async (input: { templateId: string }) => {
+    const rows = await template.templatePositionsByTemplateId(input);
+    return array(templatePositionSchema).parse(rows);
+  },
+  createTemplatePositions: async (
+    input: Infer<typeof createTemplatePositionsSchema>,
+  ) => {
+    return await template.createTemplatePositions(input);
+  },
+  deleteTemplatePosition: async (input: { templatePositionId: string }) => {
+    return await template.deleteTemplatePosition(input);
+  },
+  updateDetails: async (input: Infer<typeof updateTemplateDetailsSchema>) => {
+    return await template.updateDetails(input);
+  },
+  updatePositionQuantity: async (
+    input: Infer<typeof updateTemplatePositionQuantitySchema>,
+  ) => {
+    return await template.updatePositionQuantity(input);
+  },
+  createEventFromTemplate: async (
+    input: Infer<typeof createEventFromTemplateSchema>,
+  ) => {
+    return await template.createEventFromTemplate(input);
   },
 };

@@ -1,17 +1,23 @@
 import { createServerFn } from '@tanstack/react-start';
 import {
+  createEventFromTemplateSchema,
   createEventSchema,
   createPositionSchema,
   createShiftSchema,
   createSlotSchema,
+  createTemplateDetailsSchema,
+  createTemplatePositionsSchema,
   updateEventSchema,
   updatePositionDetailsSchema,
+  updateTemplateDetailsSchema,
+  updateTemplatePositionQuantitySchema,
 } from '~/features/calendar/calendar.schema';
 import {
   eventService as event,
   positionService as position,
   shiftService as shift,
   slotService as slot,
+  templateService as template,
 } from '~/features/calendar/calendar.services';
 import { number, object, uuidv7 } from 'zod';
 
@@ -143,4 +149,70 @@ export const slotServerFns = {
   create: createSlotServerFn,
   delete: deleteSlotServerFn,
   reassignUser: reassignUserServerFn,
+};
+
+// Templates ------------------------------------------------------------------
+
+export const allTemplatesServerFn = createServerFn().handler(async () => {
+  return await template.all();
+});
+
+export const createTemplateServerFn = createServerFn()
+  .inputValidator(createTemplateDetailsSchema)
+  .handler(async ({ data }) => {
+    return await template.create(data);
+  });
+
+export const getTemplateByIdServerFn = createServerFn()
+  .inputValidator(object({ templateId: uuidv7() }))
+  .handler(async ({ data }) => {
+    return await template.byId(data);
+  });
+
+export const getTemplatePositionsByTemplateIdServerFn = createServerFn()
+  .inputValidator(object({ templateId: uuidv7() }))
+  .handler(async ({ data }) => {
+    return await template.templatePositionsByTemplateId(data);
+  });
+
+export const createTemplatePositionsServerFn = createServerFn()
+  .inputValidator(createTemplatePositionsSchema)
+  .handler(async ({ data }) => {
+    return await template.createTemplatePositions(data);
+  });
+
+export const deleteTemplatePositionServerFn = createServerFn()
+  .inputValidator(object({ templatePositionId: uuidv7() }))
+  .handler(async ({ data }) => {
+    return await template.deleteTemplatePosition(data);
+  });
+
+export const updateTemplateDetailsServerFn = createServerFn()
+  .inputValidator(updateTemplateDetailsSchema)
+  .handler(async ({ data }) => {
+    return await template.updateDetails(data);
+  });
+
+export const updateTemplatePositionQuantityServerFn = createServerFn()
+  .inputValidator(updateTemplatePositionQuantitySchema)
+  .handler(async ({ data }) => {
+    return await template.updatePositionQuantity(data);
+  });
+
+export const createEventFromTemplateServerFn = createServerFn()
+  .inputValidator(createEventFromTemplateSchema)
+  .handler(async ({ data }) => {
+    return await template.createEventFromTemplate(data);
+  });
+
+export const templateServerFns = {
+  all: allTemplatesServerFn,
+  byId: getTemplateByIdServerFn,
+  templatePositionsByTemplateId: getTemplatePositionsByTemplateIdServerFn,
+  create: createTemplateServerFn,
+  createTemplatePositions: createTemplatePositionsServerFn,
+  deleteTemplatePosition: deleteTemplatePositionServerFn,
+  updateDetails: updateTemplateDetailsServerFn,
+  updatePositionQuantity: updateTemplatePositionQuantityServerFn,
+  createEventFromTemplate: createEventFromTemplateServerFn,
 };

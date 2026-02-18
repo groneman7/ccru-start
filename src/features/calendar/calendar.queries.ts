@@ -3,6 +3,7 @@ import {
   eventServerFns as event,
   positionServerFns as position,
   slotServerFns as slot,
+  templateServerFns as template,
 } from '~/features/calendar/calendar.functions';
 
 // Events ---------------------------------------------------------------------
@@ -36,5 +37,28 @@ export function getSlotsByEventQuery(eventId: string) {
   return queryOptions({
     queryKey: ['slotsByEvent', eventId],
     queryFn: () => slot.byEventId({ data: { eventId } }),
+  });
+}
+
+// Templates ------------------------------------------------------------------
+
+export function allTemplatesQuery() {
+  return queryOptions({
+    queryKey: ['allTemplates'],
+    queryFn: () => template.all(),
+  });
+}
+
+export function getTemplateByIdQuery(templateId: string) {
+  return queryOptions({
+    queryKey: ['templateById', templateId],
+    queryFn: () => template.byId({ data: { templateId } }),
+  });
+}
+
+export function getTemplatePositionsByTemplateIdQuery(templateId: string) {
+  return queryOptions({
+    queryKey: ['templatePositionsByTemplateId', templateId],
+    queryFn: () => template.templatePositionsByTemplateId({ data: { templateId } }),
   });
 }
