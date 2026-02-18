@@ -1,4 +1,4 @@
-import { adminClient } from 'better-auth/client/plugins';
+import { adminClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 
 const apiBaseUrl =
@@ -7,5 +7,13 @@ const apiBaseUrl =
 
 export const authClient = createAuthClient({
   baseURL: apiBaseUrl,
-  plugins: [adminClient()],
+  plugins: [
+    adminClient(),
+    inferAdditionalFields({
+      user: {
+        nameFirst: { type: 'string', input: true },
+        nameLast: { type: 'string', input: true },
+      },
+    }),
+  ],
 });

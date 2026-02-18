@@ -46,7 +46,6 @@ export const auth = betterAuth({
     enabled: true,
   },
   plugins: [
-    tanstackStartCookies(),
     admin({
       defaultRole: SYSTEM_ROLE_ID_USER,
       roles: {
@@ -64,6 +63,7 @@ export const auth = betterAuth({
       },
       impersonationSessionDuration: 60 * 60 * 24, // 1 day
     }),
+    tanstackStartCookies(), // MUST BE LAST PLUGIN IN ARRAY
     // phoneNumber({
     //   sendOTP: ({ phoneNumber, code }, ctx) => {
     //     // TODO: Implement sending OTP code via SMS
@@ -97,18 +97,22 @@ export const auth = betterAuth({
       },
       timestampFirstLogin: {
         type: 'date',
+        required: false,
         input: false,
       },
       timestampOnboardingCompleted: {
         type: 'date',
+        required: false,
         input: true,
       },
       systemRoleId: {
         type: 'string',
+        required: false,
         input: false,
       },
       userTypeId: {
         type: 'string',
+        required: false,
         input: false,
       },
     },
