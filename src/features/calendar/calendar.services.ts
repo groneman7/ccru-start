@@ -5,27 +5,19 @@ import {
   slotRepository as slot,
   templateRepository as template,
 } from '~/features/calendar/calendar.repository';
-import {
-  shiftSchemaWithSlots,
-  templatePositionSchema,
-} from '~/features/calendar/calendar.schema';
+import { shiftSchemaWithSlots } from '~/features/calendar/calendar.schema';
 import type {
-  createEventFromTemplateSchema,
   createEventSchema,
   createPositionSchema,
   createShiftSchema,
   createSlotSchema,
-  createTemplateDetailsSchema,
   createTemplatePositionsSchema,
   updateEventSchema,
   updatePositionDetailsSchema,
-  updateTemplateDetailsSchema,
-  updateTemplatePositionQuantitySchema,
+  updateTemplateSchema,
 } from '~/features/calendar/calendar.schema';
 import { array } from 'zod';
 import type { infer as Infer } from 'zod';
-
-// BUSINESS LOGIC (e.g., authorization) GOES IN THIS LAYER!!!
 
 // Events ---------------------------------------------------------------------
 export const eventService = {
@@ -39,6 +31,13 @@ export const eventService = {
   },
   create: async (input: Infer<typeof createEventSchema>) => {
     return await event.create(input);
+  },
+  createFromTemplate: async (input: {
+    templateId: string;
+    date: string;
+    createdBy: string;
+  }) => {
+    return await event.createFromTemplate(input);
   },
   update: async (input: Infer<typeof updateEventSchema>) => {
     return await event.update(input);
@@ -161,13 +160,9 @@ export const templateService = {
   byId: async (input: { templateId: string }) => {
     return await template.byId(input);
   },
-  create: async (input: Infer<typeof createTemplateDetailsSchema>) => {
-    return await template.createFromDetails(input);
-  },
-  templatePositionsByTemplateId: async (input: { templateId: string }) => {
-    const rows = await template.templatePositionsByTemplateId(input);
-    return array(templatePositionSchema).parse(rows);
-  },
+  // create: async (input: Infer<typeof createTemplateDetailsSchema>) => {
+  //   return await template.createFromDetails(input);
+  // },
   createTemplatePositions: async (
     input: Infer<typeof createTemplatePositionsSchema>,
   ) => {
@@ -176,17 +171,13 @@ export const templateService = {
   deleteTemplatePosition: async (input: { templatePositionId: string }) => {
     return await template.deleteTemplatePosition(input);
   },
-  updateDetails: async (input: Infer<typeof updateTemplateDetailsSchema>) => {
+  updateDetails: async (input: Infer<typeof updateTemplateSchema>) => {
     return await template.updateDetails(input);
   },
-  updatePositionQuantity: async (
-    input: Infer<typeof updateTemplatePositionQuantitySchema>,
-  ) => {
+  updatePositionQuantity: async (input: {
+    templatePositionId: string;
+    quantity: number;
+  }) => {
     return await template.updatePositionQuantity(input);
-  },
-  createEventFromTemplate: async (
-    input: Infer<typeof createEventFromTemplateSchema>,
-  ) => {
-    return await template.createEventFromTemplate(input);
   },
 };

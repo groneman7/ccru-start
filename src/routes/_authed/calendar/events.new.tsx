@@ -14,13 +14,13 @@ import { CheckIcon, XIcon } from 'lucide-react';
 import { iso, object, string, union, null as zNull } from 'zod';
 
 export const Route = createFileRoute('/_authed/calendar/events/new')({
-  component: RouteComponent,
+  component: NewEventPage,
   head: () => ({
     meta: [{ title: 'CCRU | Create Event' }],
   }),
 });
 
-function RouteComponent() {
+function NewEventPage() {
   const { currentUser } = Route.useRouteContext();
   // Queries & Mutations
   const { mutateAsync: createEvent, isPending: isCreating } = useMutation({

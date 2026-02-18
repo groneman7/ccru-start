@@ -3,10 +3,10 @@ import { cn } from '~/lib/utils';
 import dayjs from 'dayjs';
 
 export const Route = createFileRoute('/_auth')({
-  component: RouteComponent,
+  component: AuthRouteLayout,
 });
 
-function RouteComponent() {
+function AuthRouteLayout() {
   const time = dayjs().hour();
   const isNight = time >= 19 || time <= 7;
 

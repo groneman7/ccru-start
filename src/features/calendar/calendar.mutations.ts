@@ -6,20 +6,17 @@ import {
   slotServerFns as slot,
   templateServerFns as template,
 } from '~/features/calendar/calendar.functions';
-import type { infer as Infer } from 'zod';
 import type {
-  createEventFromTemplateSchema,
   createEventSchema,
   createPositionSchema,
   createShiftSchema,
   createSlotSchema,
-  createTemplateDetailsSchema,
   createTemplatePositionsSchema,
   updateEventSchema,
   updatePositionDetailsSchema,
-  updateTemplateDetailsSchema,
-  updateTemplatePositionQuantitySchema,
-} from './calendar.schema';
+  updateTemplateSchema,
+} from '~/features/calendar/calendar.schema';
+import type { infer as Infer } from 'zod';
 
 // Events ---------------------------------------------------------------------
 
@@ -27,6 +24,16 @@ export function createEventMutation() {
   return mutationOptions({
     mutationFn: (input: Infer<typeof createEventSchema>) =>
       event.create({ data: input }),
+  });
+}
+
+export function createEventFromTemplateMutation() {
+  return mutationOptions({
+    mutationFn: (input: {
+      templateId: string;
+      date: string;
+      createdBy: string;
+    }) => event.createFromTemplate({ data: input }),
   });
 }
 
@@ -106,12 +113,12 @@ export function reassignUserMutation() {
 
 // Templates ------------------------------------------------------------------
 
-export function createTemplateMutation() {
-  return mutationOptions({
-    mutationFn: (input: Infer<typeof createTemplateDetailsSchema>) =>
-      template.create({ data: input }),
-  });
-}
+// export function createTemplateMutation() {
+//   return mutationOptions({
+//     mutationFn: (input: Infer<typeof createTemplateDetailsSchema>) =>
+//       template.create({ data: input }),
+//   });
+// }
 
 export function createTemplatePositionsMutation() {
   return mutationOptions({
@@ -129,21 +136,14 @@ export function deleteTemplatePositionMutation() {
 
 export function updateTemplateDetailsMutation() {
   return mutationOptions({
-    mutationFn: (input: Infer<typeof updateTemplateDetailsSchema>) =>
+    mutationFn: (input: Infer<typeof updateTemplateSchema>) =>
       template.updateDetails({ data: input }),
   });
 }
 
 export function updateTemplatePositionQuantityMutation() {
   return mutationOptions({
-    mutationFn: (input: Infer<typeof updateTemplatePositionQuantitySchema>) =>
+    mutationFn: (input: { templatePositionId: string; quantity: number }) =>
       template.updatePositionQuantity({ data: input }),
-  });
-}
-
-export function createEventFromTemplateMutation() {
-  return mutationOptions({
-    mutationFn: (input: Infer<typeof createEventFromTemplateSchema>) =>
-      template.createEventFromTemplate({ data: input }),
   });
 }

@@ -17,6 +17,9 @@ import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthedCalendarIndexRouteImport } from './routes/_authed/calendar/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthedCalendarTemplatesRouteRouteImport } from './routes/_authed/calendar/templates/route'
+import { Route as AuthedCalendarTemplatesIndexRouteImport } from './routes/_authed/calendar/templates/index'
+import { Route as AuthedCalendarTemplatesNewRouteImport } from './routes/_authed/calendar/templates/new'
+import { Route as AuthedCalendarTemplatesTemplateIdRouteImport } from './routes/_authed/calendar/templates/$templateId'
 import { Route as AuthedCalendarEventsNewRouteImport } from './routes/_authed/calendar/events.new'
 import { Route as AuthedCalendarEventsEventIdRouteImport } from './routes/_authed/calendar/events.$eventId'
 import { Route as AuthedCalendarYearMonthRouteImport } from './routes/_authed/calendar/$year.$month'
@@ -60,6 +63,24 @@ const AuthedCalendarTemplatesRouteRoute =
     path: '/calendar/templates',
     getParentRoute: () => AuthedRouteRoute,
   } as any)
+const AuthedCalendarTemplatesIndexRoute =
+  AuthedCalendarTemplatesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
+  } as any)
+const AuthedCalendarTemplatesNewRoute =
+  AuthedCalendarTemplatesNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
+  } as any)
+const AuthedCalendarTemplatesTemplateIdRoute =
+  AuthedCalendarTemplatesTemplateIdRouteImport.update({
+    id: '/$templateId',
+    path: '/$templateId',
+    getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
+  } as any)
 const AuthedCalendarEventsNewRoute = AuthedCalendarEventsNewRouteImport.update({
   id: '/calendar/events/new',
   path: '/calendar/events/new',
@@ -81,23 +102,28 @@ export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
-  '/calendar/templates': typeof AuthedCalendarTemplatesRouteRoute
+  '/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/calendar/': typeof AuthedCalendarIndexRoute
   '/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
   '/calendar/events/$eventId': typeof AuthedCalendarEventsEventIdRoute
   '/calendar/events/new': typeof AuthedCalendarEventsNewRoute
+  '/calendar/templates/$templateId': typeof AuthedCalendarTemplatesTemplateIdRoute
+  '/calendar/templates/new': typeof AuthedCalendarTemplatesNewRoute
+  '/calendar/templates/': typeof AuthedCalendarTemplatesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof AuthedIndexRoute
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
-  '/calendar/templates': typeof AuthedCalendarTemplatesRouteRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/calendar': typeof AuthedCalendarIndexRoute
   '/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
   '/calendar/events/$eventId': typeof AuthedCalendarEventsEventIdRoute
   '/calendar/events/new': typeof AuthedCalendarEventsNewRoute
+  '/calendar/templates/$templateId': typeof AuthedCalendarTemplatesTemplateIdRoute
+  '/calendar/templates/new': typeof AuthedCalendarTemplatesNewRoute
+  '/calendar/templates': typeof AuthedCalendarTemplatesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -106,12 +132,15 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_authed/': typeof AuthedIndexRoute
-  '/_authed/calendar/templates': typeof AuthedCalendarTemplatesRouteRoute
+  '/_authed/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authed/calendar/': typeof AuthedCalendarIndexRoute
   '/_authed/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
   '/_authed/calendar/events/$eventId': typeof AuthedCalendarEventsEventIdRoute
   '/_authed/calendar/events/new': typeof AuthedCalendarEventsNewRoute
+  '/_authed/calendar/templates/$templateId': typeof AuthedCalendarTemplatesTemplateIdRoute
+  '/_authed/calendar/templates/new': typeof AuthedCalendarTemplatesNewRoute
+  '/_authed/calendar/templates/': typeof AuthedCalendarTemplatesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -125,17 +154,22 @@ export interface FileRouteTypes {
     | '/calendar/$year/$month'
     | '/calendar/events/$eventId'
     | '/calendar/events/new'
+    | '/calendar/templates/$templateId'
+    | '/calendar/templates/new'
+    | '/calendar/templates/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/register'
     | '/sign-in'
-    | '/calendar/templates'
     | '/api/auth/$'
     | '/calendar'
     | '/calendar/$year/$month'
     | '/calendar/events/$eventId'
     | '/calendar/events/new'
+    | '/calendar/templates/$templateId'
+    | '/calendar/templates/new'
+    | '/calendar/templates'
   id:
     | '__root__'
     | '/_auth'
@@ -149,6 +183,9 @@ export interface FileRouteTypes {
     | '/_authed/calendar/$year/$month'
     | '/_authed/calendar/events/$eventId'
     | '/_authed/calendar/events/new'
+    | '/_authed/calendar/templates/$templateId'
+    | '/_authed/calendar/templates/new'
+    | '/_authed/calendar/templates/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -215,6 +252,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedCalendarTemplatesRouteRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
+    '/_authed/calendar/templates/': {
+      id: '/_authed/calendar/templates/'
+      path: '/'
+      fullPath: '/calendar/templates/'
+      preLoaderRoute: typeof AuthedCalendarTemplatesIndexRouteImport
+      parentRoute: typeof AuthedCalendarTemplatesRouteRoute
+    }
+    '/_authed/calendar/templates/new': {
+      id: '/_authed/calendar/templates/new'
+      path: '/new'
+      fullPath: '/calendar/templates/new'
+      preLoaderRoute: typeof AuthedCalendarTemplatesNewRouteImport
+      parentRoute: typeof AuthedCalendarTemplatesRouteRoute
+    }
+    '/_authed/calendar/templates/$templateId': {
+      id: '/_authed/calendar/templates/$templateId'
+      path: '/$templateId'
+      fullPath: '/calendar/templates/$templateId'
+      preLoaderRoute: typeof AuthedCalendarTemplatesTemplateIdRouteImport
+      parentRoute: typeof AuthedCalendarTemplatesRouteRoute
+    }
     '/_authed/calendar/events/new': {
       id: '/_authed/calendar/events/new'
       path: '/calendar/events/new'
@@ -253,9 +311,28 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface AuthedCalendarTemplatesRouteRouteChildren {
+  AuthedCalendarTemplatesTemplateIdRoute: typeof AuthedCalendarTemplatesTemplateIdRoute
+  AuthedCalendarTemplatesNewRoute: typeof AuthedCalendarTemplatesNewRoute
+  AuthedCalendarTemplatesIndexRoute: typeof AuthedCalendarTemplatesIndexRoute
+}
+
+const AuthedCalendarTemplatesRouteRouteChildren: AuthedCalendarTemplatesRouteRouteChildren =
+  {
+    AuthedCalendarTemplatesTemplateIdRoute:
+      AuthedCalendarTemplatesTemplateIdRoute,
+    AuthedCalendarTemplatesNewRoute: AuthedCalendarTemplatesNewRoute,
+    AuthedCalendarTemplatesIndexRoute: AuthedCalendarTemplatesIndexRoute,
+  }
+
+const AuthedCalendarTemplatesRouteRouteWithChildren =
+  AuthedCalendarTemplatesRouteRoute._addFileChildren(
+    AuthedCalendarTemplatesRouteRouteChildren,
+  )
+
 interface AuthedRouteRouteChildren {
   AuthedIndexRoute: typeof AuthedIndexRoute
-  AuthedCalendarTemplatesRouteRoute: typeof AuthedCalendarTemplatesRouteRoute
+  AuthedCalendarTemplatesRouteRoute: typeof AuthedCalendarTemplatesRouteRouteWithChildren
   AuthedCalendarIndexRoute: typeof AuthedCalendarIndexRoute
   AuthedCalendarYearMonthRoute: typeof AuthedCalendarYearMonthRoute
   AuthedCalendarEventsEventIdRoute: typeof AuthedCalendarEventsEventIdRoute
@@ -264,7 +341,8 @@ interface AuthedRouteRouteChildren {
 
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
   AuthedIndexRoute: AuthedIndexRoute,
-  AuthedCalendarTemplatesRouteRoute: AuthedCalendarTemplatesRouteRoute,
+  AuthedCalendarTemplatesRouteRoute:
+    AuthedCalendarTemplatesRouteRouteWithChildren,
   AuthedCalendarIndexRoute: AuthedCalendarIndexRoute,
   AuthedCalendarYearMonthRoute: AuthedCalendarYearMonthRoute,
   AuthedCalendarEventsEventIdRoute: AuthedCalendarEventsEventIdRoute,

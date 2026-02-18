@@ -6,7 +6,7 @@ import { getEventsByMonthQuery } from '~/features/calendar/calendar.queries';
 import dayjs from 'dayjs';
 
 export const Route = createFileRoute('/_authed/calendar/$year/$month')({
-  component: CalendarComponent,
+  component: CalendarPage,
   head: () => ({
     meta: [{ title: 'CCRU | Calendar' }],
   }),
@@ -17,7 +17,7 @@ export const Route = createFileRoute('/_authed/calendar/$year/$month')({
   },
 });
 
-function CalendarComponent() {
+function CalendarPage() {
   const { month, year } = Route.useParams();
   const { data: events } = useQuery(
     getEventsByMonthQuery(Number(month), Number(year)),

@@ -20,10 +20,10 @@ import { authClient } from '~/lib/auth-client';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/_auth/register')({
-  component: RouteComponent,
+  component: RegisterPage,
 });
 
-function RouteComponent() {
+function RegisterPage() {
   const nav = useNavigate();
   const router = useRouter();
 

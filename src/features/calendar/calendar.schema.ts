@@ -1,14 +1,5 @@
 import { userSchema } from '~/features/admin/users.schema';
-import {
-  array,
-  iso,
-  number,
-  object,
-  string,
-  union,
-  uuidv7,
-  null as zNull,
-} from 'zod';
+import { array, number, object, string, uuidv7 } from 'zod';
 
 // Events ---------------------------------------------------------------------
 
@@ -70,7 +61,7 @@ export const shiftSchema = object({
   id: uuidv7(),
   eventId: uuidv7(),
   positionId: uuidv7(),
-  quantity: number().min(1),
+  quantity: number().int().positive(),
   status: string(),
 });
 
@@ -138,19 +129,6 @@ export const createTemplateSchema = templateSchema.omit({
   id: true,
 });
 
-const timeSchema = string().regex(
-  /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/,
-  'Time must be in HH:MM or HH:MM:SS format.',
-);
-
-export const createTemplateDetailsSchema = object({
-  eventName: string().min(1),
-  description: union([string(), zNull()]),
-  location: union([string(), zNull()]),
-  timeBegin: timeSchema,
-  timeEnd: union([timeSchema, zNull()]),
-});
-
 export const updateTemplateSchema = object({
   templateId: uuidv7(),
   data: templateSchema
@@ -163,12 +141,6 @@ export const updateTemplateSchema = object({
     }),
 });
 
-export const templatePositionSchema = object({
-  id: uuidv7(),
-  quantity: number().int().positive(),
-  position: positionSchema,
-});
-
 export const createTemplatePositionsSchema = object({
   templateId: uuidv7(),
   templatePositionsToCreate: array(
@@ -179,23 +151,11 @@ export const createTemplatePositionsSchema = object({
   ),
 });
 
-export const updateTemplateDetailsSchema = object({
-  templateId: uuidv7(),
-  name: string().min(1).optional(),
-  eventName: string().min(1).optional(),
-  description: union([string(), zNull()]).optional(),
-  location: union([string(), zNull()]).optional(),
-  timeBegin: timeSchema.optional(),
-  timeEnd: union([timeSchema, zNull()]).optional(),
-});
-
-export const updateTemplatePositionQuantitySchema = object({
-  templatePositionId: uuidv7(),
-  quantity: number().int().positive(),
-});
-
-export const createEventFromTemplateSchema = object({
-  templateId: uuidv7(),
-  date: iso.date(),
-  createdBy: uuidv7(),
+export const templateSchemaWithPositions = templateSchema.extend({
+  positions: array(
+    positionSchema.extend({
+      junctionId: uuidv7(),
+      quantity: number().int().positive(),
+    }),
+  ),
 });

@@ -3,9 +3,9 @@ import { createFileRoute } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
 import dayjs from 'dayjs';
 
-export const Route = createFileRoute('/_authed/')({ component: App });
+export const Route = createFileRoute('/_authed/')({ component: AppIndex });
 
-function App() {
+function AppIndex() {
   const { currentUser } = Route.useRouteContext();
 
   const t1 = dayjs(currentUser.timestampFirstLogin);

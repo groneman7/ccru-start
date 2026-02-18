@@ -1,5 +1,6 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { string } from 'zod';
 
 dayjs.extend(utc);
 
@@ -86,3 +87,8 @@ export function combineDateAndTimeToUTC(
     .utc()
     .toDate();
 }
+
+export const timeSchema = string().regex(
+  /^(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?$/,
+  'Time must be in HH:MM or HH:MM:SS format.',
+);

@@ -88,7 +88,7 @@ import { useState } from 'react';
 import type { infer as Infer } from 'zod';
 
 export const Route = createFileRoute('/_authed/calendar/events/$eventId')({
-  component: RouteComponent,
+  component: EventPage,
   head: () => ({
     meta: [{ title: 'CCRU | Event' }],
   }),
@@ -99,7 +99,7 @@ export const Route = createFileRoute('/_authed/calendar/events/$eventId')({
   },
 });
 
-function RouteComponent() {
+function EventPage() {
   const { currentUser } = Route.useRouteContext();
 
   // Params & Hooks

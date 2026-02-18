@@ -76,9 +76,9 @@ export function Calendar({ events, month }: CalendarProps) {
             </Button>
           </div>
           <div className="flex items-center gap-1">
-            {/* <Link to="/calendar/templates">
+            <Link to="/calendar/templates">
               <Button>Templates</Button>
-            </Link> */}
+            </Link>
             <Link to="/calendar/events/new">
               <Button>New Event</Button>
             </Link>

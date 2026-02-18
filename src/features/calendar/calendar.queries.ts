@@ -28,6 +28,7 @@ export function allPositionsQuery() {
   return queryOptions({
     queryKey: ['allPositions'],
     queryFn: () => position.all(),
+    initialData: [],
   });
 }
 
@@ -46,6 +47,7 @@ export function allTemplatesQuery() {
   return queryOptions({
     queryKey: ['allTemplates'],
     queryFn: () => template.all(),
+    staleTime: 1000, // 1 second
   });
 }
 
@@ -53,12 +55,5 @@ export function getTemplateByIdQuery(templateId: string) {
   return queryOptions({
     queryKey: ['templateById', templateId],
     queryFn: () => template.byId({ data: { templateId } }),
-  });
-}
-
-export function getTemplatePositionsByTemplateIdQuery(templateId: string) {
-  return queryOptions({
-    queryKey: ['templatePositionsByTemplateId', templateId],
-    queryFn: () => template.templatePositionsByTemplateId({ data: { templateId } }),
   });
 }

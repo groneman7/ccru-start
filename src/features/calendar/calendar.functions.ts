@@ -1,16 +1,13 @@
 import { createServerFn } from '@tanstack/react-start';
 import {
-  createEventFromTemplateSchema,
   createEventSchema,
   createPositionSchema,
   createShiftSchema,
   createSlotSchema,
-  createTemplateDetailsSchema,
   createTemplatePositionsSchema,
   updateEventSchema,
   updatePositionDetailsSchema,
-  updateTemplateDetailsSchema,
-  updateTemplatePositionQuantitySchema,
+  updateTemplateSchema,
 } from '~/features/calendar/calendar.schema';
 import {
   eventService as event,
@@ -19,7 +16,7 @@ import {
   slotService as slot,
   templateService as template,
 } from '~/features/calendar/calendar.services';
-import { number, object, uuidv7 } from 'zod';
+import { iso, number, object, uuidv7 } from 'zod';
 
 // Events ---------------------------------------------------------------------
 
@@ -27,6 +24,18 @@ export const createEventServerFn = createServerFn()
   .inputValidator(createEventSchema)
   .handler(async ({ data }) => {
     return event.create(data);
+  });
+
+export const createEventFromTemplateServerFn = createServerFn()
+  .inputValidator(
+    object({
+      templateId: uuidv7(),
+      date: iso.date(),
+      createdBy: uuidv7(),
+    }),
+  )
+  .handler(async ({ data }) => {
+    return event.createFromTemplate(data);
   });
 
 export const getEventByIdServerFn = createServerFn()
@@ -51,6 +60,7 @@ export const eventServerFns = {
   byId: getEventByIdServerFn,
   byMonth: getEventsByMonthServerFn,
   create: createEventServerFn,
+  createFromTemplate: createEventFromTemplateServerFn,
   update: updateEventServerFn,
 };
 
@@ -157,22 +167,10 @@ export const allTemplatesServerFn = createServerFn().handler(async () => {
   return await template.all();
 });
 
-export const createTemplateServerFn = createServerFn()
-  .inputValidator(createTemplateDetailsSchema)
-  .handler(async ({ data }) => {
-    return await template.create(data);
-  });
-
 export const getTemplateByIdServerFn = createServerFn()
   .inputValidator(object({ templateId: uuidv7() }))
   .handler(async ({ data }) => {
     return await template.byId(data);
-  });
-
-export const getTemplatePositionsByTemplateIdServerFn = createServerFn()
-  .inputValidator(object({ templateId: uuidv7() }))
-  .handler(async ({ data }) => {
-    return await template.templatePositionsByTemplateId(data);
   });
 
 export const createTemplatePositionsServerFn = createServerFn()
@@ -188,31 +186,30 @@ export const deleteTemplatePositionServerFn = createServerFn()
   });
 
 export const updateTemplateDetailsServerFn = createServerFn()
-  .inputValidator(updateTemplateDetailsSchema)
+  .inputValidator(updateTemplateSchema)
   .handler(async ({ data }) => {
     return await template.updateDetails(data);
   });
 
 export const updateTemplatePositionQuantityServerFn = createServerFn()
-  .inputValidator(updateTemplatePositionQuantitySchema)
+  .inputValidator(object({ templatePositionId: uuidv7(), quantity: number() }))
   .handler(async ({ data }) => {
     return await template.updatePositionQuantity(data);
   });
 
-export const createEventFromTemplateServerFn = createServerFn()
-  .inputValidator(createEventFromTemplateSchema)
-  .handler(async ({ data }) => {
-    return await template.createEventFromTemplate(data);
-  });
+// export const createEventFromTemplateServerFn = createServerFn()
+//   .inputValidator(createEventFromTemplateSchema)
+//   .handler(async ({ data }) => {
+//     return await template.createEventFromTemplate(data);
+//   });
 
 export const templateServerFns = {
   all: allTemplatesServerFn,
   byId: getTemplateByIdServerFn,
-  templatePositionsByTemplateId: getTemplatePositionsByTemplateIdServerFn,
-  create: createTemplateServerFn,
+  // templatePositionsByTemplateId: getTemplatePositionsByTemplateIdServerFn,
+  // create: createTemplateServerFn,
   createTemplatePositions: createTemplatePositionsServerFn,
   deleteTemplatePosition: deleteTemplatePositionServerFn,
   updateDetails: updateTemplateDetailsServerFn,
   updatePositionQuantity: updateTemplatePositionQuantityServerFn,
-  createEventFromTemplate: createEventFromTemplateServerFn,
 };

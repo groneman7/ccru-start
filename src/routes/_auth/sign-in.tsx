@@ -44,10 +44,10 @@ export const Route = createFileRoute('/_auth/sign-in')({
       });
     }
   },
-  component: RouteComponent,
+  component: SignInPage,
 });
 
-function RouteComponent() {
+function SignInPage() {
   const nav = useNavigate();
   const router = useRouter();
 
