@@ -79,9 +79,9 @@ export function Calendar({ events, month }: CalendarProps) {
             {/* <Link to="/calendar/templates">
               <Button>Templates</Button>
             </Link> */}
-            {/* <Link to="/calendar/events/new">
+            <Link to="/calendar/events/new">
               <Button>New Event</Button>
-            </Link> */}
+            </Link>
           </div>
         </div>
       </div>
