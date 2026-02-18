@@ -16,6 +16,7 @@ import { useStore } from '@tanstack/react-form';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
+import { ComingSoonTooltip } from '~/components/coming-soon-tooltip';
 import { useAppForm } from '~/components/form';
 import {
   AddressFieldGroup,
@@ -342,9 +343,11 @@ function EventPage() {
                   <IconClock className="size-4" />
                   <span className="flex-1">{`${dayjs(event.timeBegin).format('h:mm A')}${event.timeEnd ? ` — ${dayjs(event.timeEnd).format('h:mm A')}` : null}`}</span>
                 </div>
-                <Button className="ml-6" size="sm" variant="link">
-                  Add to calendar
-                </Button>
+                <ComingSoonTooltip>
+                  <Button className="ml-6" size="sm" variant="link">
+                    Add to calendar
+                  </Button>
+                </ComingSoonTooltip>
               </div>
               {/* Location */}
               {event.location && (
@@ -353,9 +356,11 @@ function EventPage() {
                     <IconMapPin className="size-4" />
                     <span className="flex-1">{event.location}</span>
                   </div>
-                  <Button className="ml-6" size="sm" variant="link">
-                    Get directions
-                  </Button>
+                  <ComingSoonTooltip>
+                    <Button className="ml-6" size="sm" variant="link">
+                      Get directions
+                    </Button>
+                  </ComingSoonTooltip>
                 </div>
               )}
               {/* Description */}
@@ -376,17 +381,19 @@ function EventPage() {
               <span className="text-xl font-semibold">Teams</span>
             </div>
             {permissions.can('update', 'CalendarEvent') && (
-              <Button size="sm" variant="link">
-                <Link
-                  to="/"
-                  // to="/admin/matrix"
-                  // search={{
-                  //   eventId: event.id,
-                  // }}
-                >
-                  Open in Matrix
-                </Link>
-              </Button>
+              <ComingSoonTooltip>
+                <Button size="sm" variant="link">
+                  <Link
+                    to="/"
+                    // to="/admin/matrix"
+                    // search={{
+                    //   eventId: event.id,
+                    // }}
+                  >
+                    Open in Matrix
+                  </Link>
+                </Button>
+              </ComingSoonTooltip>
             )}
           </div>
           {permissions.can('update', 'CalendarEvent') && (
