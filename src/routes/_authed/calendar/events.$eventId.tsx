@@ -92,6 +92,11 @@ export const Route = createFileRoute('/_authed/calendar/events/$eventId')({
   head: () => ({
     meta: [{ title: 'CCRU | Event' }],
   }),
+  loader: async ({ context: { queryClient }, params: { eventId } }) => {
+    await queryClient.ensureQueryData(getEventDetailsQuery(eventId));
+    await queryClient.ensureQueryData(getSlotsByEventQuery(eventId));
+    await queryClient.ensureQueryData(allUsersForComboboxQuery());
+  },
 });
 
 function RouteComponent() {
@@ -107,9 +112,15 @@ function RouteComponent() {
   const permissions = getUserPermissions(currentUser);
 
   // Queries
-  const { data: users } = useQuery(allUsersForComboboxQuery());
-  const { data: event } = useQuery(getEventDetailsQuery(eventId));
-  const { data: shifts } = useQuery(getSlotsByEventQuery(eventId));
+  const { data: users, isLoading: usersIsLoading } = useQuery(
+    allUsersForComboboxQuery(),
+  );
+  const { data: event, isLoading: eventIsLoading } = useQuery(
+    getEventDetailsQuery(eventId),
+  );
+  const { data: shifts, isLoading: shiftsIsLoading } = useQuery(
+    getSlotsByEventQuery(eventId),
+  );
 
   // Mutations
   const { mutateAsync: updateEventDetails } = useMutation({
@@ -223,7 +234,8 @@ function RouteComponent() {
   });
 
   // Render
-  // if (eventIsLoading || shiftsIsLoading) return <div>Loading event</div>;
+  if (eventIsLoading || shiftsIsLoading || usersIsLoading)
+    return <div>Loading event</div>;
   if (!event) {
     console.error('Event not found');
     return <div>Event not found</div>;
