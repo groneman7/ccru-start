@@ -1,10 +1,10 @@
 import { Label } from '~/components/ui/label';
 import { Separator } from '~/components/ui/separator';
 import { cn } from '~/lib/utils/index';
-import { cva  } from 'class-variance-authority';
-import type {VariantProps} from 'class-variance-authority';
-import { useMemo   } from 'react';
-import type {ComponentProps, ReactNode} from 'react';
+import { cva } from 'class-variance-authority';
+import type { VariantProps } from 'class-variance-authority';
+import { useMemo } from 'react';
+import type { ComponentProps, ReactNode } from 'react';
 
 function FieldSet({ className, ...props }: ComponentProps<'fieldset'>) {
   return (
@@ -203,7 +203,7 @@ function FieldError({
       return null;
     }
 
-    if (errors?.length === 1 && errors[0]?.message) {
+    if (errors.length === 1 && errors[0]?.message) {
       return errors[0].message;
     }
 
