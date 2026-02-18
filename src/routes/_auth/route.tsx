@@ -19,7 +19,7 @@ function RouteComponent() {
           : 'bg-[url("/camping_vector.svg")]',
       )}
     >
-      <div className="flex h-full w-lg flex-col bg-white/90 shadow-2xl backdrop-blur-sm">
+      <div className="flex h-full w-lg flex-col bg-white/75 shadow-2xl backdrop-blur-sm">
         <div className="flex flex-1 items-center justify-center p-8">
           <Outlet />
         </div>
