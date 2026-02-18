@@ -4,6 +4,17 @@ import { eq, sql } from 'drizzle-orm';
 import type { infer as Infer } from 'zod';
 import type { userSchemaForCombobox } from './users.schema';
 
+type UpdateOnboardingProfileInput = {
+  userId: string;
+  displayName?: string;
+  email?: string;
+  nameFirst?: string;
+  nameMiddle?: string | null;
+  nameLast?: string;
+  phoneNumber?: string | null;
+  postNominals?: string | null;
+};
+
 export const userRepository = {
   all: async () => {
     const rows = await db.select().from(users);
@@ -29,6 +40,19 @@ export const userRepository = {
     const [row] = await db
       .update(users)
       .set({ timestampOnboardingCompleted: sql`CURRENT_TIMESTAMP` })
+      .where(eq(users.id, userId))
+      .returning({ id: users.id });
+
+    return row;
+  },
+  updateOnboardingProfile: async (input: UpdateOnboardingProfileInput) => {
+    const { userId, ...changes } = input;
+    const [row] = await db
+      .update(users)
+      .set({
+        ...changes,
+        timestampUpdatedAt: sql`CURRENT_TIMESTAMP`,
+      })
       .where(eq(users.id, userId))
       .returning({ id: users.id });
 

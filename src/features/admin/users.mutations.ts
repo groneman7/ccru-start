@@ -8,6 +8,21 @@ export function completeOnboardingMutation() {
   });
 }
 
+export function updateOnboardingProfileMutation() {
+  return mutationOptions({
+    mutationFn: (input: {
+      userId: string;
+      displayName?: string;
+      email?: string;
+      nameFirst?: string;
+      nameMiddle?: string | null;
+      nameLast?: string;
+      phoneNumber?: string | null;
+      postNominals?: string | null;
+    }) => user.updateOnboardingProfile({ data: input }),
+  });
+}
+
 export function updateSystemRoleMutation() {
   return mutationOptions({
     mutationFn: (input: { userId: string; systemRoleId: string }) =>
