@@ -13,7 +13,7 @@ import {
   IconX,
 } from '@tabler/icons-react';
 import { useStore } from '@tanstack/react-form';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
 import { ComingSoonTooltip } from '~/components/coming-soon-tooltip';
@@ -23,6 +23,7 @@ import {
   DateTimeFieldGroup,
   DescriptionFieldGroup,
 } from '~/components/form/field-groups';
+import { Spinner } from '~/components/spinner';
 import {
   Button,
   Card,
@@ -51,12 +52,15 @@ import {
   Field,
   FieldLabel,
   Input,
+  InputGroup,
+  InputGroupAddon,
   Popover,
   PopoverClose,
   PopoverContent,
   PopoverHeader,
   PopoverTitle,
   PopoverTrigger,
+  // Spinner,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
@@ -235,8 +239,8 @@ function EventPage() {
   });
 
   // Render
-  if (eventIsLoading || shiftsIsLoading || usersIsLoading)
-    return <div>Loading event</div>;
+  // if (eventIsLoading || shiftsIsLoading || usersIsLoading)
+  //   return <div>Loading event</div>;
   if (!event) {
     console.error('Event not found');
     return <div>Event not found</div>;
@@ -470,10 +474,12 @@ function EventPage() {
                         )}
                         {CAN_SIGN_UP && (
                           <CardAction>
-                            <Button size="sm">
-                              <IconSparkles2 />
-                              Sign up
-                            </Button>
+                            <ComingSoonTooltip>
+                              <Button size="sm">
+                                <IconSparkles2 />
+                                Sign up
+                              </Button>
+                            </ComingSoonTooltip>
                           </CardAction>
                         )}
                       </CardHeader>
@@ -686,7 +692,7 @@ function SlotDisplay({
       <div className="flex size-8 items-center justify-center overflow-hidden rounded-full border bg-gray-100">
         <UserRound className="size-8 translate-y-1 scale-120 fill-gray-500/30 stroke-0" />
       </div>
-      <span>{slot.user.displayName}</span>
+      <span>{slot.user.displayName}test</span>
     </div>
   );
 }
@@ -966,7 +972,7 @@ function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
                     </div>
                   ))}
                   <Combobox
-                    items={positions?.filter(
+                    items={positions.filter(
                       (position) =>
                         !existingShifts.includes(position.id) &&
                         !form.state.values.shiftsToCreate.some(
@@ -1046,103 +1052,71 @@ function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
 
 function PopoverAssignSlot({
   shift,
-  users,
 }: {
   shift: Infer<typeof shiftSchemaWithSlots>;
-  users: Infer<typeof userSchemaForCombobox>[];
 }) {
+  const queryClient = useQueryClient();
+  const slotsQueryKey = getSlotsByEventQuery(shift.eventId).queryKey;
+
+  const { data: users, isLoading: usersLoading } = useQuery(
+    allUsersForComboboxQuery(),
+  );
+
   const [open, setOpen] = useState(false);
-  const [userToAssign, setUserToAssign] = useState<
-    (typeof users)[number] | null
-  >(null);
+  const [userToAssign, setUserToAssign] = useState<Infer<
+    typeof userSchemaForCombobox
+  > | null>(null);
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const { mutateAsync: assignSlot } = useMutation({
     ...assignUserMutation(),
-    onMutate: async () => {
-      // Optimistic update logic here
+    // onMutate: async (variables) => {
+    //   await queryClient.cancelQueries({ queryKey: slotsQueryKey });
+
+    //   const previousSlots =
+    //     queryClient.getQueryData<Infer<typeof shiftSchemaWithSlots>[]>(
+    //       slotsQueryKey,
+    //     );
+    //   const user = users?.find((u) => u.id === variables.userId);
+
+    //   queryClient.setQueryData<Infer<typeof shiftSchemaWithSlots>[]>(
+    //     slotsQueryKey,
+    //     (current) =>
+    //       current?.map((currentShift) =>
+    //         currentShift.id === variables.shiftId
+    //           ? {
+    //               ...currentShift,
+    //               slots: [
+    //                 ...currentShift.slots,
+    //                 {
+    //                   id: `optimistic-${variables.userId}-${Date.now()}`,
+    //                   user: {
+    //                     id: variables.userId,
+    //                     displayName: user?.displayName ?? 'Unknown user',
+    //                     image: null,
+    //                     nameFirst: user?.nameFirst ?? null,
+    //                     nameLast: user?.nameLast ?? null,
+    //                   },
+    //                 },
+    //               ],
+    //             }
+    //           : currentShift,
+    //       ) ?? current,
+    //   );
+
+    //   return { previousSlots };
+    // },
+    // onError: (_error, _variables, context) => {
+    //   if (context?.previousSlots) {
+    //     queryClient.setQueryData(slotsQueryKey, context.previousSlots);
+    //   }
+    // },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: slotsQueryKey,
+      });
     },
   });
-  // const { mutate: assignSlot } = useMutation(
-  //   trpc.calendar.shifts.assignUserToShift.mutationOptions({
-  //     onMutate: async ({ shiftId, userId }) => {
-  //       await queryClient.cancelQueries({ queryKey: SHIFTS_KEY });
-
-  //       const rollback =
-  //         queryClient.getQueriesData<Shift[]>({ queryKey: SHIFTS_KEY }) ?? [];
-  //       const user = users.find((u) => u.id === userId);
-  //       const optimisticSlotId = `optimistic-${shiftId}-${userId}-${Date.now()}`;
-
-  //       queryClient.setQueriesData<Shift[]>(
-  //         { queryKey: SHIFTS_KEY },
-  //         (prev) => {
-  //           if (!prev) return prev;
-
-  //           return prev.map((_shift) => {
-  //             if (_shift.id !== shiftId) return _shift;
-  //             if (_shift.slots.some((slot) => slot.user.id === userId)) {
-  //               return _shift;
-  //             }
-  //             const slots = [
-  //               ..._shift.slots,
-  //               {
-  //                 id: optimisticSlotId,
-  //                 user: {
-  //                   id: userId,
-  //                   displayName: user?.display ?? 'Unknown user',
-  //                   image: null,
-  //                 },
-  //               },
-  //             ];
-
-  //             return {
-  //               ..._shift,
-  //               quantity: Math.max(_shift.quantity, slots.length),
-  //               slots,
-  //             };
-  //           });
-  //         },
-  //       );
-  //       return { rollback, optimisticSlotId, shiftId, userId };
-  //     },
-  //     onSuccess: (data, _variables, ctx) => {
-  //       if (!ctx) return;
-
-  //       queryClient.setQueriesData<Shift[]>(
-  //         { queryKey: SHIFTS_KEY },
-  //         (prev) => {
-  //           if (!prev) return prev;
-
-  //           return prev.map((_shift) => {
-  //             if (_shift.id !== ctx.shiftId) return _shift;
-
-  //             return {
-  //               ..._shift,
-  //               quantity: data.quantity,
-  //               slots: _shift.slots.map((slot) => {
-  //                 if (slot.id !== ctx.optimisticSlotId) return slot;
-
-  //                 return {
-  //                   ...slot,
-  //                   id: data.slotId,
-  //                 };
-  //               }),
-  //             };
-  //           });
-  //         },
-  //       );
-  //     },
-  //     onError: (_error, _variables, ctx) => {
-  //       if (!ctx?.rollback) return;
-  //       for (const [queryKey, snapshot] of ctx.rollback) {
-  //         queryClient.setQueryData(queryKey, snapshot);
-  //       }
-  //     },
-  //     onSettled: async () => {
-  //       await queryClient.invalidateQueries({ queryKey: SHIFTS_KEY });
-  //     },
-  //   }),
-  // );
 
   return (
     <Popover
@@ -1171,18 +1145,31 @@ function PopoverAssignSlot({
           <Combobox
             items={users}
             value={userToAssign}
-            itemToStringLabel={(user: (typeof users)[number]) =>
+            itemToStringLabel={(user: Infer<typeof userSchemaForCombobox>) =>
               `${user.displayName}`
             }
             onValueChange={setUserToAssign}
           >
-            <ComboboxInput placeholder="Search users..." />
+            <ComboboxInput
+              showTrigger={!usersLoading}
+              data-slot="input-group-control"
+              placeholder="Search users..."
+            >
+              {usersLoading && (
+                <InputGroupAddon
+                  align="inline-end"
+                  className="text-muted-foreground"
+                >
+                  <Spinner />
+                </InputGroupAddon>
+              )}
+            </ComboboxInput>
             <ComboboxContent>
               <ComboboxEmpty>No users found.</ComboboxEmpty>
               <ComboboxList>
-                {(user) => (
+                {(user: Infer<typeof userSchemaForCombobox>) => (
                   <ComboboxItem key={user.id} value={user}>
-                    {user.display}
+                    {user.displayName}
                   </ComboboxItem>
                 )}
               </ComboboxList>
