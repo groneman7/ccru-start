@@ -78,3 +78,36 @@ export function WorkspaceNav({
     </div>
   );
 }
+
+export function WorkspaceSection({
+  children,
+  className,
+  ...props
+}: ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn('flex flex-1 flex-col gap-2 lg:max-w-lg', className)}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function WorkspaceSectionTitle({
+  children,
+  className,
+  ...props
+}: ComponentProps<'div'>) {
+  return (
+    <div
+      className={cn(
+        'flex items-center justify-between gap-4 text-xl font-semibold',
+        className,
+      )}
+      {...props}
+    >
+      {children}
+    </div>
+  );
+}
