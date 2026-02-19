@@ -36,6 +36,7 @@ export default [
       'import/order': 'off',
       'sort-imports': 'off',
       '@typescript-eslint/array-type': 'off',
+      '@typescript-eslint/ban-ts-comment': 'off',
     },
   },
 ];
