@@ -15,15 +15,20 @@ import {
 import { useStore } from '@tanstack/react-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { WorkspaceContent, WorkspaceHeader } from '~/components';
-import { ComingSoonTooltip } from '~/components/coming-soon-tooltip';
+import {
+  ComingSoonTooltip,
+  Spinner,
+  WorkspaceContent,
+  WorkspaceHeader,
+  WorkspaceSection,
+  WorkspaceSectionTitle,
+} from '~/components';
 import { useAppForm } from '~/components/form';
 import {
   AddressFieldGroup,
   DateTimeFieldGroup,
   DescriptionFieldGroup,
 } from '~/components/form/field-groups';
-import { Spinner } from '~/components/spinner';
 import {
   Button,
   Card,
@@ -52,7 +57,6 @@ import {
   Field,
   FieldLabel,
   Input,
-  InputGroup,
   InputGroupAddon,
   Popover,
   PopoverClose,
@@ -105,285 +109,41 @@ export const Route = createFileRoute('/_authed/calendar/events/$eventId')({
 });
 
 function EventPage() {
+  // Params
   const { currentUser } = Route.useRouteContext();
-
-  // Params & Hooks
   const { eventId } = Route.useParams();
-  const [isEditing, setIsEditing] = useState(false);
-  const [expandedShiftDescriptions, setExpandedShiftDescriptions] = useState<
-    Set<string>
-  >(new Set());
+
+  // State
+  const [editingDetails, setEditingDetails] = useState(false);
 
   const permissions = getUserPermissions(currentUser);
 
   // Queries
-  const { data: users, isLoading: usersIsLoading } = useQuery(
-    allUsersForComboboxQuery(),
-  );
-  const { data: event, isLoading: eventIsLoading } = useQuery(
-    getEventDetailsQuery(eventId),
-  );
-  const { data: shifts, isLoading: shiftsIsLoading } = useQuery(
-    getSlotsByEventQuery(eventId),
-  );
+  const { data: eventDetails } = useQuery(getEventDetailsQuery(eventId));
 
-  // Mutations
-  const { mutateAsync: updateEventDetails } = useMutation({
-    ...updateEventDetailsMutation(),
-    onMutate: async () => {
-      // Optimistic update logic here
-    },
-  });
-  // const { mutateAsync: updateEvent } = useMutation(
-  //   trpc.calendar.events.updateEventDetails.mutationOptions({
-  //     onMutate: async ({ ...eventData }) => {
-  //       await queryClient.cancelQueries({ queryKey: eventDetailsKey });
-
-  //       const rollback = queryClient.getQueryData(eventDetailsKey);
-  //       queryClient.setQueryData(eventDetailsKey, (prev) => {
-  //         if (!prev) return prev;
-
-  //         return {
-  //           ...prev,
-  //           ...eventData,
-  //         };
-  //       });
-
-  //       return { rollback };
-  //     },
-  //     onError: (_error, _variables, ctx) => {
-  //       queryClient.setQueryData(eventDetailsKey, ctx?.rollback);
-  //     },
-  //     onSettled: async () => {
-  //       await queryClient.invalidateQueries({ queryKey: eventDetailsKey });
-  //     },
-  //   }),
-  // );
-
-  const { mutateAsync: deleteShift } = useMutation({
-    ...deleteShiftMutation(),
-    onMutate: async () => {
-      // Optimistic update logic here
-    },
-  });
-  // const { mutate: deleteShift } = useMutation(
-  //   trpc.calendar.shifts.deleteShift.mutationOptions({
-  //     onMutate: async ({ shiftId }) => {
-  //       await queryClient.cancelQueries({ queryKey: SHIFTS_KEY });
-
-  //       const rollback = queryClient.getQueriesData<Shift[]>({
-  //         queryKey: SHIFTS_KEY,
-  //       });
-
-  //       queryClient.setQueriesData<Shift[]>(
-  //         { queryKey: SHIFTS_KEY },
-  //         (prev) => {
-  //           if (!prev) return prev;
-
-  //           return prev.filter((_shift) => _shift.id !== shiftId);
-  //         },
-  //       );
-
-  //       setExpandedShiftDescriptions((prev) => {
-  //         const next = new Set(prev);
-  //         next.delete(shiftId);
-  //         return next;
-  //       });
-
-  //       return { rollback };
-  //     },
-  //     onError: (_error, _variables, ctx) => {
-  //       if (!ctx?.rollback) return;
-  //       for (const [queryKey, snapshot] of ctx.rollback) {
-  //         queryClient.setQueryData(queryKey, snapshot);
-  //       }
-  //     },
-  //     onSettled: async () => {
-  //       await queryClient.invalidateQueries({ queryKey: SHIFTS_KEY });
-  //     },
-  //   }),
-  // );
-
-  // Tanstack Form
-  const form = useAppForm({
-    defaultValues: {
-      eventName: event?.name || '',
-      description: event?.description || '',
-      location: event?.location || '',
-      date: event?.timeBegin
-        ? dayjs(event.timeBegin).format('YYYY-MM-DD')
-        : dayjs().format('YYYY-MM-DD'),
-      timeBegin: event?.timeBegin
-        ? dayjs(event.timeBegin).format('h:mm A')
-        : '',
-      timeEnd: event?.timeEnd ? dayjs(event.timeEnd).format('h:mm A') : '',
-    },
-    onSubmit: ({ value }) => {
-      const eventData = {
-        description: value.description || undefined,
-        location: value.location || undefined,
-        name: value.eventName,
-        timeBegin: dayjs(`${value.date} ${value.timeBegin}`).toISOString(),
-        timeEnd: value.timeEnd
-          ? dayjs(`${value.date} ${value.timeEnd}`).toISOString()
-          : undefined,
-      };
-
-      updateEventDetails({
-        ...eventData,
-        eventId: eventId,
-      });
-
-      setIsEditing(false);
-    },
-  });
-
-  // Render
-  // if (eventIsLoading || shiftsIsLoading || usersIsLoading)
-  //   return <div>Loading event</div>;
-  if (!event) {
-    console.error('Event not found');
-    return <div>Event not found</div>;
-  }
   return (
     <>
-      <WorkspaceHeader>{event.name}</WorkspaceHeader>
-      <WorkspaceContent
-        className="gap-16"
-        orientation="horizontal"
-        toolbar={
-          permissions.can('update', 'CalendarEvent') ? (
-            <div>
-              <Button
-                disabled={isEditing}
-                size="sm"
-                onClick={() => setIsEditing(!isEditing)}
-              >
+      <WorkspaceHeader>{eventDetails?.name}</WorkspaceHeader>
+      <WorkspaceContent className="gap-16" orientation="horizontal">
+        <WorkspaceSection>
+          <WorkspaceSectionTitle>
+            Details
+            {permissions.can('update', 'CalendarEvent') && !editingDetails && (
+              <Button size="sm" onClick={() => setEditingDetails(true)}>
                 <IconPencil />
                 Edit
               </Button>
-            </div>
-          ) : null
-        }
-      >
-        {/* DETAILS */}
-        <div className="flex flex-1 flex-col gap-2 lg:max-w-md">
-          <span className="text-xl font-semibold">Details</span>
-          {isEditing ? (
-            // Form
-            <form
-              className="flex flex-1 flex-col gap-2"
-              onSubmit={(e) => {
-                e.preventDefault();
-                form.handleSubmit();
-              }}
-            >
-              <form.Field name="eventName">
-                {(eventNameField) => (
-                  <Field>
-                    <FieldLabel htmlFor={eventNameField.name}>
-                      Event name
-                    </FieldLabel>
-                    <Input
-                      id={eventNameField.name}
-                      name={eventNameField.name}
-                      value={eventNameField.state.value}
-                      onBlur={eventNameField.handleBlur}
-                      onChange={(e) =>
-                        eventNameField.handleChange(e.target.value)
-                      }
-                    />
-                  </Field>
-                )}
-              </form.Field>
-              <DateTimeFieldGroup
-                form={form}
-                fields={{
-                  date: 'date',
-                  timeBegin: 'timeBegin',
-                  timeEnd: 'timeEnd',
-                }}
-              />
-              <AddressFieldGroup
-                form={form}
-                fields={{ location: 'location' }}
-              />
-              <DescriptionFieldGroup
-                form={form}
-                fields={{ eventName: 'eventName', description: 'description' }}
-              />
-              <div className="flex items-center justify-end gap-2">
-                <Button
-                  onClick={() => {
-                    form.reset();
-                    setIsEditing(false);
-                  }}
-                >
-                  <IconX />
-                  Cancel
-                </Button>
-                <Button
-                  type="submit"
-                  variant="solid"
-                  onClick={() => form.handleSubmit()}
-                >
-                  <IconCheck />
-                  Save
-                </Button>
-              </div>
-            </form>
-          ) : (
-            // Display
-            <div className="flex flex-col gap-4">
-              {/* Date and time */}
-              <div className="flex flex-col gap-1">
-                <div className="flex items-center gap-2">
-                  <IconCalendar className="size-4" />
-                  <span className="flex-1">
-                    {dayjs(event.timeBegin).format('dddd, MMMM D, YYYY')}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <IconClock className="size-4" />
-                  <span className="flex-1">{`${dayjs(event.timeBegin).format('h:mm A')}${event.timeEnd ? ` — ${dayjs(event.timeEnd).format('h:mm A')}` : null}`}</span>
-                </div>
-                <ComingSoonTooltip>
-                  <Button className="ml-6" size="sm" variant="link">
-                    Add to calendar
-                  </Button>
-                </ComingSoonTooltip>
-              </div>
-              {/* Location */}
-              {event.location && (
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <IconMapPin className="size-4" />
-                    <span className="flex-1">{event.location}</span>
-                  </div>
-                  <ComingSoonTooltip>
-                    <Button className="ml-6" size="sm" variant="link">
-                      Get directions
-                    </Button>
-                  </ComingSoonTooltip>
-                </div>
-              )}
-              {/* Description */}
-              {event.description && (
-                <div className="flex items-start gap-2">
-                  <IconAlignLeft className="mt-1 size-4" />
-                  {/* TODO: This doesn't currently render things like line breaks, and <pre> does not work. */}
-                  <span className="flex-1">{event.description}</span>
-                </div>
-              )}
-            </div>
-          )}
-        </div>
-        {/* TEAMS */}
-        <div className="flex flex-1 flex-col gap-2 lg:max-w-lg">
-          <div className="flex items-center justify-between gap-2">
-            <div className="flex items-center gap-2">
-              <span className="text-xl font-semibold">Teams</span>
-            </div>
+            )}
+          </WorkspaceSectionTitle>
+          <EventDetails
+            editing={editingDetails}
+            eventId={eventId}
+            setEditing={setEditingDetails}
+          />
+        </WorkspaceSection>
+        <WorkspaceSection>
+          <WorkspaceSectionTitle>
+            Teams
             {permissions.can('update', 'CalendarEvent') && (
               <ComingSoonTooltip>
                 <Button size="sm" variant="link">
@@ -399,247 +159,404 @@ function EventPage() {
                 </Button>
               </ComingSoonTooltip>
             )}
-          </div>
-          {permissions.can('update', 'CalendarEvent') && (
-            <DialogAddShift
-              eventId={event.id}
-              existingShifts={
-                shifts
-                  ?.sort((a, b) =>
-                    a.position.display.localeCompare(b.position.display),
-                  )
-                  .map((s) => s.position.id) ?? []
-              }
-            />
-          )}
-          <div className="flex flex-col gap-4">
-            {shifts &&
-              shifts
-                .sort((a, b) =>
-                  a.position.display.localeCompare(b.position.display),
-                )
-                .map((shift) => {
-                  // TODO: Add permission logic
-                  const CAN_SIGN_UP = shift.quantity > shift.slots.length;
-                  const isDescriptionExpanded = expandedShiftDescriptions.has(
-                    shift.id,
-                  );
-                  return (
-                    <Card key={shift.id}>
-                      <CardHeader>
-                        <CardTitle>{shift.position.display}</CardTitle>
-                        <CardDescription>
-                          {permissions.can('modify', 'Shift') ? (
-                            <PopoverSlotQuantity shift={shift} />
-                          ) : (
-                            `${shift.slots.length} of ${shift.quantity} filled`
-                          )}
-                        </CardDescription>
-                        {shift.position.description && (
-                          <div className="flex gap-2">
-                            <IconAlignLeft className="mt-1 size-3" />
-                            <CardDescription className="flex-1 text-foreground">
-                              <span
-                                className={cn(
-                                  'inline',
-                                  isDescriptionExpanded
-                                    ? undefined
-                                    : 'line-clamp-1',
-                                )}
-                              >
-                                {shift.position.description}
-                              </span>
-                              {'  '}
-                              <button
-                                className="inline cursor-pointer border-0 bg-transparent p-0 text-xs text-muted-foreground underline underline-offset-3"
-                                onClick={() =>
-                                  setExpandedShiftDescriptions((prev) => {
-                                    const next = new Set(prev);
-                                    if (next.has(shift.id)) {
-                                      next.delete(shift.id);
-                                    } else {
-                                      next.add(shift.id);
-                                    }
-                                    return next;
-                                  })
-                                }
-                                type="button"
-                              >
-                                {isDescriptionExpanded
-                                  ? 'Show less'
-                                  : 'Show more'}
-                              </button>
-                            </CardDescription>
-                          </div>
-                        )}
-                        {CAN_SIGN_UP && (
-                          <CardAction>
-                            <ComingSoonTooltip>
-                              <Button size="sm">
-                                <IconSparkles2 />
-                                Sign up
-                              </Button>
-                            </ComingSoonTooltip>
-                          </CardAction>
-                        )}
-                      </CardHeader>
-                      <CardContent className="flex flex-col px-4">
-                        {shift.slots.map((slot) => (
-                          <div
-                            key={slot.id}
-                            className="flex items-center gap-1"
-                          >
-                            <SlotDisplay
-                              canModify={permissions.can('modify', 'Shift')}
-                              slot={slot}
-                              users={users ?? []}
-                            />
-                          </div>
-                        ))}
-                      </CardContent>
-                      {permissions.can('modify', 'Shift') && (
-                        <CardFooter className="gap-2">
-                          <PopoverAssignSlot
-                            shift={shift}
-                            users={users ?? []}
-                          />
-                          <Tooltip>
-                            <TooltipTrigger
-                              render={
-                                <Button
-                                  onClick={() => {
-                                    deleteShift({ shiftId: shift.id });
-                                  }}
-                                  type="button"
-                                >
-                                  <IconTrash />
-                                </Button>
-                              }
-                            />
-                            <TooltipContent sideOffset={8}>
-                              Remove shift
-                            </TooltipContent>
-                          </Tooltip>
-                        </CardFooter>
-                      )}
-                    </Card>
-                  );
-                })}
-          </div>
-        </div>
+          </WorkspaceSectionTitle>
+          <EventTeams eventId={eventId} permissions={permissions} />
+        </WorkspaceSection>
       </WorkspaceContent>
     </>
   );
 }
 
+function EventDetails({
+  editing,
+  eventId,
+  setEditing,
+}: {
+  editing: boolean;
+  eventId: string;
+  setEditing: (editing: boolean) => void;
+}) {
+  // Hooks
+  const queryClient = useQueryClient();
+
+  // Queries
+  const { data: eventDetails, isLoading: eventIsLoading } = useQuery(
+    getEventDetailsQuery(eventId),
+  );
+
+  // Mutations
+  const { mutateAsync: updateEventDetails } = useMutation({
+    ...updateEventDetailsMutation(),
+    onMutate: async () => {
+      // Optimistic update logic here
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: getEventDetailsQuery(eventId).queryKey,
+      });
+    },
+  });
+
+  // Tanstack Form
+  const form = useAppForm({
+    defaultValues: {
+      eventName: eventDetails?.name || '',
+      description: eventDetails?.description || '',
+      location: eventDetails?.location || '',
+      date: eventDetails?.timeBegin
+        ? dayjs(eventDetails.timeBegin).format('YYYY-MM-DD')
+        : dayjs().format('YYYY-MM-DD'),
+      timeBegin: eventDetails?.timeBegin
+        ? dayjs(eventDetails.timeBegin).format('h:mm A')
+        : '',
+      timeEnd: eventDetails?.timeEnd
+        ? dayjs(eventDetails.timeEnd).format('h:mm A')
+        : '',
+    },
+    onSubmit: ({ value }) => {
+      const eventData = {
+        description: value.description || undefined,
+        location: value.location || undefined,
+        name: value.eventName,
+        timeBegin: dayjs(`${value.date} ${value.timeBegin}`).toISOString(),
+        timeEnd: value.timeEnd
+          ? dayjs(`${value.date} ${value.timeEnd}`).toISOString()
+          : undefined,
+      };
+
+      updateEventDetails({
+        data: eventData,
+        eventId,
+      });
+
+      setEditing(false);
+    },
+  });
+
+  // Render
+  if (eventIsLoading) {
+    return <div>Loading event</div>;
+  }
+  if (!eventDetails) {
+    return <div>Event not found</div>;
+  }
+  return (
+    <>
+      {editing ? (
+        // Form
+        <form
+          className="flex flex-1 flex-col gap-2"
+          onSubmit={(e) => {
+            e.preventDefault();
+            form.handleSubmit();
+          }}
+        >
+          <form.Field name="eventName">
+            {(eventNameField) => (
+              <Field>
+                <FieldLabel htmlFor={eventNameField.name}>
+                  Event name
+                </FieldLabel>
+                <Input
+                  id={eventNameField.name}
+                  name={eventNameField.name}
+                  value={eventNameField.state.value}
+                  onBlur={eventNameField.handleBlur}
+                  onChange={(e) => eventNameField.handleChange(e.target.value)}
+                />
+              </Field>
+            )}
+          </form.Field>
+          <DateTimeFieldGroup
+            form={form}
+            fields={{
+              date: 'date',
+              timeBegin: 'timeBegin',
+              timeEnd: 'timeEnd',
+            }}
+          />
+          <AddressFieldGroup form={form} fields={{ location: 'location' }} />
+          <DescriptionFieldGroup
+            form={form}
+            fields={{ eventName: 'eventName', description: 'description' }}
+          />
+          <div className="flex items-center justify-end gap-2">
+            <Button
+              onClick={() => {
+                form.reset();
+                setEditing(false);
+              }}
+            >
+              <IconX />
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="solid"
+              onClick={() => form.handleSubmit()}
+            >
+              <IconCheck />
+              Save
+            </Button>
+          </div>
+        </form>
+      ) : (
+        // Display
+        <div className="flex flex-col gap-4">
+          {/* Date and time */}
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2">
+              <IconCalendar className="size-4" />
+              <span className="flex-1">
+                {dayjs(eventDetails.timeBegin).format('dddd, MMMM D, YYYY')}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <IconClock className="size-4" />
+              <span className="flex-1">{`${dayjs(eventDetails.timeBegin).format('h:mm A')}${eventDetails.timeEnd ? ` — ${dayjs(eventDetails.timeEnd).format('h:mm A')}` : null}`}</span>
+            </div>
+            <ComingSoonTooltip>
+              <Button className="ml-6" size="sm" variant="link">
+                Add to calendar
+              </Button>
+            </ComingSoonTooltip>
+          </div>
+          {/* Location */}
+          {eventDetails.location && (
+            <div className="flex flex-col gap-1">
+              <div className="flex items-center gap-2">
+                <IconMapPin className="size-4" />
+                <span className="flex-1">{eventDetails.location}</span>
+              </div>
+              <ComingSoonTooltip>
+                <Button className="ml-6" size="sm" variant="link">
+                  Get directions
+                </Button>
+              </ComingSoonTooltip>
+            </div>
+          )}
+          {/* Description */}
+          {eventDetails.description && (
+            <div className="flex items-start gap-2">
+              <IconAlignLeft className="mt-1 size-4" />
+              {/* TODO: This doesn't currently render things like line breaks, and <pre> does not work. */}
+              <span className="flex-1 whitespace-pre-wrap">
+                {eventDetails.description}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+    </>
+  );
+}
+
+function EventTeams({
+  eventId,
+  permissions,
+}: {
+  eventId: string;
+  permissions: ReturnType<typeof getUserPermissions>;
+}) {
+  // Hooks
+  const queryClient = useQueryClient();
+
+  // State
+  const [expandedShiftDescriptions, setExpandedShiftDescriptions] = useState<
+    Set<string>
+  >(new Set());
+
+  // Queries
+  // const { data: users } = useQuery(allUsersForComboboxQuery());
+  const { data: shifts, isLoading: shiftsIsLoading } = useQuery(
+    getSlotsByEventQuery(eventId),
+  );
+
+  // Mutations
+  const { mutateAsync: deleteShift, isPending } = useMutation({
+    ...deleteShiftMutation(),
+    onMutate: () => {
+      // Optimistic update logic here
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: getSlotsByEventQuery(eventId).queryKey,
+      });
+    },
+  });
+
+  // Render
+  if (shiftsIsLoading) {
+    return <div>Loading teams</div>;
+  }
+  return (
+    <>
+      {permissions.can('update', 'CalendarEvent') && (
+        <DialogAddShift
+          eventId={eventId}
+          existingShifts={
+            shifts
+              ?.sort((a, b) =>
+                a.position.display.localeCompare(b.position.display),
+              )
+              .map((s) => s.position.id) ?? []
+          }
+        />
+      )}
+      <div className="flex flex-col gap-4">
+        {shifts &&
+          shifts
+            .sort((a, b) =>
+              a.position.display.localeCompare(b.position.display),
+            )
+            .map((shift) => {
+              // TODO: Add permission logic
+              const CAN_SIGN_UP = shift.quantity > shift.slots.length;
+              const isDescriptionExpanded = expandedShiftDescriptions.has(
+                shift.id,
+              );
+              return (
+                <Card key={shift.id}>
+                  <CardHeader>
+                    <CardTitle>{shift.position.display}</CardTitle>
+                    <CardDescription>
+                      {permissions.can('modify', 'Shift') ? (
+                        <PopoverSlotQuantity shift={shift} />
+                      ) : (
+                        `${shift.slots.length} of ${shift.quantity} filled`
+                      )}
+                    </CardDescription>
+
+                    {CAN_SIGN_UP && (
+                      <CardAction>
+                        <ComingSoonTooltip>
+                          <Button size="sm">
+                            <IconSparkles2 />
+                            Sign up
+                          </Button>
+                        </ComingSoonTooltip>
+                      </CardAction>
+                    )}
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-2 px-4">
+                    {shift.position.description && (
+                      <div className="flex gap-2">
+                        <IconAlignLeft className="mt-1 size-3" />
+                        <CardDescription className="flex-1 text-foreground">
+                          <span
+                            className={cn(
+                              'inline',
+                              isDescriptionExpanded
+                                ? undefined
+                                : 'line-clamp-1',
+                            )}
+                          >
+                            {shift.position.description}
+                          </span>
+                          {'  '}
+                          <button
+                            className="inline cursor-pointer border-0 bg-transparent p-0 text-xs text-muted-foreground underline underline-offset-3"
+                            onClick={() =>
+                              setExpandedShiftDescriptions((prev) => {
+                                const next = new Set(prev);
+                                if (next.has(shift.id)) {
+                                  next.delete(shift.id);
+                                } else {
+                                  next.add(shift.id);
+                                }
+                                return next;
+                              })
+                            }
+                            type="button"
+                          >
+                            {isDescriptionExpanded ? 'Show less' : 'Show more'}
+                          </button>
+                        </CardDescription>
+                      </div>
+                    )}
+                    {shift.slots.map((slot) => (
+                      <div key={slot.id} className="flex items-center gap-1">
+                        <SlotDisplay
+                          eventId={eventId}
+                          canModify={permissions.can('modify', 'Shift')}
+                          slot={slot}
+                        />
+                      </div>
+                    ))}
+                  </CardContent>
+                  {permissions.can('modify', 'Shift') && (
+                    <CardFooter className="gap-2">
+                      <PopoverAssignSlot shift={shift} />
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <Button
+                              disabled={isPending}
+                              onClick={() => {
+                                deleteShift({ shiftId: shift.id });
+                              }}
+                              type="button"
+                            >
+                              {isPending ? <Spinner /> : <IconTrash />}
+                            </Button>
+                          }
+                        />
+                        <TooltipContent sideOffset={8}>
+                          Remove shift
+                        </TooltipContent>
+                      </Tooltip>
+                    </CardFooter>
+                  )}
+                </Card>
+              );
+            })}
+      </div>
+    </>
+  );
+}
+
 function SlotDisplay({
+  eventId,
   canModify,
   slot,
-  users,
 }: {
+  eventId: string;
   canModify?: boolean;
   slot: Infer<typeof shiftSchemaWithSlots>['slots'][number];
-  users: Infer<typeof userSchemaForCombobox>[];
 }) {
+  // Hooks
+  const queryClient = useQueryClient();
+
+  // Queries
+  const { data: users, isLoading: usersLoading } = useQuery(
+    allUsersForComboboxQuery(),
+  );
+
+  // Mutations
   const { mutateAsync: reassignSlot } = useMutation({
     ...reassignUserMutation(),
     onMutate: async () => {
       // Optimistic update logic here
     },
   });
-  // const { mutate: reassignSlot } = useMutation(
-  //   trpc.calendar.shifts.reassignSlot.mutationOptions({
-  //     onMutate: async ({ slotId, userId }) => {
-  //       await queryClient.cancelQueries({ queryKey: SHIFTS_KEY });
-
-  //       const rollback = queryClient.getQueriesData<Shift[]>({
-  //         queryKey: SHIFTS_KEY,
-  //       });
-  //       const user = users.find((u) => u.id === userId);
-
-  //       queryClient.setQueriesData<Shift[]>(
-  //         { queryKey: SHIFTS_KEY },
-  //         (prev) => {
-  //           if (!prev) return prev;
-
-  //           return prev.map((_shift) => ({
-  //             ..._shift,
-  //             slots: _shift.slots.map((_slot) =>
-  //               _slot.id === slotId
-  //                 ? {
-  //                     ..._slot,
-  //                     user: {
-  //                       id: userId,
-  //                       displayName: user?.display ?? 'Unknown user',
-  //                       image: null,
-  //                     },
-  //                   }
-  //                 : _slot,
-  //             ),
-  //           }));
-  //         },
-  //       );
-
-  //       return { rollback };
-  //     },
-  //     onError: (_error, _variables, ctx) => {
-  //       if (!ctx?.rollback) return;
-  //       for (const [queryKey, snapshot] of ctx.rollback) {
-  //         queryClient.setQueryData(queryKey, snapshot);
-  //       }
-  //     },
-  //     onSettled: async () => {
-  //       await queryClient.invalidateQueries({ queryKey: SHIFTS_KEY });
-  //     },
-  //   }),
-  // );
 
   const { mutateAsync: deleteSlot } = useMutation({
     ...deleteSlotMutation(),
     onMutate: async () => {
       // Optimistic update logic here
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: getSlotsByEventQuery(eventId).queryKey,
+      });
+    },
   });
-  // const { mutate: deleteSlot } = useMutation(
-  //   trpc.calendar.shifts.deleteSlot.mutationOptions({
-  //     onMutate: async ({ slotId }) => {
-  //       await queryClient.cancelQueries({ queryKey: SHIFTS_KEY });
-
-  //       const rollback = queryClient.getQueriesData<Shift[]>({
-  //         queryKey: SHIFTS_KEY,
-  //       });
-
-  //       queryClient.setQueriesData<Shift[]>(
-  //         { queryKey: SHIFTS_KEY },
-  //         (prev) => {
-  //           if (!prev) return prev;
-
-  //           return prev.map((_shift) => ({
-  //             ..._shift,
-  //             slots: _shift.slots.filter((_slot) => _slot.id !== slotId),
-  //           }));
-  //         },
-  //       );
-
-  //       return { rollback };
-  //     },
-  //     onError: (_error, _variables, ctx) => {
-  //       if (!ctx?.rollback) return;
-  //       for (const [queryKey, snapshot] of ctx.rollback) {
-  //         queryClient.setQueryData(queryKey, snapshot);
-  //       }
-  //     },
-  //     onSettled: async () => {
-  //       await queryClient.invalidateQueries({ queryKey: SHIFTS_KEY });
-  //     },
-  //   }),
-  // );
 
   return canModify ? (
     <>
       <Combobox
-        defaultValue={users.find((u) => u.id === slot.user.id)}
-        items={users.sort((a, b) => a.nameLast!.localeCompare(b.nameLast!))}
+        defaultValue={users?.find((u) => u.id === slot.user.id)}
+        items={users?.sort((a, b) => a.nameLast!.localeCompare(b.nameLast!))}
         itemToStringLabel={(user: Infer<typeof userSchemaForCombobox>) =>
           user.displayName
         }
@@ -669,10 +586,21 @@ function SlotDisplay({
           }
         />
         <ComboboxContent>
-          <ComboboxInput showTrigger={false} />
+          <ComboboxInput showTrigger={false}>
+            {usersLoading && (
+              <InputGroupAddon
+                align="inline-end"
+                className="text-muted-foreground"
+              >
+                <Spinner />
+              </InputGroupAddon>
+            )}
+          </ComboboxInput>
           <ComboboxList>
             {(user: Infer<typeof userSchemaForCombobox>) => (
-              <ComboboxItem value={user}>{user.displayName}</ComboboxItem>
+              <ComboboxItem key={user.id} value={user}>
+                {user.displayName}
+              </ComboboxItem>
             )}
           </ComboboxList>
         </ComboboxContent>
@@ -702,6 +630,8 @@ function PopoverSlotQuantity({
 }: {
   shift: Infer<typeof shiftSchemaWithSlots>;
 }) {
+  const queryClient = useQueryClient();
+
   const [quantity, setQuantity] = useState<number>(shift.quantity);
   const minSlots = Math.max(shift.slots.length, 1);
 
@@ -710,45 +640,12 @@ function PopoverSlotQuantity({
     onMutate: async () => {
       // Optimistic update logic here
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: getSlotsByEventQuery(shift.eventId).queryKey,
+      });
+    },
   });
-  // const { mutate: updateSlotQuantity } = useMutation(
-  //   trpc.calendar.shifts.updateSlotQuantity.mutationOptions({
-  //     onMutate: async ({ shiftId, quantity }) => {
-  //       await queryClient.cancelQueries({ queryKey: SHIFTS_KEY });
-
-  //       const rollback = queryClient.getQueriesData<Shift[]>({
-  //         queryKey: SHIFTS_KEY,
-  //       });
-
-  //       queryClient.setQueriesData<Shift[]>(
-  //         { queryKey: SHIFTS_KEY },
-  //         (prev) => {
-  //           if (!prev) return prev;
-
-  //           return prev.map((_shift) =>
-  //             _shift.id === shiftId
-  //               ? {
-  //                   ..._shift,
-  //                   quantity: Math.max(quantity, _shift.slots.length),
-  //                 }
-  //               : _shift,
-  //           );
-  //         },
-  //       );
-
-  //       return { rollback };
-  //     },
-  //     onError: (_error, _variables, ctx) => {
-  //       if (!ctx?.rollback) return;
-  //       for (const [queryKey, snapshot] of ctx.rollback) {
-  //         queryClient.setQueryData(queryKey, snapshot);
-  //       }
-  //     },
-  //     onSettled: async () => {
-  //       await queryClient.invalidateQueries({ queryKey: SHIFTS_KEY });
-  //     },
-  //   }),
-  // );
 
   return (
     <Popover>
@@ -847,69 +744,22 @@ type DialogAddShiftProps = {
   existingShifts: string[]; // Array of shift IDs
 };
 function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
+  const queryClient = useQueryClient();
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
   const { data: positions } = useQuery(allPositionsQuery());
 
   const { mutateAsync: addShifts } = useMutation({
     ...createShiftMutation(),
-    onMutate: async () => {
+    onMutate: () => {
       // Optimistic update logic here
     },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: getSlotsByEventQuery(eventId).queryKey,
+      });
+    },
   });
-  // const { mutate: addShifts } = useMutation(
-  //   trpc.calendar.shifts.createShifts.mutationOptions({
-  //     onMutate: async ({ shiftsToCreate }) => {
-  //       await queryClient.cancelQueries({ queryKey: SHIFTS_KEY });
-
-  //       const rollback = queryClient.getQueriesData<Shift[]>({
-  //         queryKey: SHIFTS_KEY,
-  //       });
-
-  //       queryClient.setQueriesData<Shift[]>(
-  //         { queryKey: SHIFTS_KEY },
-  //         // @ts-expect-error - TODO: Fix this
-  //         (prev) => {
-  //           if (!prev) return prev;
-
-  //           const optimisticShifts = shiftsToCreate
-  //             .filter(
-  //               (s) =>
-  //                 !prev.some(
-  //                   (existing) => existing.position.id === s.positionId,
-  //                 ),
-  //             )
-  //             .map((s) => {
-  //               const position = positions?.find((p) => p.id === s.positionId);
-  //               return {
-  //                 id: `optimistic-shift-${s.positionId}-${Date.now()}`,
-  //                 quantity: s.quantity,
-  //                 position: {
-  //                   id: s.positionId,
-  //                   name: position?.name ?? 'Unknown position',
-  //                   display: position?.display ?? 'Unknown position',
-  //                 },
-  //                 slots: [],
-  //               };
-  //             });
-
-  //           return [...prev, ...optimisticShifts];
-  //         },
-  //       );
-
-  //       return { rollback };
-  //     },
-  //     onError: (_error, _variables, ctx) => {
-  //       if (!ctx?.rollback) return;
-  //       for (const [queryKey, snapshot] of ctx.rollback) {
-  //         queryClient.setQueryData(queryKey, snapshot);
-  //       }
-  //     },
-  //     onSettled: async () => {
-  //       await queryClient.invalidateQueries({ queryKey: SHIFTS_KEY });
-  //     },
-  //   }),
-  // );
 
   const form = useAppForm({
     defaultValues: {
@@ -1063,58 +913,20 @@ function PopoverAssignSlot({
   );
 
   const [open, setOpen] = useState(false);
+  const [tooltipOpen, setTooltipOpen] = useState(false);
   const [userToAssign, setUserToAssign] = useState<Infer<
     typeof userSchemaForCombobox
   > | null>(null);
-  const [tooltipOpen, setTooltipOpen] = useState(false);
 
-  const { mutateAsync: assignSlot } = useMutation({
+  const { mutateAsync: assignSlot, isPending } = useMutation({
     ...assignUserMutation(),
-    // onMutate: async (variables) => {
-    //   await queryClient.cancelQueries({ queryKey: slotsQueryKey });
-
-    //   const previousSlots =
-    //     queryClient.getQueryData<Infer<typeof shiftSchemaWithSlots>[]>(
-    //       slotsQueryKey,
-    //     );
-    //   const user = users?.find((u) => u.id === variables.userId);
-
-    //   queryClient.setQueryData<Infer<typeof shiftSchemaWithSlots>[]>(
-    //     slotsQueryKey,
-    //     (current) =>
-    //       current?.map((currentShift) =>
-    //         currentShift.id === variables.shiftId
-    //           ? {
-    //               ...currentShift,
-    //               slots: [
-    //                 ...currentShift.slots,
-    //                 {
-    //                   id: `optimistic-${variables.userId}-${Date.now()}`,
-    //                   user: {
-    //                     id: variables.userId,
-    //                     displayName: user?.displayName ?? 'Unknown user',
-    //                     image: null,
-    //                     nameFirst: user?.nameFirst ?? null,
-    //                     nameLast: user?.nameLast ?? null,
-    //                   },
-    //                 },
-    //               ],
-    //             }
-    //           : currentShift,
-    //       ) ?? current,
-    //   );
-
-    //   return { previousSlots };
-    // },
-    // onError: (_error, _variables, context) => {
-    //   if (context?.previousSlots) {
-    //     queryClient.setQueryData(slotsQueryKey, context.previousSlots);
-    //   }
-    // },
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: slotsQueryKey,
       });
+    },
+    onSuccess: () => {
+      setOpen(false);
     },
   });
 
@@ -1185,36 +997,38 @@ function PopoverAssignSlot({
               </Button>
             }
           />
-          <PopoverClose
-            render={
-              <Tooltip
-                open={tooltipOpen && userToAssign === null}
-                onOpenChange={setTooltipOpen}
-              >
-                <TooltipTrigger
-                  render={
-                    <div className="has-disabled:cursor-not-allowed">
-                      <Button
-                        disabled={!userToAssign}
-                        variant="solid"
-                        onClick={() => {
-                          if (!userToAssign) return;
-                          assignSlot({
-                            shiftId: shift.id,
-                            userId: userToAssign.id,
-                          });
-                        }}
-                      >
+          <Tooltip
+            open={tooltipOpen && userToAssign === null}
+            onOpenChange={setTooltipOpen}
+          >
+            <TooltipTrigger
+              render={
+                <div className="has-disabled:cursor-not-allowed">
+                  <Button
+                    disabled={!userToAssign}
+                    variant="solid"
+                    onClick={() => {
+                      if (!userToAssign) return;
+                      assignSlot({
+                        shiftId: shift.id,
+                        userId: userToAssign.id,
+                      });
+                    }}
+                  >
+                    {isPending ? (
+                      <Spinner />
+                    ) : (
+                      <>
                         <IconCheck />
                         Save
-                      </Button>
-                    </div>
-                  }
-                />
-                <TooltipContent>Select a user to assign</TooltipContent>
-              </Tooltip>
-            }
-          />
+                      </>
+                    )}
+                  </Button>
+                </div>
+              }
+            />
+            <TooltipContent>Select a user to assign</TooltipContent>
+          </Tooltip>
         </div>
       </PopoverContent>
     </Popover>
