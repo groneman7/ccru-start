@@ -8,7 +8,6 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
-import { queryClient } from '~/router';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 import TanStackQueryDevtools from '../lib/tanstack-query/devtools';
@@ -44,6 +43,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootDocument({ children }: { children: ReactNode }) {
+  const { queryClient } = Route.useRouteContext();
+
   return (
     <html lang="en">
       <head>
