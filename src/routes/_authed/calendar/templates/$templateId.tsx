@@ -85,8 +85,8 @@ const timeSchema = string().regex(
 export const Route = createFileRoute('/_authed/calendar/templates/$templateId')(
   {
     loader: async ({ context: { queryClient }, params: { templateId } }) => {
-      await queryClient.fetchQuery(getTemplateByIdQuery(templateId));
-      await queryClient.fetchQuery(allTemplatesQuery());
+      await queryClient.ensureQueryData(getTemplateByIdQuery(templateId));
+      await queryClient.ensureQueryData(allTemplatesQuery());
     },
     component: RouteComponent,
     head: () => ({
