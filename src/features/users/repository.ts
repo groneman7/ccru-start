@@ -2,7 +2,7 @@ import { db } from '~/server/db';
 import { userInBetterAuth as users } from '~/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import type { infer as Infer } from 'zod';
-import type { userSchemaForCombobox } from './users.schema';
+import type { userSchemaForCombobox } from './schema';
 
 type UpdateOnboardingProfileInput = {
   userId: string;

@@ -69,8 +69,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '~/components/ui';
-import { allUsersForComboboxQuery } from '~/features/admin/users.queries';
-import type { userSchemaForCombobox } from '~/features/admin/users.schema';
 import {
   assignUserMutation,
   createShiftMutation,
@@ -79,16 +77,18 @@ import {
   reassignUserMutation,
   updateEventDetailsMutation,
   updateSlotQuantityMutation,
-} from '~/features/calendar/calendar.mutations';
+} from '~/features/calendar/mutations';
 import {
   allPositionsQuery,
   getEventDetailsQuery,
   getSlotsByEventQuery,
-} from '~/features/calendar/calendar.queries';
+} from '~/features/calendar/queries';
 import type {
   positionSchema,
   shiftSchemaWithSlots,
-} from '~/features/calendar/calendar.schema';
+} from '~/features/calendar/schema';
+import { allUsersForComboboxQuery } from '~/features/users/queries';
+import type { userSchemaForCombobox } from '~/features/users/schema';
 import { cn } from '~/lib/utils';
 import { getUserPermissions } from '~/server/permissions';
 import dayjs from 'dayjs';

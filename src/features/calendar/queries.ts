@@ -4,7 +4,7 @@ import {
   positionServerFns as position,
   slotServerFns as slot,
   templateServerFns as template,
-} from '~/features/calendar/calendar.functions';
+} from '~/features/calendar/functions';
 
 // Events ---------------------------------------------------------------------
 
@@ -38,6 +38,7 @@ export function getSlotsByEventQuery(eventId: string) {
   return queryOptions({
     queryKey: ['slotsByEvent', eventId],
     queryFn: () => slot.byEventId({ data: { eventId } }),
+    staleTime: 1000,
   });
 }
 

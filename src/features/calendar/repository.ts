@@ -9,7 +9,7 @@ import type {
   updateEventSchema,
   updatePositionDetailsSchema,
   updateTemplateSchema,
-} from '~/features/calendar/calendar.schema';
+} from '~/features/calendar/schema';
 import { db } from '~/server/db';
 import {
   eventsInCalendar as events,

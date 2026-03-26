@@ -1,4 +1,4 @@
-import { userRepository as user } from '~/features/admin/users.repository';
+import { userRepository as user } from '~/features/users/repository';
 
 export const userService = {
   all: async () => {

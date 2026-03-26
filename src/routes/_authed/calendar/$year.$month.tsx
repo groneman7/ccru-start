@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { WorkspaceContent } from '~/components';
 import { Calendar } from '~/components/calendar';
-import { getEventsByMonthQuery } from '~/features/calendar/calendar.queries';
+import { getEventsByMonthQuery } from '~/features/calendar/queries';
 import dayjs from 'dayjs';
 
 export const Route = createFileRoute('/_authed/calendar/$year/$month')({

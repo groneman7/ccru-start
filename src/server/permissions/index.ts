@@ -1,6 +1,6 @@
 import type { MongoAbility } from '@casl/ability';
 import { AbilityBuilder, createMongoAbility } from '@casl/ability';
-import type { userSchema } from '~/features/admin/users.schema';
+import type { userSchema } from '~/features/users/schema';
 import type { infer as Infer } from 'zod';
 
 type CalendarEventSubject = 'CalendarEvent';

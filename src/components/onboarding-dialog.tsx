@@ -23,7 +23,7 @@ import {
 import {
   completeOnboardingMutation,
   updateOnboardingProfileMutation,
-} from '~/features/admin/users.mutations';
+} from '~/features/users/mutations';
 import { getChangedFields } from '~/lib/utils';
 import { z } from 'zod';
 
@@ -74,8 +74,14 @@ export function OnboardingDialog() {
     },
     onSubmit: async ({ value }) => {
       const parsed = onboardingSubmitSchema.parse(value);
-      const { nameFirst, nameMiddle, nameLast, postNominals, email, phoneNumber } =
-        parsed;
+      const {
+        nameFirst,
+        nameMiddle,
+        nameLast,
+        postNominals,
+        email,
+        phoneNumber,
+      } = parsed;
       const displayName = `${nameFirst} ${nameLast}`.trim();
 
       const nextProfile = {

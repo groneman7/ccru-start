@@ -8,7 +8,7 @@ import {
   DescriptionFieldGroup,
 } from '~/components/form/field-groups';
 import { Button, Field, FieldLabel, Input } from '~/components/ui';
-import { createEventMutation } from '~/features/calendar/calendar.mutations';
+import { createEventMutation } from '~/features/calendar/mutations';
 import dayjs from 'dayjs';
 import { CheckIcon, XIcon } from 'lucide-react';
 import { iso, object, string, union, null as zNull } from 'zod';

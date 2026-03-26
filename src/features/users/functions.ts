@@ -1,5 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
-import { userService as user } from '~/features/admin/users.services';
+import { userService as user } from '~/features/users/services';
 import { nullable, object, optional, string } from 'zod';
 
 export const allUsersServerFn = createServerFn().handler(async () => {

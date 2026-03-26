@@ -51,7 +51,7 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton>
-                  <Link /* to="/admin" */ to="/">Admin</Link>
+                  <Link to="/admin">Admin</Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             </SidebarMenu>

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '~/components/ui';
-import type { eventSchema } from '~/features/calendar/calendar.schema';
+import type { eventSchema } from '~/features/calendar/schema';
 import { cn } from '~/lib/utils';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';

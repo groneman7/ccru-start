@@ -8,7 +8,7 @@ import {
 } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
 import { Button } from '~/components/ui';
-import { allTemplatesQuery } from '~/features/calendar/calendar.queries';
+import { allTemplatesQuery } from '~/features/calendar/queries';
 import { cn } from '~/lib/utils';
 
 export const Route = createFileRoute('/_authed/calendar/templates')({

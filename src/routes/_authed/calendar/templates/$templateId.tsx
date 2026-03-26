@@ -47,16 +47,16 @@ import {
   deleteTemplatePositionMutation,
   updateTemplateDetailsMutation,
   updateTemplatePositionQuantityMutation,
-} from '~/features/calendar/calendar.mutations';
+} from '~/features/calendar/mutations';
 import {
   allPositionsQuery,
   allTemplatesQuery,
   getTemplateByIdQuery,
-} from '~/features/calendar/calendar.queries';
+} from '~/features/calendar/queries';
 import type {
   positionSchema,
   templateSchemaWithPositions,
-} from '~/features/calendar/calendar.schema';
+} from '~/features/calendar/schema';
 import { parseAndFormatTime } from '~/lib/utils';
 import dayjs from 'dayjs';
 import {

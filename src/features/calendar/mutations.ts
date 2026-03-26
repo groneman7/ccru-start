@@ -5,7 +5,7 @@ import {
   shiftServerFns as shift,
   slotServerFns as slot,
   templateServerFns as template,
-} from '~/features/calendar/calendar.functions';
+} from '~/features/calendar/functions';
 import type {
   createEventSchema,
   createPositionSchema,
@@ -15,7 +15,7 @@ import type {
   updateEventSchema,
   updatePositionDetailsSchema,
   updateTemplateSchema,
-} from '~/features/calendar/calendar.schema';
+} from '~/features/calendar/schema';
 import type { infer as Infer } from 'zod';
 
 // Events ---------------------------------------------------------------------

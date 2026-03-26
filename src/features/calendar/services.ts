@@ -4,8 +4,8 @@ import {
   shiftRepository as shift,
   slotRepository as slot,
   templateRepository as template,
-} from '~/features/calendar/calendar.repository';
-import { shiftSchemaWithSlots } from '~/features/calendar/calendar.schema';
+} from '~/features/calendar/repository';
+import { shiftSchemaWithSlots } from '~/features/calendar/schema';
 import type {
   createEventSchema,
   createPositionSchema,
@@ -15,7 +15,7 @@ import type {
   updateEventSchema,
   updatePositionDetailsSchema,
   updateTemplateSchema,
-} from '~/features/calendar/calendar.schema';
+} from '~/features/calendar/schema';
 import { array } from 'zod';
 import type { infer as Infer } from 'zod';
 

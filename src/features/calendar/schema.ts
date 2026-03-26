@@ -1,4 +1,4 @@
-import { userSchema } from '~/features/admin/users.schema';
+import { userSchema } from '~/features/users/schema';
 import { array, number, object, string, uuidv7 } from 'zod';
 
 // Events ---------------------------------------------------------------------

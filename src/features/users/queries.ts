@@ -1,5 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
-import { userServerFns as user } from '~/features/admin/users.functions';
+import { userServerFns as user } from '~/features/users/functions';
 
 export function allUsersQuery() {
   return queryOptions({
