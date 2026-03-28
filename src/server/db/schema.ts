@@ -120,7 +120,7 @@ export const userInBetterAuth = betterAuth.table(
       .default(sql`uuid_generate_v7()`)
       .primaryKey()
       .notNull(),
-    displayName: text('display_name').notNull(),
+    display: text().notNull(),
     email: text().notNull(),
     emailVerified: boolean('email_verified').default(false).notNull(),
     image: text(),
@@ -143,9 +143,9 @@ export const userInBetterAuth = betterAuth.table(
       .notNull(),
     systemRoleId: uuid('system_role_id'),
     userTypeId: uuid('user_type_id'),
-    banned: boolean('banned').default(false),
+    banned: boolean().default(false),
     banReason: text('ban_reason'),
-    banExpires: timestamp('ban_expires'),
+    banExpires: timestamp('ban_expires', { mode: 'string' }),
   },
   (table) => [
     foreignKey({

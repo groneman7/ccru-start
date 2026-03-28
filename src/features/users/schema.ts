@@ -2,7 +2,7 @@ import { boolean, email, object, string, url, uuidv7 } from 'zod';
 
 export const userSchema = object({
   id: uuidv7(),
-  displayName: string().min(1),
+  display: string().min(1),
   email: email().min(1),
   emailVerified: boolean(),
   image: url().nullable(),
@@ -23,7 +23,7 @@ export const userSchema = object({
 
 export const userSchemaForCombobox = userSchema.pick({
   id: true,
-  displayName: true,
+  display: true,
   nameFirst: true,
   nameLast: true,
   systemRoleId: true,
@@ -31,7 +31,7 @@ export const userSchemaForCombobox = userSchema.pick({
 });
 
 export const createUserSchema = userSchema.pick({
-  displayName: true,
+  display: true,
   email: true,
   nameFirst: true,
   nameMiddle: true,
@@ -44,7 +44,7 @@ export const createUserSchema = userSchema.pick({
 
 export const updateUserSchema = userSchema
   .pick({
-    displayName: true,
+    display: true,
     email: true,
     nameFirst: true,
     nameMiddle: true,

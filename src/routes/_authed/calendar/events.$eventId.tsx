@@ -558,7 +558,7 @@ function SlotDisplay({
         defaultValue={users?.find((u) => u.id === slot.user.id)}
         items={users?.sort((a, b) => a.nameLast!.localeCompare(b.nameLast!))}
         itemToStringLabel={(user: Infer<typeof userSchemaForCombobox>) =>
-          user.displayName
+          user.display
         }
         itemToStringValue={(user: Infer<typeof userSchemaForCombobox>) =>
           user.id
@@ -599,7 +599,7 @@ function SlotDisplay({
           <ComboboxList>
             {(user: Infer<typeof userSchemaForCombobox>) => (
               <ComboboxItem key={user.id} value={user}>
-                {user.displayName}
+                {user.display}
               </ComboboxItem>
             )}
           </ComboboxList>
@@ -620,7 +620,7 @@ function SlotDisplay({
       <div className="flex size-8 items-center justify-center overflow-hidden rounded-full border bg-gray-100">
         <UserRound className="size-8 translate-y-1 scale-120 fill-gray-500/30 stroke-0" />
       </div>
-      <span>{slot.user.displayName}test</span>
+      <span>{slot.user.display}test</span>
     </div>
   );
 }
@@ -958,7 +958,7 @@ function PopoverAssignSlot({
             items={users}
             value={userToAssign}
             itemToStringLabel={(user: Infer<typeof userSchemaForCombobox>) =>
-              `${user.displayName}`
+              `${user.display}`
             }
             onValueChange={setUserToAssign}
           >
@@ -981,7 +981,7 @@ function PopoverAssignSlot({
               <ComboboxList>
                 {(user: Infer<typeof userSchemaForCombobox>) => (
                   <ComboboxItem key={user.id} value={user}>
-                    {user.displayName}
+                    {user.display}
                   </ComboboxItem>
                 )}
               </ComboboxList>

@@ -12,7 +12,7 @@ export function updateOnboardingProfileMutation() {
   return mutationOptions({
     mutationFn: (input: {
       userId: string;
-      displayName?: string;
+      display?: string;
       email?: string;
       nameFirst?: string;
       nameMiddle?: string | null;

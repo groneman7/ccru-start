@@ -22,7 +22,7 @@ export const updateOnboardingProfileServerFn = createServerFn()
   .inputValidator(
     object({
       userId: string(),
-      displayName: optional(string()),
+      display: optional(string()),
       email: optional(string()),
       nameFirst: optional(string()),
       nameMiddle: optional(nullable(string())),

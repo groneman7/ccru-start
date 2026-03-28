@@ -8,12 +8,14 @@ import {
   Scripts,
 } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
+import type { CurrentUser } from '~/server/auth';
 import type { ReactNode } from 'react';
 import { Toaster } from 'sonner';
 import TanStackQueryDevtools from '../lib/tanstack-query/devtools';
 import appCss from '../styles.css?url';
 
 interface RouterContext {
+  currentUser?: CurrentUser;
   queryClient: QueryClient;
 }
 

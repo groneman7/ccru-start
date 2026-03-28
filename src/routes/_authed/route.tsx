@@ -26,10 +26,12 @@ export const Route = createFileRoute('/_authed')({
       });
     }
 
+    const { name, ...user } = session.user;
+
     return {
       currentUser: {
-        ...session.user,
-        displayName: session.user.name,
+        ...user,
+        display: name,
         isImpersonated: !!session.session.impersonatedBy,
       },
     };
@@ -43,9 +45,8 @@ function AuthedRouteLayout() {
   return (
     <div className="bg-blue-50">
       <SidebarProvider>
-        {currentUser.timestampOnboardingCompleted === null && (
-          <OnboardingDialog />
-        )}
+        {currentUser.timestampOnboardingCompleted === null &&
+          !currentUser.isImpersonated && <OnboardingDialog />}
         <AppSidebar />
         <div className="b my-2 mr-2 flex flex-1 flex-col rounded-lg border-2 border-blue-100 bg-white">
           <Workspace>

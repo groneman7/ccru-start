@@ -6,7 +6,7 @@ import type { userSchemaForCombobox } from './schema';
 
 type UpdateOnboardingProfileInput = {
   userId: string;
-  displayName?: string;
+  display?: string;
   email?: string;
   nameFirst?: string;
   nameMiddle?: string | null;
@@ -25,7 +25,7 @@ export const userRepository = {
     const rows = await db
       .select({
         id: users.id,
-        displayName: users.displayName,
+        display: users.display,
         nameFirst: users.nameFirst,
         nameLast: users.nameLast,
         systemRoleId: users.systemRoleId,

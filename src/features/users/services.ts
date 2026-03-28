@@ -12,7 +12,7 @@ export const userService = {
   },
   updateOnboardingProfile: async (input: {
     userId: string;
-    displayName?: string;
+    display?: string;
     email?: string;
     nameFirst?: string;
     nameMiddle?: string | null;

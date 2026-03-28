@@ -81,7 +81,7 @@ export function AppSidebar() {
                     </div>
                     <div className="flex flex-col justify-center text-left">
                       <span className="text-base leading-5 font-semibold">
-                        {currentUser.displayName}
+                        {currentUser.display}
                       </span>
                       <span className="text-xs text-slate-600">
                         {/* {currentUser.userType?.display} */}

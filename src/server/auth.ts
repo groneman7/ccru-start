@@ -80,7 +80,7 @@ export const auth = betterAuth({
   user: {
     fields: {
       createdAt: 'timestampCreatedAt',
-      name: 'displayName',
+      name: 'display',
       updatedAt: 'timestampUpdatedAt',
     },
     additionalFields: {
@@ -89,7 +89,7 @@ export const auth = betterAuth({
       nameLast: { type: 'string', input: true },
       phoneNumber: { type: 'string' },
       phoneNumberVerified: { type: 'boolean' },
-      postNominals: { type: 'string', input: true },
+      postNominals: { type: 'string', input: true, required: false },
       status: {
         // IMPORTANT: Any changes to this enum need to be manually reflected in the database schema
         type: ['active', 'inactive', 'invited'],
@@ -118,3 +118,10 @@ export const auth = betterAuth({
     },
   },
 });
+
+export type AuthSession = typeof auth.$Infer.Session;
+export type AuthUser = AuthSession['user'];
+export type CurrentUser = Omit<AuthUser, 'name'> & {
+  display: AuthUser['name'];
+  isImpersonated: boolean;
+};

@@ -95,7 +95,7 @@ export const slotSchema = object({
   shiftId: uuidv7(),
   user: userSchema.pick({
     id: true,
-    displayName: true,
+    display: true,
     image: true,
     nameFirst: true,
     nameLast: true,

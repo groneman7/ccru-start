@@ -227,7 +227,7 @@ export const slotRepository = {
         userId: users.id,
         userFirstName: users.nameFirst,
         userLastName: users.nameLast,
-        userDisplayName: users.displayName,
+        userDisplay: users.display,
         userImage: users.image,
       })
       .from(shifts)

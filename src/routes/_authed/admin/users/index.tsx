@@ -97,7 +97,7 @@ function RouteComponent() {
         return false;
       }
       if (!search) return true;
-      return [user.displayName, user.email, user.nameFirst, user.nameLast]
+      return [user.display, user.email, user.nameFirst, user.nameLast]
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(search));
     });
@@ -268,7 +268,7 @@ function RouteComponent() {
                       to="/admin/users/$userId"
                       params={{ userId: user.id }}
                     >
-                      {user.displayName}
+                      {user.display}
                     </Link>
                   </div>
                   <span className="text-sm">{user.email}</span>

@@ -119,12 +119,12 @@ export const slotService = {
           slots: [],
         };
 
-        if (row.slotId && row.userId && row.userDisplayName) {
+        if (row.slotId && row.userId && row.userDisplay) {
           const slotToAdd: SlotDto = {
             id: row.slotId,
             user: {
               id: row.userId,
-              displayName: row.userDisplayName,
+              display: row.userDisplay,
               image: row.userImage,
               nameFirst: row.userFirstName,
               nameLast: row.userLastName,
