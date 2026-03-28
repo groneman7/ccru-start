@@ -6,11 +6,14 @@ import { ContactFieldGroup } from '~/components/form/field-groups/contact';
 import {
   Button,
   Combobox,
+  ComboboxChip,
+  ComboboxChips,
+  ComboboxChipsInput,
   ComboboxContent,
   ComboboxEmpty,
-  ComboboxInput,
   ComboboxItem,
   ComboboxList,
+  ComboboxValue,
   Dialog,
   DialogContent,
   DialogDescription,
@@ -19,61 +22,67 @@ import {
   Field,
   FieldGroup,
   FieldLabel,
+  useComboboxAnchor,
 } from '~/components/ui';
 import {
   completeOnboardingMutation,
   updateOnboardingProfileMutation,
 } from '~/features/users/mutations';
 import { getChangedFields } from '~/lib/utils';
-import { z } from 'zod';
+
+// import { z } from 'zod';
 
 const POST_NOMINALS = ['MD', 'DO', 'PA-C', 'APRN', 'RN', 'PharmD', 'PhD'];
-const onboardingSubmitSchema = z.object({
-  nameFirst: z.preprocess(
-    (value) => (typeof value === 'string' ? value.trim() : ''),
-    z.string().min(1),
-  ),
-  nameMiddle: z.preprocess((value) => {
-    if (typeof value !== 'string') return null;
-    const trimmed = value.trim();
-    return trimmed.length === 0 ? null : trimmed;
-  }, z.string().nullable()),
-  nameLast: z.preprocess(
-    (value) => (typeof value === 'string' ? value.trim() : ''),
-    z.string().min(1),
-  ),
-  postNominals: z.preprocess((value) => {
-    if (typeof value !== 'string') return null;
-    const trimmed = value.trim();
-    return trimmed.length === 0 ? null : trimmed;
-  }, z.string().nullable()),
-  email: z.preprocess(
-    (value) => (typeof value === 'string' ? value.trim() : ''),
-    z.string().email(),
-  ),
-  phoneNumber: z.preprocess((value) => {
-    if (typeof value !== 'string') return null;
-    const trimmed = value.trim();
-    return trimmed.length === 0 ? null : trimmed;
-  }, z.string().nullable()),
-});
+// const onboardingSubmitSchema = z.object({
+//   nameFirst: z.preprocess(
+//     (value) => (typeof value === 'string' ? value.trim() : ''),
+//     z.string().min(1),
+//   ),
+//   nameMiddle: z.preprocess((value) => {
+//     if (typeof value !== 'string') return null;
+//     const trimmed = value.trim();
+//     return trimmed.length === 0 ? null : trimmed;
+//   }, z.string().nullable()),
+//   nameLast: z.preprocess(
+//     (value) => (typeof value === 'string' ? value.trim() : ''),
+//     z.string().min(1),
+//   ),
+//   postNominals: z.preprocess((value) => {
+//     if (!Array.isArray(value)) return [];
+//     return value
+//       .filter((item): item is string => typeof item === 'string')
+//       .map((item) => item.trim())
+//       .filter((item) => item.length > 0);
+//   }, z.array(z.string())),
+//   email: z.preprocess(
+//     (value) => (typeof value === 'string' ? value.trim() : ''),
+//     z.string().email(),
+//   ),
+//   phoneNumber: z.preprocess((value) => {
+//     if (typeof value !== 'string') return null;
+//     const trimmed = value.trim();
+//     return trimmed.length === 0 ? null : trimmed;
+//   }, z.string().nullable()),
+// });
 
 export function OnboardingDialog() {
   const { currentUser } = useRouteContext({ from: '/_authed' });
   const nav = useNavigate();
+
+  const anchor = useComboboxAnchor();
 
   const form = useAppForm({
     defaultValues: {
       nameFirst: currentUser.nameFirst,
       nameMiddle: currentUser.nameMiddle,
       nameLast: currentUser.nameLast,
-      postNominals: currentUser.postNominals,
+      postNominals: [] as string[],
       email: currentUser.email,
       phoneNumber: currentUser.phoneNumber,
       image: currentUser.image,
     },
     onSubmit: async ({ value }) => {
-      const parsed = onboardingSubmitSchema.parse(value);
+      // const parsed = onboardingSubmitSchema.parse(value);
       const {
         nameFirst,
         nameMiddle,
@@ -81,20 +90,22 @@ export function OnboardingDialog() {
         postNominals,
         email,
         phoneNumber,
-      } = parsed;
-      const displayName = `${nameFirst} ${nameLast}`.trim();
+      } = value;
+      const display = `${nameFirst} ${nameLast}`.trim();
+
+      const postNominalsString = postNominals.join(', ');
 
       const nextProfile = {
-        displayName,
+        display,
         email,
         nameFirst,
         nameMiddle,
         nameLast,
         phoneNumber,
-        postNominals,
+        postNominals: postNominalsString,
       };
       const currentProfile = {
-        displayName: currentUser.displayName,
+        display: currentUser.display,
         email: currentUser.email,
         nameFirst: currentUser.nameFirst,
         nameMiddle: currentUser.nameMiddle,
@@ -175,21 +186,31 @@ export function OnboardingDialog() {
                               Post-nominals
                             </FieldLabel>
                             <Combobox
-                              defaultValue={POST_NOMINALS.find(
-                                (f) => f === postNominalsField.state.value,
-                              )}
+                              // defaultValue={postNominalsField.state.value}
                               items={POST_NOMINALS}
-                              value={POST_NOMINALS.find(
-                                (f) => f === postNominalsField.state.value,
-                              )}
+                              multiple
+                              value={postNominalsField.state.value}
                               onValueChange={(item) =>
-                                postNominalsField.handleChange(item ?? '')
+                                postNominalsField.handleChange(item)
                               }
                             >
-                              <ComboboxInput
-                                id={postNominalsField.name}
-                                name={postNominalsField.name}
-                              />
+                              <ComboboxChips
+                                className="border-2 border-red-500"
+                                ref={anchor}
+                              >
+                                <ComboboxValue>
+                                  <>
+                                    {postNominalsField.state.value.map(
+                                      (item) => (
+                                        <ComboboxChip key={item}>
+                                          {item}
+                                        </ComboboxChip>
+                                      ),
+                                    )}
+                                    <ComboboxChipsInput />
+                                  </>
+                                </ComboboxValue>
+                              </ComboboxChips>
                               <ComboboxContent>
                                 <ComboboxEmpty>Empty.</ComboboxEmpty>
                                 <ComboboxList>
