@@ -401,10 +401,10 @@ function RouteComponent() {
                         render={
                           <div>
                             <Button
-                              disabled={currentUser.isImporsonated}
+                              disabled={currentUser.isImpersonated}
                               size="icon"
                               onClick={async () => {
-                                if (currentUser.isImporsonated) return;
+                                if (currentUser.isImpersonated) return;
                                 const response =
                                   await authClient.admin.impersonateUser({
                                     userId: user.id,
@@ -419,7 +419,7 @@ function RouteComponent() {
                         }
                       />
                       <TooltipContent sideOffset={8}>
-                        {currentUser.isImporsonated
+                        {currentUser.isImpersonated
                           ? 'Alerady impersonating a user'
                           : 'Impersonate user'}
                       </TooltipContent>
