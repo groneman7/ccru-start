@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { userInBetterAuth, eventsInCalendar, sessionInBetterAuth, templatesInCalendar, junctionTemplatePositionsInCalendar, positionsInCalendar, systemRolesInAuthz, userTypesInAuthz, junctionShiftsInCalendar, junctionSlotsInCalendar } from "./schema";
+import { userInBetterAuth, eventsInCalendar, sessionInBetterAuth, templatesInCalendar, junctionTemplatePositionsInCalendar, positionsInCalendar, userTypesInAuthz, junctionShiftsInCalendar, junctionSlotsInCalendar } from "./schema";
 
 export const eventsInCalendarRelations = relations(eventsInCalendar, ({one, many}) => ({
 	userInBetterAuth: one(userInBetterAuth, {
@@ -12,10 +12,6 @@ export const eventsInCalendarRelations = relations(eventsInCalendar, ({one, many
 export const userInBetterAuthRelations = relations(userInBetterAuth, ({one, many}) => ({
 	eventsInCalendars: many(eventsInCalendar),
 	sessionInBetterAuths: many(sessionInBetterAuth),
-	systemRolesInAuthz: one(systemRolesInAuthz, {
-		fields: [userInBetterAuth.systemRoleId],
-		references: [systemRolesInAuthz.id]
-	}),
 	userTypesInAuthz: one(userTypesInAuthz, {
 		fields: [userInBetterAuth.userTypeId],
 		references: [userTypesInAuthz.id]
@@ -48,10 +44,6 @@ export const templatesInCalendarRelations = relations(templatesInCalendar, ({man
 export const positionsInCalendarRelations = relations(positionsInCalendar, ({many}) => ({
 	junctionTemplatePositionsInCalendars: many(junctionTemplatePositionsInCalendar),
 	junctionShiftsInCalendars: many(junctionShiftsInCalendar),
-}));
-
-export const systemRolesInAuthzRelations = relations(systemRolesInAuthz, ({many}) => ({
-	userInBetterAuths: many(userInBetterAuth),
 }));
 
 export const userTypesInAuthzRelations = relations(userTypesInAuthz, ({many}) => ({

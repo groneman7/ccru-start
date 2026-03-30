@@ -2,8 +2,8 @@ import { pgTable, pgSchema, foreignKey, uuid, text, timestamp, unique, integer, 
 import { sql } from "drizzle-orm"
 
 export const calendar = pgSchema("calendar");
-export const authz = pgSchema("authz");
 export const betterAuth = pgSchema("better-auth");
+export const authz = pgSchema("authz");
 export const accountStatus = pgEnum("account_status", ['active', 'inactive', 'invited'])
 export const shiftStatus = pgEnum("shift_status", ['active', 'deleted'])
 export const singleMultiple = pgEnum("single_multiple", ['single', 'multiple'])
@@ -24,14 +24,6 @@ export const eventsInCalendar = calendar.table("events", {
 			foreignColumns: [userInBetterAuth.id],
 			name: "created_by"
 		}).onUpdate("cascade"),
-]);
-
-export const systemRolesInAuthz = authz.table("system_roles", {
-	id: uuid().default(sql`uuid_generate_v7()`).primaryKey().notNull(),
-	name: text().notNull(),
-	display: text().notNull(),
-}, (table) => [
-	unique("system_roles_name_key").on(table.name),
 ]);
 
 export const sessionInBetterAuth = betterAuth.table("session", {
@@ -88,17 +80,12 @@ export const userInBetterAuth = betterAuth.table("user", {
 	timestampFirstLogin: timestamp("timestamp_first_login", { mode: 'string' }),
 	timestampOnboardingCompleted: timestamp("timestamp_onboarding_completed", { mode: 'string' }),
 	timestampUpdatedAt: timestamp("timestamp_updated_at", { mode: 'string' }).defaultNow().notNull(),
-	systemRoleId: uuid("system_role_id"),
 	userTypeId: uuid("user_type_id"),
 	banned: boolean().default(false),
 	banReason: text("ban_reason"),
 	banExpires: timestamp("ban_expires", { mode: 'string' }),
+	role: text(),
 }, (table) => [
-	foreignKey({
-			columns: [table.systemRoleId],
-			foreignColumns: [systemRolesInAuthz.id],
-			name: "system_role_fkey"
-		}).onDelete("restrict"),
 	foreignKey({
 			columns: [table.userTypeId],
 			foreignColumns: [userTypesInAuthz.id],

@@ -4,6 +4,7 @@ import { AppSidebar, Workspace } from '~/components';
 import { OnboardingDialog } from '~/components/onboarding-dialog';
 import { SidebarProvider } from '~/components/ui';
 import { auth } from '~/server/auth';
+import type { CurrentUser } from '~/server/auth';
 
 const getSession = createServerFn({ method: 'GET' }).handler(async () => {
   const { getRequestHeaders } = await import('@tanstack/react-start/server');
@@ -27,13 +28,16 @@ export const Route = createFileRoute('/_authed')({
     }
 
     const { name, ...user } = session.user;
+    const currentUser: CurrentUser = {
+      ...user,
+      display: name,
+    };
+    if (session.session.impersonatedBy) {
+      currentUser.impersonatedBy = session.session.impersonatedBy;
+    }
 
     return {
-      currentUser: {
-        ...user,
-        display: name,
-        isImpersonated: !!session.session.impersonatedBy,
-      },
+      currentUser,
     };
   },
   component: AuthedRouteLayout,
@@ -46,7 +50,7 @@ function AuthedRouteLayout() {
     <div className="bg-blue-50">
       <SidebarProvider>
         {currentUser.timestampOnboardingCompleted === null &&
-          !currentUser.isImpersonated && <OnboardingDialog />}
+          !currentUser.impersonatedBy && <OnboardingDialog />}
         <AppSidebar />
         <div className="b my-2 mr-2 flex flex-1 flex-col rounded-lg border-2 border-blue-100 bg-white">
           <Workspace>

@@ -4,13 +4,13 @@ import { authorizationServerFns as authz } from '~/features/authz/functions';
 export function allSystemRolesQuery() {
   return queryOptions({
     queryKey: ['allSystemRoles'],
-    queryFn: () => authz.allSystemRoles(),
+    queryFn: () => authz.getAllSystemRoles(),
   });
 }
 
 export function allUserTypesQuery() {
   return queryOptions({
     queryKey: ['allUserTypes'],
-    queryFn: () => authz.allUserTypes(),
+    queryFn: () => authz.getAllUserTypes(),
   });
 }

@@ -1,15 +1,15 @@
 import { createServerFn } from '@tanstack/react-start';
 import { authorizationService as authz } from '~/features/authz/services';
 
-const allSystemRolesServerFn = createServerFn().handler(async () => {
-  return await authz.allSystemRoles();
+const getAllSystemRolesServerFn = createServerFn().handler(async () => {
+  return await authz.getAllSystemRoles();
 });
 
-const allUserTypesServerFn = createServerFn().handler(async () => {
-  return await authz.allUserTypes();
+const getAllUserTypesServerFn = createServerFn().handler(async () => {
+  return await authz.getAllUserTypes();
 });
 
 export const authorizationServerFns = {
-  allSystemRoles: allSystemRolesServerFn,
-  allUserTypes: allUserTypesServerFn,
+  getAllSystemRoles: getAllSystemRolesServerFn,
+  getAllUserTypes: getAllUserTypesServerFn,
 };

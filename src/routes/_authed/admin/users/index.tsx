@@ -24,13 +24,15 @@ import {
   allSystemRolesQuery,
   allUserTypesQuery,
 } from '~/features/authz/queries';
-import type { systemRoleSchema, userTypeSchema } from '~/features/authz/schema';
+import type { userTypeSchema } from '~/features/authz/schema';
+import { SYSTEM_ROLES } from '~/features/authz/schema';
 import {
   updateSystemRoleMutation,
   updateUserTypeMutation,
 } from '~/features/users/mutations';
 import { allUsersQuery } from '~/features/users/queries';
 import { authClient } from '~/lib/auth-client';
+import { getUserPermissions } from '~/server/permissions';
 import { ListFilterIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -43,11 +45,16 @@ export const Route = createFileRoute('/_authed/admin/users/')({
 function RouteComponent() {
   const nav = useNavigate();
   const { currentUser } = Route.useRouteContext();
+  const permissions = getUserPermissions(currentUser);
+
   const [filters, setFilters] = useState({
-    systemRoleId: null as string | null,
+    role: null as string | null,
     userTypeId: null as string | null,
     search: '',
   });
+  const [pendingUserTypeIds, setPendingUserTypeIds] = useState<
+    Record<string, string | null>
+  >({});
 
   // Queries
   const { data: users, isLoading: usersLoading } = useQuery(allUsersQuery());
@@ -63,14 +70,6 @@ function RouteComponent() {
     ...updateUserTypeMutation(),
   });
 
-  const systemRoleOptions = [
-    { id: 'any', display: 'Any' },
-    ...(systemRoles ?? []).map((role) => ({
-      id: role.id,
-      display: role.display,
-    })),
-  ];
-
   const userTypeOptions = [
     { id: 'any', display: 'Any' },
     ...(userTypes ?? []).map((userType) => ({
@@ -79,10 +78,6 @@ function RouteComponent() {
     })),
   ];
 
-  const selectedSystemRoleOption =
-    systemRoleOptions.find((option) => option.id === filters.systemRoleId) ??
-    systemRoleOptions[0];
-
   const selectedUserTypeOption =
     userTypeOptions.find((option) => option.id === filters.userTypeId) ??
     userTypeOptions[0];
@@ -90,7 +85,7 @@ function RouteComponent() {
     const search = filters.search.trim().toLowerCase();
     if (!users) return [];
     return users.filter((user) => {
-      if (filters.systemRoleId && user.systemRoleId !== filters.systemRoleId) {
+      if (filters.role && user.role !== filters.role) {
         return false;
       }
       if (filters.userTypeId && user.userTypeId !== filters.userTypeId) {
@@ -101,14 +96,14 @@ function RouteComponent() {
         .filter(Boolean)
         .some((value) => value!.toLowerCase().includes(search));
     });
-  }, [filters.search, filters.systemRoleId, filters.userTypeId, users]);
+  }, [filters.search, filters.role, filters.userTypeId, users]);
   const sortedUsers = useMemo(() => {
     return [...filteredUsers].sort((a, b) =>
       a.nameLast!.localeCompare(b.nameLast!),
     );
   }, [filteredUsers]);
   const hasActiveFilters =
-    filters.systemRoleId !== null ||
+    filters.role !== null ||
     filters.userTypeId !== null ||
     filters.search.trim().length > 0;
 
@@ -135,21 +130,19 @@ function RouteComponent() {
                   System Role
                 </div>
                 <Combobox
-                  items={systemRoleOptions}
-                  value={selectedSystemRoleOption}
-                  itemToStringLabel={(option) => option.display}
-                  itemToStringValue={(option) => option.id}
+                  items={SYSTEM_ROLES}
+                  value={filters.role}
                   onValueChange={(value) => {
-                    if (!value || value.id === 'any') {
+                    if (!value) {
                       setFilters((prev) => ({
                         ...prev,
-                        systemRoleId: null,
+                        role: null,
                       }));
                       return;
                     }
                     setFilters((prev) => ({
                       ...prev,
-                      systemRoleId: value.id,
+                      role: value,
                     }));
                   }}
                 >
@@ -233,7 +226,7 @@ function RouteComponent() {
                     disabled={!hasActiveFilters}
                     onClick={() =>
                       setFilters({
-                        systemRoleId: null,
+                        role: null,
                         userTypeId: null,
                         search: '',
                       })
@@ -257,6 +250,13 @@ function RouteComponent() {
         </div>
         <div className="flex flex-col gap-2">
           {sortedUsers.map((user) => {
+            const selectedUserTypeId =
+              pendingUserTypeIds[user.id] ?? user.userTypeId ?? null;
+            const selectedUserType =
+              userTypes?.find(
+                (userType) => userType.id === selectedUserTypeId,
+              ) ?? null;
+
             return (
               <div
                 key={user.id}
@@ -275,22 +275,14 @@ function RouteComponent() {
                 </div>
                 <div className="w-1/6 text-sm">
                   <Combobox
-                    defaultValue={systemRoles?.find(
-                      (systemRole) => systemRole.id === user.systemRoleId,
-                    )}
+                    value={user.role}
                     items={systemRoles ?? []}
-                    itemToStringLabel={(
-                      systemRole: Infer<typeof systemRoleSchema>,
-                    ) => systemRole.display}
-                    itemToStringValue={(
-                      systemRole: Infer<typeof systemRoleSchema>,
-                    ) => systemRole.id}
                     onValueChange={(value) => {
                       if (!value) return;
                       updateSystemRole(
                         {
                           userId: user.id,
-                          systemRoleId: value.id,
+                          role: value,
                         },
                         {
                           onSuccess: () => {
@@ -298,8 +290,9 @@ function RouteComponent() {
                               .filter(Boolean)
                               .join(' ');
                             toast.success(
-                              `System Role updated to ${value.display} for ${fullName}`,
+                              `System Role updated to ${value} for ${fullName}`,
                             );
+                            // TODO: UI update for role change
                           },
                         },
                       );
@@ -323,9 +316,9 @@ function RouteComponent() {
                       />
                       <ComboboxEmpty>No system roles defined.</ComboboxEmpty>
                       <ComboboxList>
-                        {(systemRole) => (
-                          <ComboboxItem key={systemRole.id} value={systemRole}>
-                            {systemRole.display}
+                        {(role: string) => (
+                          <ComboboxItem key={role} value={role}>
+                            {role}
                           </ComboboxItem>
                         )}
                       </ComboboxList>
@@ -335,8 +328,9 @@ function RouteComponent() {
                 <div className="w-1/5 text-sm">
                   <Combobox
                     items={
-                      userTypes?.sort((a, b) => a.name.localeCompare(b.name)) ??
-                      []
+                      userTypes
+                        ?.slice()
+                        .sort((a, b) => a.name.localeCompare(b.name)) ?? []
                     }
                     itemToStringLabel={(
                       userType: Infer<typeof userTypeSchema>,
@@ -344,23 +338,31 @@ function RouteComponent() {
                     itemToStringValue={(
                       userType: Infer<typeof userTypeSchema>,
                     ) => userType.id}
-                    defaultValue={userTypes?.find(
-                      (userType) => userType.id === user.userTypeId,
-                    )}
+                    value={selectedUserType}
                     onValueChange={(value) => {
                       if (!value) return;
+                      setPendingUserTypeIds((prev) => ({
+                        ...prev,
+                        [user.id]: value.id,
+                      }));
                       updateUserType(
                         {
                           userId: user.id,
                           userTypeId: value.id,
                         },
                         {
+                          onError: () => {
+                            setPendingUserTypeIds((prev) => ({
+                              ...prev,
+                              [user.id]: user.userTypeId ?? null,
+                            }));
+                          },
                           onSuccess: () => {
                             const fullName = [user.nameFirst, user.nameLast]
                               .filter(Boolean)
                               .join(' ');
                             toast.success(
-                              `System Role updated to ${value.display} for ${fullName}`,
+                              `User type updated to ${value.display} for ${fullName}`,
                             );
                           },
                         },
@@ -385,9 +387,9 @@ function RouteComponent() {
                       />
                       <ComboboxEmpty>No system roles defined.</ComboboxEmpty>
                       <ComboboxList>
-                        {(role) => (
-                          <ComboboxItem key={role.id} value={role}>
-                            {role.display}
+                        {(userType: Infer<typeof userTypeSchema>) => (
+                          <ComboboxItem key={userType.id} value={userType}>
+                            {userType.display}
                           </ComboboxItem>
                         )}
                       </ComboboxList>
@@ -395,36 +397,45 @@ function RouteComponent() {
                   </Combobox>
                 </div>
                 <div className="flex flex-1 items-center justify-end">
-                  {user.id !== currentUser.id && (
-                    <Tooltip>
-                      <TooltipTrigger
-                        render={
-                          <div>
-                            <Button
-                              disabled={currentUser.isImpersonated}
-                              size="icon"
-                              onClick={async () => {
-                                if (currentUser.isImpersonated) return;
-                                const response =
-                                  await authClient.admin.impersonateUser({
-                                    userId: user.id,
-                                  });
-                                if (response.error) return;
-                                nav({ reloadDocument: true });
-                              }}
-                            >
-                              <IconEye />
-                            </Button>
-                          </div>
-                        }
-                      />
-                      <TooltipContent sideOffset={8}>
-                        {currentUser.isImpersonated
-                          ? 'Alerady impersonating a user'
-                          : 'Impersonate user'}
-                      </TooltipContent>
-                    </Tooltip>
-                  )}
+                  {permissions.can('impersonate', 'System') &&
+                    user.id !== currentUser.id && (
+                      <Tooltip>
+                        <TooltipTrigger
+                          render={
+                            <div>
+                              <Button
+                                size="icon"
+                                onClick={async () => {
+                                  if (currentUser.impersonatedBy) {
+                                    // 1. Stop impersonating
+                                    await authClient.admin.stopImpersonating();
+                                    const response =
+                                      await authClient.admin.impersonateUser({
+                                        userId: user.id,
+                                      });
+                                    if (response.error) return;
+                                    // 2. Impersonate new user
+                                  }
+                                  const response =
+                                    await authClient.admin.impersonateUser({
+                                      userId: user.id,
+                                    });
+                                  if (response.error) return;
+                                  nav({ reloadDocument: true });
+                                }}
+                              >
+                                <IconEye />
+                              </Button>
+                            </div>
+                          }
+                        />
+                        <TooltipContent sideOffset={8}>
+                          {currentUser.impersonatedBy
+                            ? 'Already impersonating a user. This will stop current impersonation.'
+                            : 'Impersonate user'}
+                        </TooltipContent>
+                      </Tooltip>
+                    )}
                 </div>
               </div>
             );

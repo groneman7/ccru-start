@@ -2,6 +2,8 @@ import {
   IconAlignLeft,
   IconCalendar,
   IconCheck,
+  IconCircleCheck,
+  IconCircleCheckFilled,
   IconClock,
   IconMapPin,
   IconMinus,
@@ -356,7 +358,7 @@ function EventTeams({
   permissions,
 }: {
   eventId: string;
-  permissions: ReturnType<typeof getUserPermissions>;
+  permissions: ReturnType<typeof getUserPermissions>; // TODO: Fix this
 }) {
   // Hooks
   const queryClient = useQueryClient();
@@ -410,8 +412,7 @@ function EventTeams({
               a.position.display.localeCompare(b.position.display),
             )
             .map((shift) => {
-              // TODO: Add permission logic
-              const CAN_SIGN_UP = shift.quantity > shift.slots.length;
+              const slotsAvailable = shift.quantity - shift.slots.length;
               const isDescriptionExpanded = expandedShiftDescriptions.has(
                 shift.id,
               );
@@ -427,16 +428,11 @@ function EventTeams({
                       )}
                     </CardDescription>
 
-                    {CAN_SIGN_UP && (
-                      <CardAction>
-                        <ComingSoonTooltip>
-                          <Button size="sm">
-                            <IconSparkles2 />
-                            Sign up
-                          </Button>
-                        </ComingSoonTooltip>
-                      </CardAction>
-                    )}
+                    <ButtonSignUp
+                      eventId={eventId}
+                      shiftId={shift.id}
+                      slotsAvailable={slotsAvailable}
+                    />
                   </CardHeader>
                   <CardContent className="flex flex-col gap-2 px-4">
                     {shift.position.description && (
@@ -511,6 +507,96 @@ function EventTeams({
               );
             })}
       </div>
+    </>
+  );
+}
+
+type ButtonSignUpProps = {
+  eventId: string;
+  shiftId: string;
+  slotsAvailable: number;
+};
+function ButtonSignUp({ eventId, shiftId, slotsAvailable }: ButtonSignUpProps) {
+  const { currentUser } = Route.useRouteContext();
+  const queryClient = useQueryClient();
+
+  const [open, setOpen] = useState(false);
+
+  // TODO: Add permission logic
+  const canSignUp = slotsAvailable > 0;
+
+  // Queries
+  const { data: eventDetails } = useQuery(getEventDetailsQuery(eventId));
+
+  // Mutations
+  const { mutateAsync: signUp, status } = useMutation({
+    ...assignUserMutation(),
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: getSlotsByEventQuery(eventId).queryKey,
+      });
+    },
+  });
+
+  return (
+    <>
+      {/* FIXME: If user signs up then is deleted, the sign up button is not shown because the mutation is still in success state. */}
+      {canSignUp && status !== 'success' ? (
+        <CardAction>
+          <Button
+            size="sm"
+            onClick={() => {
+              signUp(
+                { shiftId, userId: currentUser.id },
+                {
+                  onSuccess: () => {
+                    setOpen(true);
+                  },
+                },
+              );
+            }}
+          >
+            {status === 'pending' ? (
+              <Spinner />
+            ) : (
+              <>
+                <IconSparkles2 />
+                Sign up
+              </>
+            )}
+          </Button>
+        </CardAction>
+      ) : null}
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent showCloseButton={false}>
+          <div className="flex items-center justify-center gap-4">
+            <div className="flex flex-1 flex-col items-center justify-center">
+              <IconCircleCheckFilled className="size-32 text-emerald-500" />
+              <span className="text-center text-2xl font-semibold">
+                Thank you for signing up!
+              </span>
+            </div>
+            <div className="flex flex-1 flex-col gap-1">
+              <span className="text-lg font-semibold">Floater</span>
+              <span>{eventDetails!.name}</span>
+              <span>{eventDetails!.location}</span>
+              <span>
+                {dayjs(eventDetails!.timeBegin).format('dddd, MMMM M, YYYY')}
+              </span>
+              <span>
+                {dayjs(eventDetails!.timeBegin).format('h:mm A')}
+                {' – '}
+                {eventDetails!.timeEnd
+                  ? dayjs(eventDetails!.timeEnd).format('h:mm A')
+                  : null}
+              </span>
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose render={<Button>Close</Button>} />
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }
@@ -620,7 +706,7 @@ function SlotDisplay({
       <div className="flex size-8 items-center justify-center overflow-hidden rounded-full border bg-gray-100">
         <UserRound className="size-8 translate-y-1 scale-120 fill-gray-500/30 stroke-0" />
       </div>
-      <span>{slot.user.display}test</span>
+      <span>{slot.user.display}</span>
     </div>
   );
 }

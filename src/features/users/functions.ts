@@ -36,7 +36,7 @@ export const updateOnboardingProfileServerFn = createServerFn()
   });
 
 export const updateSystemRoleServerFn = createServerFn()
-  .inputValidator(object({ userId: string(), systemRoleId: string() }))
+  .inputValidator(object({ userId: string(), role: string() }))
   .handler(async ({ data }) => {
     return await user.updateSystemRole(data);
   });

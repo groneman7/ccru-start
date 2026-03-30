@@ -96,7 +96,7 @@ export function AppSidebar() {
                 className="w-[--radix-dropdown-menu-trigger-width]"
                 align="start"
               >
-                {currentUser.isImpersonated ? (
+                {currentUser.impersonatedBy ? (
                   <DropdownMenuItem
                     onClick={async () => {
                       const response =

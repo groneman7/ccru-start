@@ -17,7 +17,7 @@ export const userSchema = object({
   timestampFirstLogin: string().min(1),
   timestampOnboardingCompleted: string().min(1),
   timestampUpdatedAt: string().min(1),
-  systemRoleId: uuidv7().nullable(),
+  role: string().nullable(),
   userTypeId: uuidv7().nullable(),
 });
 
@@ -26,7 +26,7 @@ export const userSchemaForCombobox = userSchema.pick({
   display: true,
   nameFirst: true,
   nameLast: true,
-  systemRoleId: true,
+  role: true,
   userTypeId: true,
 });
 
@@ -38,7 +38,7 @@ export const createUserSchema = userSchema.pick({
   nameLast: true,
   phoneNumber: true,
   postNominals: true,
-  systemRoleId: true,
+  role: true,
   userTypeId: true,
 });
 
@@ -51,7 +51,7 @@ export const updateUserSchema = userSchema
     nameLast: true,
     phoneNumber: true,
     postNominals: true,
-    systemRoleId: true,
+    role: true,
     userTypeId: true,
   })
   .partial();

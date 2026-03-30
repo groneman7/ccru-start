@@ -1,10 +1,10 @@
 import { authorizationRepository as authz } from '~/features/authz/repository';
 
 export const authorizationService = {
-  allSystemRoles: async () => {
-    return await authz.allSystemRoles();
+  getAllSystemRoles: async () => {
+    return await authz.getAllSystemRoles();
   },
-  allUserTypes: async () => {
-    return await authz.allUserTypes();
+  getAllUserTypes: async () => {
+    return await authz.getAllUserTypes();
   },
 };

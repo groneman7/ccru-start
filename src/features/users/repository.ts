@@ -28,7 +28,7 @@ export const userRepository = {
         display: users.display,
         nameFirst: users.nameFirst,
         nameLast: users.nameLast,
-        systemRoleId: users.systemRoleId,
+        role: users.role,
         userTypeId: users.userTypeId,
       })
       .from(users);
@@ -58,11 +58,11 @@ export const userRepository = {
 
     return row;
   },
-  updateSystemRole: async (input: { userId: string; systemRoleId: string }) => {
-    const { userId, systemRoleId } = input;
+  updateSystemRole: async (input: { userId: string; role: string }) => {
+    const { userId, role } = input;
     const [row] = await db
       .update(users)
-      .set({ systemRoleId })
+      .set({ role })
       .where(eq(users.id, userId))
       .returning({ id: users.id });
 

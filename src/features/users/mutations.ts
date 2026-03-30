@@ -25,7 +25,7 @@ export function updateOnboardingProfileMutation() {
 
 export function updateSystemRoleMutation() {
   return mutationOptions({
-    mutationFn: (input: { userId: string; systemRoleId: string }) =>
+    mutationFn: (input: { userId: string; role: string }) =>
       user.updateSystemRole({ data: input }),
   });
 }

@@ -22,7 +22,7 @@ export const userService = {
   }) => {
     return await user.updateOnboardingProfile(input);
   },
-  updateSystemRole: async (input: { userId: string; systemRoleId: string }) => {
+  updateSystemRole: async (input: { userId: string; role: string }) => {
     return await user.updateSystemRole(input);
   },
   updateUserType: async (input: { userId: string; userTypeId: string }) => {

@@ -74,12 +74,12 @@ export function OnboardingDialog() {
   const form = useAppForm({
     defaultValues: {
       nameFirst: currentUser.nameFirst,
-      nameMiddle: currentUser.nameMiddle,
+      nameMiddle: currentUser.nameMiddle ?? '',
       nameLast: currentUser.nameLast,
-      postNominals: [] as string[],
+      postNominals: currentUser.postNominals?.split(', ') ?? ([] as string[]),
       email: currentUser.email,
-      phoneNumber: currentUser.phoneNumber,
-      image: currentUser.image,
+      phoneNumber: currentUser.phoneNumber ?? '',
+      image: currentUser.image ?? '',
     },
     onSubmit: async ({ value }) => {
       // const parsed = onboardingSubmitSchema.parse(value);
@@ -91,9 +91,8 @@ export function OnboardingDialog() {
         email,
         phoneNumber,
       } = value;
-      const display = `${nameFirst} ${nameLast}`.trim();
-
       const postNominalsString = postNominals.join(', ');
+      const display = `${nameFirst.trim()} ${nameLast.trim()}${postNominals.length > 0 ? `, ${postNominalsString}` : ''}`;
 
       const nextProfile = {
         display,
@@ -168,7 +167,7 @@ export function OnboardingDialog() {
                     </form.AppField>
                     <form.AppField name="nameMiddle">
                       {(nameMiddleField) => (
-                        <nameMiddleField.InputField label="Middle name" />
+                        <nameMiddleField.InputField label="Middle name (or initial)" />
                       )}
                     </form.AppField>
                   </FieldGroup>
@@ -194,10 +193,7 @@ export function OnboardingDialog() {
                                 postNominalsField.handleChange(item)
                               }
                             >
-                              <ComboboxChips
-                                className="border-2 border-red-500"
-                                ref={anchor}
-                              >
+                              <ComboboxChips ref={anchor}>
                                 <ComboboxValue>
                                   <>
                                     {postNominalsField.state.value.map(

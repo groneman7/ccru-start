@@ -1,7 +1,7 @@
 import { InputDecoration } from '~/components/ui/index';
 import { cn } from '~/lib/utils/index';
-import { cva  } from 'class-variance-authority';
-import type {VariantProps} from 'class-variance-authority';
+import { cva } from 'class-variance-authority';
+import type { VariantProps } from 'class-variance-authority';
 import type { ComponentProps, ReactNode } from 'react';
 
 const inputVariants = cva(
@@ -16,7 +16,7 @@ const inputVariants = cva(
   {
     variants: {
       variant: {
-        default: 'border border-border',
+        default: 'border border-border ring-ring',
       },
       size: {
         sm: 'h-7 text-sm',

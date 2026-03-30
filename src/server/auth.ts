@@ -14,11 +14,6 @@ import { config } from 'dotenv';
 
 config({ path: '.env.local' });
 
-const SYSTEM_ROLE_ID_USER = '019c0720-810c-7eec-b2b5-4b3372d5a769';
-const SYSTEM_ROLE_ID_ADMIN = '019c0720-810c-7ec6-9c74-ba2a6c3c0379';
-const SYSTEM_ROLE_ID_DEVELOPER = '019c0720-810c-78cc-b3f1-48e219ec1ee7';
-const SYSTEM_ROLE_ID_OFFICER = '019c0720-810b-7202-8891-bc4103197f07';
-
 export const auth = betterAuth({
   trustedOrigins: [process.env.BETTER_AUTH_URL!],
   account: {
@@ -47,28 +42,21 @@ export const auth = betterAuth({
   },
   plugins: [
     admin({
-      defaultRole: SYSTEM_ROLE_ID_USER,
+      defaultRole: 'User',
       roles: {
-        [SYSTEM_ROLE_ID_USER]: userAc,
-        [SYSTEM_ROLE_ID_ADMIN]: adminAc,
-        [SYSTEM_ROLE_ID_DEVELOPER]: adminAc,
-        [SYSTEM_ROLE_ID_OFFICER]: adminAc,
-      },
-      schema: {
-        user: {
-          fields: {
-            role: 'systemRoleId',
-          },
-        },
+        User: userAc,
+        Officer: adminAc,
+        Administrator: adminAc,
+        Developer: adminAc,
       },
       impersonationSessionDuration: 60 * 60 * 24, // 1 day
     }),
-    tanstackStartCookies(), // MUST BE LAST PLUGIN IN ARRAY
     // phoneNumber({
     //   sendOTP: ({ phoneNumber, code }, ctx) => {
     //     // TODO: Implement sending OTP code via SMS
     //   },
     // }),
+    tanstackStartCookies(), // MUST BE LAST PLUGIN IN ARRAY
   ],
   socialProviders: {
     google: {
@@ -85,9 +73,9 @@ export const auth = betterAuth({
     },
     additionalFields: {
       nameFirst: { type: 'string', input: true },
-      nameMiddle: { type: 'string', input: true },
+      nameMiddle: { type: 'string', input: true, required: false },
       nameLast: { type: 'string', input: true },
-      phoneNumber: { type: 'string' },
+      phoneNumber: { type: 'string', input: true, required: false },
       phoneNumberVerified: { type: 'boolean' },
       postNominals: { type: 'string', input: true, required: false },
       status: {
@@ -105,11 +93,6 @@ export const auth = betterAuth({
         required: false,
         input: true,
       },
-      systemRoleId: {
-        type: 'string',
-        required: false,
-        input: false,
-      },
       userTypeId: {
         type: 'string',
         required: false,
@@ -123,5 +106,5 @@ export type AuthSession = typeof auth.$Infer.Session;
 export type AuthUser = AuthSession['user'];
 export type CurrentUser = Omit<AuthUser, 'name'> & {
   display: AuthUser['name'];
-  isImpersonated: boolean;
+  impersonatedBy?: string;
 };

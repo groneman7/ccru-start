@@ -1,16 +1,12 @@
+import { SYSTEM_ROLES } from '~/features/authz/schema';
 import { db } from '~/server/db';
-import {
-  systemRolesInAuthz as systemRoles,
-  userTypesInAuthz as userTypes,
-} from '~/server/db/schema';
+import { userTypesInAuthz as userTypes } from '~/server/db/schema';
 
 export const authorizationRepository = {
-  allSystemRoles: async () => {
-    const rows = await db.select().from(systemRoles);
-
-    return rows;
+  getAllSystemRoles: () => {
+    return SYSTEM_ROLES;
   },
-  allUserTypes: async () => {
+  getAllUserTypes: async () => {
     const rows = await db.select().from(userTypes);
 
     return rows;
