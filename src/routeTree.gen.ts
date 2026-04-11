@@ -14,6 +14,7 @@ import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
+import { Route as AuthedAdminRouteRouteImport } from './routes/_authed/admin/route'
 import { Route as AuthedCalendarIndexRouteImport } from './routes/_authed/calendar/index'
 import { Route as AuthedAdminIndexRouteImport } from './routes/_authed/admin/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
@@ -53,15 +54,20 @@ const AuthRegisterRoute = AuthRegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthedAdminRouteRoute = AuthedAdminRouteRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 const AuthedCalendarIndexRoute = AuthedCalendarIndexRouteImport.update({
   id: '/calendar/',
   path: '/calendar/',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
 const AuthedAdminIndexRoute = AuthedAdminIndexRouteImport.update({
-  id: '/admin/',
-  path: '/admin/',
-  getParentRoute: () => AuthedRouteRoute,
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedAdminRouteRoute,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
@@ -81,9 +87,9 @@ const AuthedCalendarTemplatesIndexRoute =
     getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
   } as any)
 const AuthedAdminUsersIndexRoute = AuthedAdminUsersIndexRouteImport.update({
-  id: '/admin/users/',
-  path: '/admin/users/',
-  getParentRoute: () => AuthedRouteRoute,
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AuthedAdminRouteRoute,
 } as any)
 const AuthedCalendarTemplatesNewRoute =
   AuthedCalendarTemplatesNewRouteImport.update({
@@ -115,9 +121,9 @@ const AuthedCalendarYearMonthRoute = AuthedCalendarYearMonthRouteImport.update({
 } as any)
 const AuthedAdminUsersUserIdRouteRoute =
   AuthedAdminUsersUserIdRouteRouteImport.update({
-    id: '/admin/users/$userId',
-    path: '/admin/users/$userId',
-    getParentRoute: () => AuthedRouteRoute,
+    id: '/users/$userId',
+    path: '/users/$userId',
+    getParentRoute: () => AuthedAdminRouteRoute,
   } as any)
 const AuthedAdminUsersUserIdIndexRoute =
   AuthedAdminUsersUserIdIndexRouteImport.update({
@@ -140,6 +146,7 @@ const AuthedAdminUsersUserIdHistoryRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
+  '/admin': typeof AuthedAdminRouteRouteWithChildren
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
   '/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
@@ -180,6 +187,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_authed': typeof AuthedRouteRouteWithChildren
+  '/_authed/admin': typeof AuthedAdminRouteRouteWithChildren
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_authed/': typeof AuthedIndexRoute
@@ -203,6 +211,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/register'
     | '/sign-in'
     | '/calendar/templates'
@@ -242,6 +251,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_auth'
     | '/_authed'
+    | '/_authed/admin'
     | '/_auth/register'
     | '/_auth/sign-in'
     | '/_authed/'
@@ -305,6 +315,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_authed/admin': {
+      id: '/_authed/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthedAdminRouteRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
     '/_authed/calendar/': {
       id: '/_authed/calendar/'
       path: '/calendar'
@@ -314,10 +331,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authed/admin/': {
       id: '/_authed/admin/'
-      path: '/admin'
+      path: '/'
       fullPath: '/admin/'
       preLoaderRoute: typeof AuthedAdminIndexRouteImport
-      parentRoute: typeof AuthedRouteRoute
+      parentRoute: typeof AuthedAdminRouteRoute
     }
     '/api/auth/$': {
       id: '/api/auth/$'
@@ -342,10 +359,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authed/admin/users/': {
       id: '/_authed/admin/users/'
-      path: '/admin/users'
+      path: '/users'
       fullPath: '/admin/users/'
       preLoaderRoute: typeof AuthedAdminUsersIndexRouteImport
-      parentRoute: typeof AuthedRouteRoute
+      parentRoute: typeof AuthedAdminRouteRoute
     }
     '/_authed/calendar/templates/new': {
       id: '/_authed/calendar/templates/new'
@@ -384,10 +401,10 @@ declare module '@tanstack/react-router' {
     }
     '/_authed/admin/users/$userId': {
       id: '/_authed/admin/users/$userId'
-      path: '/admin/users/$userId'
+      path: '/users/$userId'
       fullPath: '/admin/users/$userId'
       preLoaderRoute: typeof AuthedAdminUsersUserIdRouteRouteImport
-      parentRoute: typeof AuthedRouteRoute
+      parentRoute: typeof AuthedAdminRouteRoute
     }
     '/_authed/admin/users/$userId/': {
       id: '/_authed/admin/users/$userId/'
@@ -427,6 +444,40 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface AuthedAdminUsersUserIdRouteRouteChildren {
+  AuthedAdminUsersUserIdHistoryRoute: typeof AuthedAdminUsersUserIdHistoryRoute
+  AuthedAdminUsersUserIdProfileRoute: typeof AuthedAdminUsersUserIdProfileRoute
+  AuthedAdminUsersUserIdIndexRoute: typeof AuthedAdminUsersUserIdIndexRoute
+}
+
+const AuthedAdminUsersUserIdRouteRouteChildren: AuthedAdminUsersUserIdRouteRouteChildren =
+  {
+    AuthedAdminUsersUserIdHistoryRoute: AuthedAdminUsersUserIdHistoryRoute,
+    AuthedAdminUsersUserIdProfileRoute: AuthedAdminUsersUserIdProfileRoute,
+    AuthedAdminUsersUserIdIndexRoute: AuthedAdminUsersUserIdIndexRoute,
+  }
+
+const AuthedAdminUsersUserIdRouteRouteWithChildren =
+  AuthedAdminUsersUserIdRouteRoute._addFileChildren(
+    AuthedAdminUsersUserIdRouteRouteChildren,
+  )
+
+interface AuthedAdminRouteRouteChildren {
+  AuthedAdminIndexRoute: typeof AuthedAdminIndexRoute
+  AuthedAdminUsersUserIdRouteRoute: typeof AuthedAdminUsersUserIdRouteRouteWithChildren
+  AuthedAdminUsersIndexRoute: typeof AuthedAdminUsersIndexRoute
+}
+
+const AuthedAdminRouteRouteChildren: AuthedAdminRouteRouteChildren = {
+  AuthedAdminIndexRoute: AuthedAdminIndexRoute,
+  AuthedAdminUsersUserIdRouteRoute:
+    AuthedAdminUsersUserIdRouteRouteWithChildren,
+  AuthedAdminUsersIndexRoute: AuthedAdminUsersIndexRoute,
+}
+
+const AuthedAdminRouteRouteWithChildren =
+  AuthedAdminRouteRoute._addFileChildren(AuthedAdminRouteRouteChildren)
+
 interface AuthedCalendarTemplatesRouteRouteChildren {
   AuthedCalendarTemplatesTemplateIdRoute: typeof AuthedCalendarTemplatesTemplateIdRoute
   AuthedCalendarTemplatesNewRoute: typeof AuthedCalendarTemplatesNewRoute
@@ -446,48 +497,25 @@ const AuthedCalendarTemplatesRouteRouteWithChildren =
     AuthedCalendarTemplatesRouteRouteChildren,
   )
 
-interface AuthedAdminUsersUserIdRouteRouteChildren {
-  AuthedAdminUsersUserIdHistoryRoute: typeof AuthedAdminUsersUserIdHistoryRoute
-  AuthedAdminUsersUserIdProfileRoute: typeof AuthedAdminUsersUserIdProfileRoute
-  AuthedAdminUsersUserIdIndexRoute: typeof AuthedAdminUsersUserIdIndexRoute
-}
-
-const AuthedAdminUsersUserIdRouteRouteChildren: AuthedAdminUsersUserIdRouteRouteChildren =
-  {
-    AuthedAdminUsersUserIdHistoryRoute: AuthedAdminUsersUserIdHistoryRoute,
-    AuthedAdminUsersUserIdProfileRoute: AuthedAdminUsersUserIdProfileRoute,
-    AuthedAdminUsersUserIdIndexRoute: AuthedAdminUsersUserIdIndexRoute,
-  }
-
-const AuthedAdminUsersUserIdRouteRouteWithChildren =
-  AuthedAdminUsersUserIdRouteRoute._addFileChildren(
-    AuthedAdminUsersUserIdRouteRouteChildren,
-  )
-
 interface AuthedRouteRouteChildren {
+  AuthedAdminRouteRoute: typeof AuthedAdminRouteRouteWithChildren
   AuthedIndexRoute: typeof AuthedIndexRoute
   AuthedCalendarTemplatesRouteRoute: typeof AuthedCalendarTemplatesRouteRouteWithChildren
-  AuthedAdminIndexRoute: typeof AuthedAdminIndexRoute
   AuthedCalendarIndexRoute: typeof AuthedCalendarIndexRoute
-  AuthedAdminUsersUserIdRouteRoute: typeof AuthedAdminUsersUserIdRouteRouteWithChildren
   AuthedCalendarYearMonthRoute: typeof AuthedCalendarYearMonthRoute
   AuthedCalendarEventsEventIdRoute: typeof AuthedCalendarEventsEventIdRoute
   AuthedCalendarEventsNewRoute: typeof AuthedCalendarEventsNewRoute
-  AuthedAdminUsersIndexRoute: typeof AuthedAdminUsersIndexRoute
 }
 
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
+  AuthedAdminRouteRoute: AuthedAdminRouteRouteWithChildren,
   AuthedIndexRoute: AuthedIndexRoute,
   AuthedCalendarTemplatesRouteRoute:
     AuthedCalendarTemplatesRouteRouteWithChildren,
-  AuthedAdminIndexRoute: AuthedAdminIndexRoute,
   AuthedCalendarIndexRoute: AuthedCalendarIndexRoute,
-  AuthedAdminUsersUserIdRouteRoute:
-    AuthedAdminUsersUserIdRouteRouteWithChildren,
   AuthedCalendarYearMonthRoute: AuthedCalendarYearMonthRoute,
   AuthedCalendarEventsEventIdRoute: AuthedCalendarEventsEventIdRoute,
   AuthedCalendarEventsNewRoute: AuthedCalendarEventsNewRoute,
-  AuthedAdminUsersIndexRoute: AuthedAdminUsersIndexRoute,
 }
 
 const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(

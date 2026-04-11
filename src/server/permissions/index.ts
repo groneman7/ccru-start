@@ -12,7 +12,7 @@ type ShiftSubject = 'Shift';
 type ShiftPermission = ['modify', ShiftSubject];
 
 type SystemSubject = 'System';
-type SystemPermission = ['impersonate', SystemSubject];
+type SystemPermission = ['manage' | 'impersonate', SystemSubject];
 
 type Permissions = CalendarEventPermission | ShiftPermission | SystemPermission;
 
@@ -23,7 +23,7 @@ export function getUserPermissions(user?: CurrentUser) {
     cannot: forbid,
   } = new AbilityBuilder<MongoAbility<Permissions>>(createMongoAbility);
 
-  if (user) {
+  if (user && user.role) {
     if (user.role === 'Developer') {
       allow('impersonate', 'System');
     } else {
@@ -32,7 +32,11 @@ export function getUserPermissions(user?: CurrentUser) {
 
     if (user.role !== 'User') {
       allow('update', 'CalendarEvent');
+    }
+
+    if (['Administrator', 'Developer'].includes(user.role)) {
       allow('modify', 'Shift');
+      allow('manage', 'System');
     }
   }
 

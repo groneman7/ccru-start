@@ -18,6 +18,7 @@ import {
 } from '~/components/ui';
 import { authClient } from '~/lib/auth-client';
 import { cn } from '~/lib/utils';
+import { getUserPermissions } from '~/server/permissions';
 import { CircleUserRound } from 'lucide-react';
 
 export function AppSidebar() {
@@ -25,6 +26,8 @@ export function AppSidebar() {
   const { currentUser } = useRouteContext({ from: '/_authed' });
   const { signOut } = authClient;
   const nav = useNavigate();
+
+  const permissions = getUserPermissions(currentUser);
 
   return (
     <Sidebar variant="inset">
@@ -49,11 +52,13 @@ export function AppSidebar() {
                   <SidebarMenuButton>Calendar</SidebarMenuButton>
                 </Link>
               </SidebarMenuItem>
-              <SidebarMenuItem>
-                <SidebarMenuButton>
-                  <Link to="/admin">Admin</Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
+              {permissions.can('manage', 'System') ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton>
+                    <Link to="/admin">Admin</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : null}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
