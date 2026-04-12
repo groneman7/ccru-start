@@ -3,7 +3,7 @@ import {
   IconCalendar,
   IconCheck,
   IconCircleCheckFilled,
-  IconClock,
+  IconExternalLink,
   IconMapPin,
   IconMinus,
   IconPencil,
@@ -87,6 +87,7 @@ import {
   getSlotsByEventQuery,
 } from '~/features/calendar/queries';
 import type {
+  locationSchema,
   positionSchema,
   shiftSchemaWithSlots,
 } from '~/features/calendar/schema';
@@ -246,6 +247,22 @@ function EventDetails({
     },
   });
 
+  function buildGoogleMapsUrl(location: Infer<typeof locationSchema>): string {
+    const query = encodeURIComponent(
+      [
+        location.line1,
+        location.line2,
+        location.city,
+        location.state,
+        location.zip,
+      ]
+        .filter(Boolean)
+        .join(', '),
+    );
+
+    return `https://www.google.com/maps/search/${query}`;
+  }
+
   // Render
   if (eventIsLoading) {
     return <div>Loading event</div>;
@@ -318,38 +335,45 @@ function EventDetails({
         <div className="flex flex-col gap-4">
           {/* Date and time */}
           <div className="flex flex-col gap-1">
-            <div className="flex items-center gap-2">
-              <IconCalendar className="size-4" />
-              <span className="flex-1">
-                {dayjs(eventDetails.timeBegin).format('dddd, MMMM D, YYYY')}
-              </span>
+            <div className="flex gap-2">
+              <IconCalendar className="mt-1 size-4" />
+              <div className="flex flex-1 flex-col">
+                <span className="flex-1">
+                  {dayjs(eventDetails.timeBegin).format('dddd, MMMM D, YYYY')}
+                </span>
+                <span className="flex-1">{`${dayjs(eventDetails.timeBegin).format('h:mm A')}${eventDetails.timeEnd ? ` — ${dayjs(eventDetails.timeEnd).format('h:mm A')}` : null}`}</span>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              <IconClock className="size-4" />
-              <span className="flex-1">{`${dayjs(eventDetails.timeBegin).format('h:mm A')}${eventDetails.timeEnd ? ` — ${dayjs(eventDetails.timeEnd).format('h:mm A')}` : null}`}</span>
-            </div>
-            <ComingSoonTooltip>
-              <Button className="ml-6" size="sm" variant="link">
-                Add to calendar
-              </Button>
-            </ComingSoonTooltip>
+            <a>
+              <ComingSoonTooltip>
+                <Button className="ml-6" size="sm" variant="link">
+                  Add to calendar
+                </Button>
+              </ComingSoonTooltip>
+            </a>
           </div>
           {/* Location */}
           {formatLocationLines(eventDetails.location).length > 0 && (
             <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2">
-                <IconMapPin className="size-4" />
+              <div className="flex gap-2">
+                <IconMapPin className="mt-1 size-4" />
                 <div className="flex flex-1 flex-col">
                   {formatLocationLines(eventDetails.location).map((line) => (
                     <span key={line}>{line}</span>
                   ))}
                 </div>
               </div>
-              <ComingSoonTooltip>
-                <Button className="ml-6" size="sm" variant="link">
-                  Get directions
-                </Button>
-              </ComingSoonTooltip>
+              {eventDetails.location ? (
+                <a
+                  href={buildGoogleMapsUrl(eventDetails.location)}
+                  target="_blank"
+                >
+                  <Button className="ml-6" size="sm" variant="link">
+                    Open in Google Maps
+                    <IconExternalLink />
+                  </Button>
+                </a>
+              ) : null}
             </div>
           )}
           {/* Description */}
