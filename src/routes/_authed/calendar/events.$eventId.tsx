@@ -50,11 +50,7 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
   Field,
   FieldLabel,
   Input,
@@ -393,7 +389,7 @@ function EventTeams({
   return (
     <>
       {permissions.can('update', 'CalendarEvent') && (
-        <DialogAddShift
+        <PopoverAddShifts
           eventId={eventId}
           existingShifts={
             shifts
@@ -421,7 +417,7 @@ function EventTeams({
                     <CardTitle>{shift.position.display}</CardTitle>
                     <CardDescription>
                       {permissions.can('modify', 'Shift') ? (
-                        <PopoverSlotQuantity shift={shift} />
+                        <PopoverModifySlotQuantity shift={shift} />
                       ) : (
                         `${shift.slots.length} of ${shift.quantity} filled`
                       )}
@@ -710,7 +706,79 @@ function SlotDisplay({
   );
 }
 
-function PopoverSlotQuantity({
+function normalizeQuantity(quantity: number, minQuantity: number) {
+  if (!Number.isInteger(quantity)) return minQuantity;
+
+  return Math.max(quantity, minQuantity);
+}
+
+function SlotQuantitySelector({
+  minQuantity,
+  quantity,
+  onQuantityChange,
+  onRemove,
+}: {
+  minQuantity: number;
+  quantity: number;
+  onQuantityChange: (quantity: number) => void;
+  onRemove?: () => void;
+}) {
+  const normalizedQuantity = normalizeQuantity(quantity, minQuantity);
+  const isAtMinimum = normalizedQuantity <= minQuantity;
+
+  return (
+    <div className="flex items-center gap-1">
+      <Button
+        disabled={!onRemove && isAtMinimum}
+        size="icon-xs"
+        type="button"
+        variant="ghost"
+        onClick={() => {
+          if (isAtMinimum) {
+            onRemove?.();
+            return;
+          }
+
+          onQuantityChange(normalizedQuantity - 1);
+        }}
+      >
+        {onRemove && isAtMinimum ? (
+          <IconTrash className="size-3" />
+        ) : (
+          <IconMinus className="size-3" />
+        )}
+      </Button>
+      <Input
+        className="w-12 [&_input]:text-center"
+        inputMode="numeric"
+        size="sm"
+        type="text"
+        value={quantity}
+        onBeforeInput={(e) => {
+          if (e.nativeEvent.data && !/^[0-9]+$/.test(e.nativeEvent.data)) {
+            e.preventDefault();
+          }
+        }}
+        onBlur={(e) =>
+          onQuantityChange(
+            normalizeQuantity(Number(e.target.value), minQuantity),
+          )
+        }
+        onChange={(e) => onQuantityChange(Number(e.target.value))}
+      />
+      <Button
+        size="icon-xs"
+        type="button"
+        variant="ghost"
+        onClick={() => onQuantityChange(normalizedQuantity + 1)}
+      >
+        <IconPlus className="size-3" />
+      </Button>
+    </div>
+  );
+}
+
+function PopoverModifySlotQuantity({
   shift,
 }: {
   shift: Infer<typeof shiftSchemaWithSlots>;
@@ -719,6 +787,7 @@ function PopoverSlotQuantity({
 
   const [quantity, setQuantity] = useState<number>(shift.quantity);
   const minSlots = Math.max(shift.slots.length, 1);
+  const normalizedQuantity = normalizeQuantity(quantity, minSlots);
 
   const { mutateAsync: updateSlotQuantity } = useMutation({
     ...updateSlotQuantityMutation(),
@@ -746,43 +815,11 @@ function PopoverSlotQuantity({
           <PopoverTitle>Modify quantity</PopoverTitle>
         </PopoverHeader>
         <div className="flex flex-col gap-4">
-          <div className="flex items-center gap-1">
-            <Button
-              disabled={quantity <= Math.max(minSlots, 1)}
-              size="icon-xs"
-              variant="ghost"
-              onClick={() => setQuantity((v) => v - 1)}
-            >
-              <IconMinus className="size-3" />
-            </Button>
-            <Input
-              className="w-12 [&_input]:text-center"
-              inputMode="numeric"
-              size="sm"
-              type="text"
-              value={quantity}
-              onBeforeInput={(e) => {
-                if (
-                  e.nativeEvent.data &&
-                  !/^[0-9]+$/.test(e.nativeEvent.data)
-                ) {
-                  e.preventDefault();
-                }
-              }}
-              onBlur={(e) =>
-                Number(e.target.value) < minSlots && setQuantity(minSlots)
-              }
-              onChange={(e) => setQuantity(Number(e.target.value))}
-            />
-            <Button
-              size="icon-xs"
-              type="button"
-              variant="ghost"
-              onClick={() => setQuantity((v) => v + 1)}
-            >
-              <IconPlus className="size-3" />
-            </Button>
-          </div>
+          <SlotQuantitySelector
+            minQuantity={minSlots}
+            quantity={quantity}
+            onQuantityChange={setQuantity}
+          />
           <div className="flex items-center gap-1">
             <PopoverClose
               render={
@@ -800,14 +837,14 @@ function PopoverSlotQuantity({
             <PopoverClose
               render={
                 <Button
-                  disabled={quantity === shift.quantity}
+                  disabled={normalizedQuantity === shift.quantity}
                   size="sm"
                   variant="solid"
                   onClick={() => {
-                    if (quantity !== shift.quantity) {
+                    if (normalizedQuantity !== shift.quantity) {
                       updateSlotQuantity({
                         shiftId: shift.id,
-                        quantity,
+                        quantity: normalizedQuantity,
                       });
                     }
                   }}
@@ -824,30 +861,30 @@ function PopoverSlotQuantity({
   );
 }
 
-type DialogAddShiftProps = {
+function PopoverAddShifts({
+  eventId,
+  existingShifts,
+}: {
   eventId: string;
   existingShifts: string[]; // Array of shift IDs
-};
-function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
+}) {
   const queryClient = useQueryClient();
+  const [open, setOpen] = useState(false);
   const [tooltipOpen, setTooltipOpen] = useState(false);
 
+  // Queries
   const { data: positions } = useQuery(allPositionsQuery());
 
-  const { mutateAsync: addShifts } = useMutation({
+  // Mutations
+  const { mutateAsync: addShifts, isPending } = useMutation({
     ...createShiftMutation(),
-    onMutate: () => {
-      // Optimistic update logic here
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({
-        queryKey: getSlotsByEventQuery(eventId).queryKey,
-      });
-    },
   });
 
+  // Form
   const form = useAppForm({
     defaultValues: {
+      positionSearch: '',
+      selectedPosition: null as Infer<typeof positionSchema> | null,
       shiftsToCreate: [] as {
         position: Infer<typeof positionSchema>;
         quantity: number;
@@ -856,10 +893,23 @@ function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
     onSubmit: ({ value }) => {
       const shiftsToCreate = value.shiftsToCreate.map((s) => ({
         positionId: s.position.id,
-        quantity: s.quantity,
+        quantity: normalizeQuantity(s.quantity, 1),
       }));
 
-      addShifts({ eventId, shiftsToCreate });
+      addShifts(
+        { eventId, shiftsToCreate },
+        {
+          onSettled: () => {
+            queryClient.invalidateQueries({
+              queryKey: getSlotsByEventQuery(eventId).queryKey,
+            });
+          },
+          onSuccess: () => {
+            setOpen(false);
+            form.reset();
+          },
+        },
+      );
     },
   });
 
@@ -868,9 +918,19 @@ function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
     (state) => state.values.shiftsToCreate.length,
   );
 
+  // Render
   return (
-    <Dialog onOpenChange={(open) => !open && form.reset()}>
-      <DialogTrigger
+    <Popover
+      open={open}
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
+        // Reset state when dialog is closed
+        if (!isOpen) {
+          form.reset();
+        }
+      }}
+    >
+      <PopoverTrigger
         render={
           <Button variant="ghost">
             <IconPlus />
@@ -878,30 +938,38 @@ function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
           </Button>
         }
       />
-      <DialogContent showCloseButton={false}>
-        <DialogHeader>
-          <DialogTitle>Add Shifts</DialogTitle>
-          <DialogDescription>Add shifts for this event.</DialogDescription>
-        </DialogHeader>
-        <div className="flex w-3/5 flex-col gap-1">
+      <PopoverContent>
+        <PopoverHeader>
+          <PopoverTitle>Add Shifts</PopoverTitle>
+        </PopoverHeader>
+        <div>
           <form
+            className="flex flex-col gap-2"
             onSubmit={(e) => {
               e.preventDefault();
             }}
           >
             <form.Field mode="array" name="shiftsToCreate">
               {(shiftsToCreateField) => (
-                <div>
+                <div className="flex flex-col gap-1">
                   {shiftsToCreateField.state.value.map((shift, i) => (
-                    <div key={shift.position.id} className="flex gap-2">
-                      <form.Field name={`shiftsToCreate[${i}].position`}>
-                        {(positionField) => (
-                          <div>{positionField.state.value.display}</div>
-                        )}
-                      </form.Field>
+                    <div
+                      key={shift.position.id}
+                      className="flex items-center gap-2 border-2 border-blue-400"
+                    >
+                      <div className="min-w-40 flex-1">
+                        {shift.position.display}
+                      </div>
                       <form.Field name={`shiftsToCreate[${i}].quantity`}>
                         {(quantityField) => (
-                          <div>{quantityField.state.value}</div>
+                          <SlotQuantitySelector
+                            minQuantity={1}
+                            quantity={quantityField.state.value}
+                            onRemove={() => shiftsToCreateField.removeValue(i)}
+                            onQuantityChange={(quantity) =>
+                              quantityField.handleChange(quantity)
+                            }
+                          />
                         )}
                       </form.Field>
                     </div>
@@ -914,16 +982,18 @@ function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
                           (s) => s.position.id === position.id,
                         ),
                     )}
+                    value={form.state.values.selectedPosition}
                     itemToStringLabel={(
                       position: Infer<typeof positionSchema>,
                     ) => position.display}
-                    onValueChange={(v) =>
-                      v &&
+                    onValueChange={(v) => {
+                      if (!v) return;
                       shiftsToCreateField.pushValue({
                         position: v,
                         quantity: 1,
-                      })
-                    }
+                      });
+                      form.setFieldValue('selectedPosition', null);
+                    }}
                   >
                     <ComboboxInput placeholder="Search positions..." />
                     <ComboboxContent>
@@ -947,8 +1017,8 @@ function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
             </form.Field>
           </form>
         </div>
-        <DialogFooter>
-          <DialogClose
+        <div className="flex items-center justify-end gap-2">
+          <PopoverClose
             render={
               <Button>
                 <IconX />
@@ -964,14 +1034,14 @@ function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
               render={
                 <div className="has-disabled:cursor-not-allowed">
                   <Button
-                    disabled={length === 0}
+                    disabled={length === 0 || isPending}
                     variant="solid"
                     onClick={() => {
                       if (length === 0) return;
                       form.handleSubmit();
                     }}
                   >
-                    <IconCheck />
+                    {isPending ? <Spinner /> : <IconCheck />}
                     Save
                   </Button>
                 </div>
@@ -979,9 +1049,9 @@ function DialogAddShift({ eventId, existingShifts }: DialogAddShiftProps) {
             />
             <TooltipContent>Select positions to add</TooltipContent>
           </Tooltip>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
 
@@ -1018,10 +1088,10 @@ function PopoverAssignSlot({
   return (
     <Popover
       open={open}
-      onOpenChange={(value) => {
-        setOpen(value);
+      onOpenChange={(isOpen) => {
+        setOpen(isOpen);
         // Reset state when dialog is closed
-        if (!value) {
+        if (!isOpen) {
           setUserToAssign(null);
         }
       }}
@@ -1100,14 +1170,8 @@ function PopoverAssignSlot({
                       });
                     }}
                   >
-                    {isPending ? (
-                      <Spinner />
-                    ) : (
-                      <>
-                        <IconCheck />
-                        Save
-                      </>
-                    )}
+                    {isPending ? <Spinner /> : <IconCheck />}
+                    Save
                   </Button>
                 </div>
               }
