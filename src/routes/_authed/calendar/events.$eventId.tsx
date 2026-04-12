@@ -2,7 +2,6 @@ import {
   IconAlignLeft,
   IconCalendar,
   IconCheck,
-  IconCircleCheck,
   IconCircleCheckFilled,
   IconClock,
   IconMapPin,

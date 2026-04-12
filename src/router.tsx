@@ -1,6 +1,7 @@
 import { QueryClient } from '@tanstack/react-query';
 import { createRouter as createTanStackRouter } from '@tanstack/react-router';
 import { setupRouterSsrQueryIntegration } from '@tanstack/react-router-ssr-query';
+import { NotFound, Pending } from '~/components';
 import { routeTree } from './routeTree.gen';
 
 export function getRouter() {
@@ -15,9 +16,8 @@ export function getRouter() {
     context: {
       queryClient,
     },
-    defaultPendingComponent: () => (
-      <div className={`p-2 text-2xl`}>Pending component...</div>
-    ),
+    defaultPendingComponent: Pending,
+    defaultNotFoundComponent: NotFound,
   });
 
   setupRouterSsrQueryIntegration({

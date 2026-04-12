@@ -15,7 +15,7 @@ import TanStackQueryDevtools from '../lib/tanstack-query/devtools';
 import appCss from '../styles.css?url';
 
 interface RouterContext {
-  currentUser: CurrentUser;
+  currentUser?: CurrentUser;
   queryClient: QueryClient;
 }
 

@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as PendingRouteImport } from './routes/pending'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
@@ -31,6 +32,11 @@ import { Route as AuthedAdminUsersUserIdIndexRouteImport } from './routes/_authe
 import { Route as AuthedAdminUsersUserIdProfileRouteImport } from './routes/_authed/admin/users/$userId/profile'
 import { Route as AuthedAdminUsersUserIdHistoryRouteImport } from './routes/_authed/admin/users/$userId/history'
 
+const PendingRoute = PendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
@@ -146,6 +152,7 @@ const AuthedAdminUsersUserIdHistoryRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
+  '/pending': typeof PendingRoute
   '/admin': typeof AuthedAdminRouteRouteWithChildren
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
@@ -167,6 +174,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof AuthedIndexRoute
+  '/pending': typeof PendingRoute
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
@@ -187,6 +195,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_authed': typeof AuthedRouteRouteWithChildren
+  '/pending': typeof PendingRoute
   '/_authed/admin': typeof AuthedAdminRouteRouteWithChildren
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/sign-in': typeof AuthSignInRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/pending'
     | '/admin'
     | '/register'
     | '/sign-in'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/pending'
     | '/register'
     | '/sign-in'
     | '/api/auth/$'
@@ -251,6 +262,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_auth'
     | '/_authed'
+    | '/pending'
     | '/_authed/admin'
     | '/_auth/register'
     | '/_auth/sign-in'
@@ -275,11 +287,19 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
+  PendingRoute: typeof PendingRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/pending': {
+      id: '/pending'
+      path: '/pending'
+      fullPath: '/pending'
+      preLoaderRoute: typeof PendingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authed': {
       id: '/_authed'
       path: ''
@@ -525,6 +545,7 @@ const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
+  PendingRoute: PendingRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport
