@@ -1,5 +1,26 @@
 import { userSchema } from '~/features/users/schema';
 import { array, number, object, string, uuidv7 } from 'zod';
+import type { infer as Infer } from 'zod';
+
+export const locationSchema = object({
+  name: string().min(1),
+  line1: string().min(1),
+  line2: string().nullable(),
+  city: string().min(1),
+  state: string().min(1),
+  zip: string().min(1),
+});
+
+export type Location = Infer<typeof locationSchema>;
+
+export const locationFormSchema = object({
+  name: string(),
+  line1: string(),
+  line2: string().nullable(),
+  city: string(),
+  state: string(),
+  zip: string(),
+});
 
 // Events ---------------------------------------------------------------------
 
@@ -7,7 +28,7 @@ export const eventSchema = object({
   id: uuidv7(),
   name: string().min(1),
   description: string().nullable(),
-  location: string().nullable(),
+  location: locationSchema.nullable(),
   timeBegin: string(),
   timeEnd: string().nullable(),
   createdBy: uuidv7().nullable(),
@@ -122,7 +143,7 @@ export const templateSchema = object({
   description: string().nullable(),
   timeBegin: string(),
   timeEnd: string().nullable(),
-  location: string().nullable(),
+  location: locationSchema.nullable(),
 });
 
 export const createTemplateSchema = templateSchema.omit({

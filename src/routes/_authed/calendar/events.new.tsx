@@ -8,9 +8,15 @@ import {
   DescriptionFieldGroup,
 } from '~/components/form/field-groups';
 import { Button, Field, FieldLabel, Input } from '~/components/ui';
+import {
+  createEmptyLocation,
+  parseLocationInput,
+} from '~/features/calendar/location';
 import { createEventMutation } from '~/features/calendar/mutations';
+import { locationFormSchema } from '~/features/calendar/schema';
 import dayjs from 'dayjs';
 import { CheckIcon, XIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import { iso, object, string, union, null as zNull } from 'zod';
 
 export const Route = createFileRoute('/_authed/calendar/events/new')({
@@ -38,7 +44,7 @@ function NewEventPage() {
     defaultValues: {
       eventName: '',
       description: '' as string | null,
-      location: '' as string | null,
+      location: createEmptyLocation(),
       date: dayjs().format('YYYY-MM-DD'),
       timeBegin: '',
       timeEnd: '' as string | null,
@@ -50,18 +56,25 @@ function NewEventPage() {
       onSubmit: object({
         eventName: string().min(1, 'Please enter an event name.'),
         description: union([string(), zNull()]),
-        location: union([string(), zNull()]),
+        location: locationFormSchema,
         date: iso.date(),
         timeBegin: string().min(1, 'Please enter a start time.'),
         timeEnd: union([string(), zNull()]),
       }),
     },
     onSubmit: async ({ value }) => {
+      const parsedLocation = parseLocationInput(value.location);
+
+      if (parsedLocation.isPartial) {
+        toast.error('Please complete all required location fields.');
+        return;
+      }
+
       const newEventId = await createEvent({
         createdBy: currentUser.id,
         description: value.description,
         name: value.eventName,
-        location: value.location,
+        location: parsedLocation.location,
         timeBegin: dayjs(`${value.date} ${value.timeBegin}`).toISOString(),
         timeEnd: value.timeEnd
           ? dayjs(`${value.date} ${value.timeEnd}`).toISOString()

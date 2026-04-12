@@ -67,6 +67,12 @@ import {
   TooltipTrigger,
 } from '~/components/ui';
 import {
+  createEmptyLocation,
+  formatLocationInline,
+  formatLocationLines,
+  parseLocationInput,
+} from '~/features/calendar/location';
+import {
   assignUserMutation,
   createShiftMutation,
   deleteShiftMutation,
@@ -91,6 +97,7 @@ import { getUserPermissions } from '~/server/permissions';
 import dayjs from 'dayjs';
 import { UserRound } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import type { infer as Infer } from 'zod';
 
 export const Route = createFileRoute('/_authed/calendar/events/$eventId')({
@@ -199,7 +206,7 @@ function EventDetails({
     defaultValues: {
       eventName: eventDetails?.name || '',
       description: eventDetails?.description || '',
-      location: eventDetails?.location || '',
+      location: eventDetails?.location ?? createEmptyLocation(),
       date: eventDetails?.timeBegin
         ? dayjs(eventDetails.timeBegin).format('YYYY-MM-DD')
         : dayjs().format('YYYY-MM-DD'),
@@ -211,14 +218,23 @@ function EventDetails({
         : '',
     },
     onSubmit: ({ value }) => {
+      const parsedLocation = parseLocationInput(value.location);
+
+      if (parsedLocation.isPartial) {
+        toast.error('Please complete all required location fields.');
+        return;
+      }
+
       const eventData = {
         description: value.description || undefined,
-        location: value.location || undefined,
         name: value.eventName,
         timeBegin: dayjs(`${value.date} ${value.timeBegin}`).toISOString(),
         timeEnd: value.timeEnd
           ? dayjs(`${value.date} ${value.timeEnd}`).toISOString()
           : undefined,
+        ...(parsedLocation.location
+          ? { location: parsedLocation.location }
+          : {}),
       };
 
       updateEventDetails({
@@ -319,11 +335,15 @@ function EventDetails({
             </ComingSoonTooltip>
           </div>
           {/* Location */}
-          {eventDetails.location && (
+          {formatLocationLines(eventDetails.location).length > 0 && (
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <IconMapPin className="size-4" />
-                <span className="flex-1">{eventDetails.location}</span>
+                <div className="flex flex-1 flex-col">
+                  {formatLocationLines(eventDetails.location).map((line) => (
+                    <span key={line}>{line}</span>
+                  ))}
+                </div>
               </div>
               <ComingSoonTooltip>
                 <Button className="ml-6" size="sm" variant="link">
@@ -574,7 +594,9 @@ function ButtonSignUp({ eventId, shiftId, slotsAvailable }: ButtonSignUpProps) {
             <div className="flex flex-1 flex-col gap-1">
               <span className="text-lg font-semibold">Floater</span>
               <span>{eventDetails!.name}</span>
-              <span>{eventDetails!.location}</span>
+              {formatLocationInline(eventDetails!.location) && (
+                <span>{formatLocationInline(eventDetails!.location)}</span>
+              )}
               <span>
                 {dayjs(eventDetails!.timeBegin).format('dddd, MMMM M, YYYY')}
               </span>

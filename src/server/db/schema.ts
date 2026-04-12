@@ -1,8 +1,10 @@
+import type { Location } from '~/features/calendar/schema';
 import { sql } from 'drizzle-orm';
 import {
   boolean,
   foreignKey,
   integer,
+  jsonb,
   pgEnum,
   pgSchema,
   text,
@@ -33,8 +35,11 @@ export const eventsInCalendar = calendar.table(
       .notNull(),
     name: text().notNull(),
     description: text(),
-    location: text(),
-    timeBegin: timestamp('time_begin', { withTimezone: true, mode: 'string' }),
+    location: jsonb().$type<Location>(),
+    timeBegin: timestamp('time_begin', {
+      withTimezone: true,
+      mode: 'string',
+    }).notNull(),
     timeEnd: timestamp('time_end', { withTimezone: true, mode: 'string' }),
     createdBy: uuid('created_by'),
   },
@@ -183,7 +188,7 @@ export const templatesInCalendar = calendar.table(
     description: text(),
     timeBegin: time('time_begin').notNull(),
     timeEnd: time('time_end'),
-    location: text(),
+    location: jsonb().$type<Location>(),
   },
   (table) => [unique('templates_name_key').on(table.name)],
 );

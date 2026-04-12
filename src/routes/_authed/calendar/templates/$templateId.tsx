@@ -42,6 +42,11 @@ import {
   TooltipTrigger,
 } from '~/components/ui';
 import {
+  createEmptyLocation,
+  formatLocationLines,
+  parseLocationInput,
+} from '~/features/calendar/location';
+import {
   createEventFromTemplateMutation,
   createTemplatePositionsMutation,
   deleteTemplatePositionMutation,
@@ -57,6 +62,7 @@ import type {
   positionSchema,
   templateSchemaWithPositions,
 } from '~/features/calendar/schema';
+import { locationFormSchema } from '~/features/calendar/schema';
 import { parseAndFormatTime } from '~/lib/utils';
 import dayjs from 'dayjs';
 import {
@@ -250,7 +256,7 @@ function RouteComponent() {
       name: template?.name ?? '',
       display: template?.display ?? '',
       description: template?.description ?? '',
-      location: template?.location ?? '',
+      location: template?.location ?? createEmptyLocation(),
       timeBegin: template?.timeBegin ?? '',
       timeEnd: template?.timeEnd ?? '',
     },
@@ -259,12 +265,19 @@ function RouteComponent() {
         name: string().min(1, 'Please enter a template name.'),
         display: string().min(1, 'Please enter an event name.'),
         description: string(),
-        location: string(),
+        location: locationFormSchema,
         timeBegin: timeSchema,
         timeEnd: union([timeSchema, literal('')]),
       }),
     },
     onSubmit: async ({ value }) => {
+      const parsedLocation = parseLocationInput(value.location);
+
+      if (parsedLocation.isPartial) {
+        toast.error('Please complete all required location fields.');
+        return;
+      }
+
       const normalizedTimeBegin =
         parseAndFormatTime(value.timeBegin)?.iso ?? value.timeBegin;
       const normalizedTimeEnd = value.timeEnd
@@ -277,7 +290,7 @@ function RouteComponent() {
           name: value.name.trim(),
           display: value.display.trim(),
           description: value.description || null,
-          location: value.location || null,
+          location: parsedLocation.location,
           timeBegin: normalizedTimeBegin,
           timeEnd: normalizedTimeEnd,
         },
@@ -292,7 +305,7 @@ function RouteComponent() {
       name: template.name,
       display: template.display,
       description: template.description ?? '',
-      location: template.location ?? '',
+      location: template.location ?? createEmptyLocation(),
       timeBegin: template.timeBegin,
       timeEnd: template.timeEnd ?? '',
     });
@@ -420,10 +433,14 @@ function RouteComponent() {
               <Clock className="size-4" />
               <span className="flex-1">{`${formatTime(template.timeBegin)}${template.timeEnd ? ` - ${formatTime(template.timeEnd)}` : ''}`}</span>
             </div>
-            {template.location && (
+            {formatLocationLines(template.location).length > 0 && (
               <div className="flex items-center gap-2">
                 <MapPin className="size-4" />
-                <span className="flex-1">{template.location}</span>
+                <div className="flex flex-1 flex-col">
+                  {formatLocationLines(template.location).map((line) => (
+                    <span key={line}>{line}</span>
+                  ))}
+                </div>
               </div>
             )}
             {template.description && (
