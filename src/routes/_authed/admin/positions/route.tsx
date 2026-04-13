@@ -36,7 +36,7 @@ function PositionsRouteLayout() {
             </Button>
           </Link>
           {allPositions
-            .sort((a, b) => a.name.localeCompare(b.name))
+            ?.sort((a, b) => a.name.localeCompare(b.name))
             .map((position) => (
               <Link
                 key={position.id}
