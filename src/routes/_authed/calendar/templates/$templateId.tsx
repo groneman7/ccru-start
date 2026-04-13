@@ -91,8 +91,10 @@ const timeSchema = string().regex(
 export const Route = createFileRoute('/_authed/calendar/templates/$templateId')(
   {
     loader: async ({ context: { queryClient }, params: { templateId } }) => {
-      await queryClient.ensureQueryData(getTemplateByIdQuery(templateId));
-      await queryClient.ensureQueryData(allTemplatesQuery());
+      await Promise.all([
+        queryClient.ensureQueryData(getTemplateByIdQuery(templateId)),
+        queryClient.ensureQueryData(allTemplatesQuery()),
+      ]);
     },
     component: RouteComponent,
     head: () => ({
@@ -117,40 +119,6 @@ function RouteComponent() {
   const { mutate: deleteTemplatePosition, isPending: deleteIsPending } =
     useMutation({
       ...deleteTemplatePositionMutation(),
-      // onMutate: async (variables) => {
-      //   const templateQueryKey = getTemplateByIdQuery(templateId).queryKey;
-      //   await queryClient.cancelQueries({ queryKey: templateQueryKey });
-
-      //   const previousTemplate =
-      //     queryClient.getQueryData<Infer<typeof templateSchemaWithPositions>>(
-      //       templateQueryKey,
-      //     );
-
-      //   queryClient.setQueryData<Infer<typeof templateSchemaWithPositions>>(
-      //     templateQueryKey,
-      //     (current) => {
-      //       if (!current) return current;
-
-      //       return {
-      //         ...current,
-      //         positions: current.positions.filter(
-      //           (position) =>
-      //             position.junctionId !== variables.templatePositionId,
-      //         ),
-      //       };
-      //     },
-      //   );
-
-      //   return { previousTemplate };
-      // },
-      // onError: (_error, _variables, context) => {
-      //   if (context?.previousTemplate) {
-      //     queryClient.setQueryData(
-      //       getTemplateByIdQuery(templateId).queryKey,
-      //       context.previousTemplate,
-      //     );
-      //   }
-      // },
       onSettled: async () => {
         await queryClient.invalidateQueries({
           queryKey: getTemplateByIdQuery(templateId).queryKey,
@@ -165,61 +133,6 @@ function RouteComponent() {
   const { mutateAsync: updateTemplateDetails, isPending: isSavingDetails } =
     useMutation({
       ...updateTemplateDetailsMutation(),
-      // onMutate: async (variables) => {
-      //   const templateQueryKey = getTemplateByIdQuery(templateId).queryKey;
-      //   const allTemplatesQueryKey = allTemplatesQuery().queryKey;
-
-      //   await Promise.all([
-      //     queryClient.cancelQueries({ queryKey: templateQueryKey }),
-      //     queryClient.cancelQueries({ queryKey: allTemplatesQueryKey }),
-      //   ]);
-
-      //   const previousTemplate =
-      //     queryClient.getQueryData<Infer<typeof templateSchemaWithPositions>>(
-      //       templateQueryKey,
-      //     );
-      //   const previousTemplates =
-      //     queryClient.getQueryData<Infer<typeof templateSchema>[]>(
-      //       allTemplatesQueryKey,
-      //     );
-
-      //   queryClient.setQueryData<Infer<typeof templateSchemaWithPositions>>(
-      //     templateQueryKey,
-      //     (current) =>
-      //       current
-      //         ? {
-      //             ...current,
-      //             ...variables.data,
-      //           }
-      //         : current,
-      //   );
-
-      //   queryClient.setQueryData<Infer<typeof templateSchema>[]>(
-      //     allTemplatesQueryKey,
-      //     (current) =>
-      //       current?.map((template) =>
-      //         template.id === variables.templateId
-      //           ? { ...template, ...variables.data }
-      //           : template,
-      //       ) ?? current,
-      //   );
-
-      //   return { previousTemplate, previousTemplates };
-      // },
-      // onError: (_error, _variables, context) => {
-      //   if (context?.previousTemplate) {
-      //     queryClient.setQueryData(
-      //       getTemplateByIdQuery(templateId).queryKey,
-      //       context.previousTemplate,
-      //     );
-      //   }
-      //   if (context?.previousTemplates) {
-      //     queryClient.setQueryData(
-      //       allTemplatesQuery().queryKey,
-      //       context.previousTemplates,
-      //     );
-      //   }
-      // },
       onSettled: async () => {
         await Promise.all([
           queryClient.invalidateQueries({
@@ -521,11 +434,6 @@ function DialogCreateEventFromTemplate({
     defaultValues: {
       date: dayjs().format('YYYY-MM-DD'),
     },
-    // validators: {
-    //   onSubmit: object({
-    //     date: iso.date(),
-    //   }),
-    // },
     onSubmit: async ({ value }) => {
       await onCreateEvent(value.date);
       setOpen(false);
@@ -606,37 +514,6 @@ function PopoverTemplatePositionQuantity({
   const { mutateAsync: updateTemplatePositionQuantity, isPending: isSaving } =
     useMutation({
       ...updateTemplatePositionQuantityMutation(),
-      // onMutate: async (variables) => {
-      //   await queryClient.cancelQueries({ queryKey: templateQueryKey });
-
-      //   const previousTemplate =
-      //     queryClient.getQueryData<Infer<typeof templateSchemaWithPositions>>(
-      //       templateQueryKey,
-      //     );
-
-      //   queryClient.setQueryData<Infer<typeof templateSchemaWithPositions>>(
-      //     templateQueryKey,
-      //     (current) => {
-      //       if (!current) return current;
-
-      //       return {
-      //         ...current,
-      //         positions: current.positions.map((position) =>
-      //           position.junctionId === variables.templatePositionId
-      //             ? { ...position, quantity: variables.quantity }
-      //             : position,
-      //         ),
-      //       };
-      //     },
-      //   );
-
-      //   return { previousTemplate };
-      // },
-      // onError: (_error, _variables, context) => {
-      //   if (context?.previousTemplate) {
-      //     queryClient.setQueryData(templateQueryKey, context.previousTemplate);
-      //   }
-      // },
       onSettled: async () => {
         await queryClient.invalidateQueries({
           queryKey: templateQueryKey,
