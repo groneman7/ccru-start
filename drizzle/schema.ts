@@ -6,6 +6,7 @@ import {
   jsonb,
   pgEnum,
   pgSchema,
+  pgTable,
   text,
   time,
   timestamp,
@@ -13,8 +14,8 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
-export const calendar = pgSchema('calendar');
 export const betterAuth = pgSchema('better-auth');
+export const calendar = pgSchema('calendar');
 export const authz = pgSchema('authz');
 export const accountStatus = pgEnum('account_status', [
   'active',
@@ -24,32 +25,6 @@ export const accountStatus = pgEnum('account_status', [
 export const shiftStatus = pgEnum('shift_status', ['active', 'deleted']);
 export const singleMultiple = pgEnum('single_multiple', ['single', 'multiple']);
 export const slotStatus = pgEnum('slot_status', ['active', 'deleted']);
-
-export const eventsInCalendar = calendar.table(
-  'events',
-  {
-    id: uuid()
-      .default(sql`uuid_generate_v7()`)
-      .primaryKey()
-      .notNull(),
-    name: text().notNull(),
-    description: text(),
-    location: jsonb(),
-    timeBegin: timestamp('time_begin', {
-      withTimezone: true,
-      mode: 'string',
-    }).notNull(),
-    timeEnd: timestamp('time_end', { withTimezone: true, mode: 'string' }),
-    createdBy: uuid('created_by'),
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.createdBy],
-      foreignColumns: [userInBetterAuth.id],
-      name: 'created_by',
-    }).onUpdate('cascade'),
-  ],
-);
 
 export const sessionInBetterAuth = betterAuth.table(
   'session',
@@ -101,6 +76,32 @@ export const junctionTemplatePositionsInCalendar = calendar.table(
       foreignColumns: [positionsInCalendar.id],
       name: 'position_id_fkey',
     }),
+  ],
+);
+
+export const eventsInCalendar = calendar.table(
+  'events',
+  {
+    id: uuid()
+      .default(sql`uuid_generate_v7()`)
+      .primaryKey()
+      .notNull(),
+    name: text().notNull(),
+    description: text(),
+    location: jsonb(),
+    timeBegin: timestamp('time_begin', {
+      withTimezone: true,
+      mode: 'string',
+    }).notNull(),
+    timeEnd: timestamp('time_end', { withTimezone: true, mode: 'string' }),
+    createdBy: uuid('created_by'),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.createdBy],
+      foreignColumns: [userInBetterAuth.id],
+      name: 'created_by',
+    }).onUpdate('cascade'),
   ],
 );
 
@@ -162,19 +163,6 @@ export const positionsInCalendar = calendar.table(
   (table) => [unique('positions_name_key').on(table.name)],
 );
 
-export const userTypesInAuthz = authz.table(
-  'user_types',
-  {
-    id: uuid()
-      .default(sql`uuid_generate_v7()`)
-      .primaryKey()
-      .notNull(),
-    name: text().notNull(),
-    display: text().notNull(),
-  },
-  (table) => [unique('user_types_name_key').on(table.name)],
-);
-
 export const templatesInCalendar = calendar.table(
   'templates',
   {
@@ -190,6 +178,19 @@ export const templatesInCalendar = calendar.table(
     location: jsonb(),
   },
   (table) => [unique('templates_name_key').on(table.name)],
+);
+
+export const userTypesInAuthz = authz.table(
+  'user_types',
+  {
+    id: uuid()
+      .default(sql`uuid_generate_v7()`)
+      .primaryKey()
+      .notNull(),
+    name: text().notNull(),
+    display: text().notNull(),
+  },
+  (table) => [unique('user_types_name_key').on(table.name)],
 );
 
 export const junctionShiftsInCalendar = calendar.table(

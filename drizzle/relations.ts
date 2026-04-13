@@ -1,29 +1,21 @@
 import { relations } from "drizzle-orm/relations";
-import { userInBetterAuth, eventsInCalendar, sessionInBetterAuth, templatesInCalendar, junctionTemplatePositionsInCalendar, positionsInCalendar, userTypesInAuthz, junctionShiftsInCalendar, junctionSlotsInCalendar } from "./schema";
-
-export const eventsInCalendarRelations = relations(eventsInCalendar, ({one, many}) => ({
-	userInBetterAuth: one(userInBetterAuth, {
-		fields: [eventsInCalendar.createdBy],
-		references: [userInBetterAuth.id]
-	}),
-	junctionShiftsInCalendars: many(junctionShiftsInCalendar),
-}));
-
-export const userInBetterAuthRelations = relations(userInBetterAuth, ({one, many}) => ({
-	eventsInCalendars: many(eventsInCalendar),
-	sessionInBetterAuths: many(sessionInBetterAuth),
-	userTypesInAuthz: one(userTypesInAuthz, {
-		fields: [userInBetterAuth.userTypeId],
-		references: [userTypesInAuthz.id]
-	}),
-	junctionSlotsInCalendars: many(junctionSlotsInCalendar),
-}));
+import { userInBetterAuth, sessionInBetterAuth, templatesInCalendar, junctionTemplatePositionsInCalendar, positionsInCalendar, eventsInCalendar, userTypesInAuthz, junctionShiftsInCalendar, junctionSlotsInCalendar } from "./schema";
 
 export const sessionInBetterAuthRelations = relations(sessionInBetterAuth, ({one}) => ({
 	userInBetterAuth: one(userInBetterAuth, {
 		fields: [sessionInBetterAuth.userId],
 		references: [userInBetterAuth.id]
 	}),
+}));
+
+export const userInBetterAuthRelations = relations(userInBetterAuth, ({one, many}) => ({
+	sessionInBetterAuths: many(sessionInBetterAuth),
+	eventsInCalendars: many(eventsInCalendar),
+	userTypesInAuthz: one(userTypesInAuthz, {
+		fields: [userInBetterAuth.userTypeId],
+		references: [userTypesInAuthz.id]
+	}),
+	junctionSlotsInCalendars: many(junctionSlotsInCalendar),
 }));
 
 export const junctionTemplatePositionsInCalendarRelations = relations(junctionTemplatePositionsInCalendar, ({one}) => ({
@@ -43,6 +35,14 @@ export const templatesInCalendarRelations = relations(templatesInCalendar, ({man
 
 export const positionsInCalendarRelations = relations(positionsInCalendar, ({many}) => ({
 	junctionTemplatePositionsInCalendars: many(junctionTemplatePositionsInCalendar),
+	junctionShiftsInCalendars: many(junctionShiftsInCalendar),
+}));
+
+export const eventsInCalendarRelations = relations(eventsInCalendar, ({one, many}) => ({
+	userInBetterAuth: one(userInBetterAuth, {
+		fields: [eventsInCalendar.createdBy],
+		references: [userInBetterAuth.id]
+	}),
 	junctionShiftsInCalendars: many(junctionShiftsInCalendar),
 }));
 
