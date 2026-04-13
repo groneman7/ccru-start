@@ -1,5 +1,6 @@
 // import { usePostHog } from '@posthog/react';
 import { IconCheck, IconSparkles } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   createFileRoute,
   Link,
@@ -7,7 +8,6 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
 import { useAppForm } from '~/components/form';
 import {
   Button,
@@ -22,21 +22,16 @@ import {
   FieldGroup,
   FieldLabel,
 } from '~/components/ui';
+import {
+  authSessionQuery,
+  authSessionQueryKey,
+} from '~/features/auth/queries';
 import { authClient } from '~/lib/auth-client';
-import { auth } from '~/server/auth';
 import { useState } from 'react';
 
-const getSession = createServerFn({ method: 'GET' }).handler(async () => {
-  const { getRequestHeaders } = await import('@tanstack/react-start/server');
-
-  return auth.api.getSession({
-    headers: getRequestHeaders(),
-  });
-});
-
 export const Route = createFileRoute('/_auth/sign-in')({
-  beforeLoad: async () => {
-    const session = await getSession();
+  beforeLoad: async ({ context: { queryClient } }) => {
+    const session = await queryClient.fetchQuery(authSessionQuery());
 
     if (session) {
       throw redirect({
@@ -50,6 +45,7 @@ export const Route = createFileRoute('/_auth/sign-in')({
 function SignInPage() {
   const nav = useNavigate();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const form = useAppForm({
     defaultValues: {
@@ -72,6 +68,7 @@ function SignInPage() {
           },
           onSuccess: async () => {
             setOtpLoading(false);
+            queryClient.removeQueries({ queryKey: authSessionQueryKey });
             await router.invalidate();
             await nav({ to: '/' });
           },
@@ -99,6 +96,7 @@ function SignInPage() {
         },
         onSuccess: () => {
           setOtpLoading(false);
+          queryClient.removeQueries({ queryKey: authSessionQueryKey });
         },
         onError: (ctx) => {
           setOtpLoading(false);

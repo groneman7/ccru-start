@@ -1,5 +1,5 @@
 import { IconEye } from '@tabler/icons-react';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
 import {
@@ -31,6 +31,7 @@ import {
   updateUserTypeMutation,
 } from '~/features/users/mutations';
 import { allUsersQuery } from '~/features/users/queries';
+import { authSessionQueryKey } from '~/features/auth/queries';
 import { authClient } from '~/lib/auth-client';
 import { getUserPermissions } from '~/server/permissions';
 import { ListFilterIcon } from 'lucide-react';
@@ -44,6 +45,7 @@ export const Route = createFileRoute('/_authed/admin/users/')({
 
 function RouteComponent() {
   const nav = useNavigate();
+  const queryClient = useQueryClient();
   const { currentUser } = Route.useRouteContext();
   const permissions = getUserPermissions(currentUser);
 
@@ -409,18 +411,18 @@ function RouteComponent() {
                                   if (currentUser.impersonatedBy) {
                                     // 1. Stop impersonating
                                     await authClient.admin.stopImpersonating();
-                                    const response =
-                                      await authClient.admin.impersonateUser({
-                                        userId: user.id,
-                                      });
-                                    if (response.error) return;
-                                    // 2. Impersonate new user
+                                    queryClient.removeQueries({
+                                      queryKey: authSessionQueryKey,
+                                    });
                                   }
                                   const response =
                                     await authClient.admin.impersonateUser({
                                       userId: user.id,
                                     });
                                   if (response.error) return;
+                                  queryClient.removeQueries({
+                                    queryKey: authSessionQueryKey,
+                                  });
                                   nav({ reloadDocument: true });
                                 }}
                               >

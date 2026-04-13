@@ -28,7 +28,14 @@ export function allPositionsQuery() {
   return queryOptions({
     queryKey: ['allPositions'],
     queryFn: () => position.all(),
-    initialData: [],
+    staleTime: 30 * 1000,
+  });
+}
+
+export function getPositionByIdQuery(positionId: string) {
+  return queryOptions({
+    queryKey: ['positionById', positionId],
+    queryFn: () => position.byId({ data: { positionId } }),
   });
 }
 

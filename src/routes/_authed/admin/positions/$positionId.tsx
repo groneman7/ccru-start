@@ -21,6 +21,7 @@ export const Route = createFileRoute('/_authed/admin/positions/$positionId')({
     ]);
   },
   component: PositionPage,
+  preloadGcTime: 1000 * 10,
   head: () => ({
     meta: [{ title: 'CCRU | Position' }],
   }),

@@ -1,4 +1,5 @@
 // import { usePostHog } from '@posthog/react';
+import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useRouteContext } from '@tanstack/react-router';
 // import { SignedOut } from '~/components';
 import {
@@ -16,6 +17,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from '~/components/ui';
+import { authSessionQueryKey } from '~/features/auth/queries';
 import { authClient } from '~/lib/auth-client';
 import { cn } from '~/lib/utils';
 import { getUserPermissions } from '~/server/permissions';
@@ -26,6 +28,7 @@ export function AppSidebar() {
   const { currentUser } = useRouteContext({ from: '/_authed' });
   const { signOut } = authClient;
   const nav = useNavigate();
+  const queryClient = useQueryClient();
 
   const permissions = getUserPermissions(currentUser);
 
@@ -107,6 +110,9 @@ export function AppSidebar() {
                       const response =
                         await authClient.admin.stopImpersonating();
                       if (response.error) return;
+                      queryClient.removeQueries({
+                        queryKey: authSessionQueryKey,
+                      });
                       // posthog.capture('impersonation_stopped');
                       nav({ reloadDocument: true });
                     }}
@@ -115,11 +121,14 @@ export function AppSidebar() {
                   </DropdownMenuItem>
                 ) : (
                   <DropdownMenuItem
-                    onClick={() => {
+                    onClick={async () => {
                       // posthog.capture('user_signed_out');
                       // posthog.reset();
-                      signOut();
-                      nav({ to: '/sign-in' });
+                      await signOut();
+                      queryClient.removeQueries({
+                        queryKey: authSessionQueryKey,
+                      });
+                      await nav({ to: '/sign-in' });
                     }}
                   >
                     Sign out

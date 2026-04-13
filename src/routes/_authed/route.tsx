@@ -1,29 +1,17 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
-import { createServerFn } from '@tanstack/react-start';
 import { AppSidebar, Workspace } from '~/components';
 import { OnboardingDialog } from '~/components/onboarding-dialog';
 import { SidebarProvider } from '~/components/ui';
-import { auth } from '~/server/auth';
+import { authSessionQuery } from '~/features/auth/queries';
 import type { CurrentUser } from '~/server/auth';
 
-const getSession = createServerFn({ method: 'GET' }).handler(async () => {
-  const { getRequestHeaders } = await import('@tanstack/react-start/server');
-
-  return auth.api.getSession({
-    headers: getRequestHeaders(),
-  });
-});
-
 export const Route = createFileRoute('/_authed')({
-  beforeLoad: async ({ location }) => {
-    const session = await getSession();
+  beforeLoad: async ({ context: { queryClient } }) => {
+    const session = await queryClient.fetchQuery(authSessionQuery());
 
     if (!session) {
       throw redirect({
         to: '/sign-in',
-        search: {
-          redirect: location.href,
-        },
       });
     }
 

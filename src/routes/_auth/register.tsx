@@ -1,4 +1,5 @@
 import { IconLogin2, IconSparkles } from '@tabler/icons-react';
+import { useQueryClient } from '@tanstack/react-query';
 import {
   createFileRoute,
   Link,
@@ -16,6 +17,7 @@ import {
   CardTitle,
   FieldGroup,
 } from '~/components/ui';
+import { authSessionQueryKey } from '~/features/auth/queries';
 import { authClient } from '~/lib/auth-client';
 import { useState } from 'react';
 
@@ -26,6 +28,7 @@ export const Route = createFileRoute('/_auth/register')({
 function RegisterPage() {
   const nav = useNavigate();
   const router = useRouter();
+  const queryClient = useQueryClient();
 
   const form = useAppForm({
     defaultValues: {
@@ -54,6 +57,7 @@ function RegisterPage() {
           },
           onSuccess: async () => {
             setOtpLoading(false);
+            queryClient.removeQueries({ queryKey: authSessionQueryKey });
             await router.invalidate();
             await nav({ to: '/' });
           },
@@ -81,6 +85,7 @@ function RegisterPage() {
         },
         onSuccess: async () => {
           setOtpLoading(false);
+          queryClient.removeQueries({ queryKey: authSessionQueryKey });
           await router.invalidate();
           await nav({ to: '/' });
         },
