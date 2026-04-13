@@ -35,7 +35,7 @@ function TemplatesRouteLayout() {
 
   return (
     <>
-      <WorkspaceHeader>Event Templates</WorkspaceHeader>
+      <WorkspaceHeader>Templates</WorkspaceHeader>
       <WorkspaceContent orientation="horizontal">
         <div className="flex w-xs flex-col overflow-clip rounded border">
           <Link className="flex" to="/calendar/templates/new">
