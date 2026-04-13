@@ -12,7 +12,7 @@ function RouteComponent() {
       <WorkspaceContent>
         <div className="flex flex-col gap-1">
           <Link to="/admin/users">Users</Link>
-          {/* <Link to="/admin/positions">Positions</Link> */}
+          <Link to="/admin/positions">Positions</Link>
           {/* <Link to="/admin/matrix">Matrix</Link> */}
         </div>
       </WorkspaceContent>
