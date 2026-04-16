@@ -21,9 +21,11 @@ import { Route as AuthedAdminIndexRouteImport } from './routes/_authed/admin/ind
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthedCalendarTemplatesRouteRouteImport } from './routes/_authed/calendar/templates/route'
 import { Route as AuthedAdminPositionsRouteRouteImport } from './routes/_authed/admin/positions/route'
+import { Route as AuthedAdminCertificationsRouteRouteImport } from './routes/_authed/admin/certifications/route'
 import { Route as AuthedCalendarTemplatesIndexRouteImport } from './routes/_authed/calendar/templates/index'
 import { Route as AuthedAdminUsersIndexRouteImport } from './routes/_authed/admin/users/index'
 import { Route as AuthedAdminPositionsIndexRouteImport } from './routes/_authed/admin/positions/index'
+import { Route as AuthedAdminCertificationsIndexRouteImport } from './routes/_authed/admin/certifications/index'
 import { Route as AuthedCalendarTemplatesNewRouteImport } from './routes/_authed/calendar/templates/new'
 import { Route as AuthedCalendarTemplatesTemplateIdRouteImport } from './routes/_authed/calendar/templates/$templateId'
 import { Route as AuthedCalendarEventsNewRouteImport } from './routes/_authed/calendar/events.new'
@@ -31,6 +33,8 @@ import { Route as AuthedCalendarEventsEventIdRouteImport } from './routes/_authe
 import { Route as AuthedCalendarYearMonthRouteImport } from './routes/_authed/calendar/$year.$month'
 import { Route as AuthedAdminPositionsNewRouteImport } from './routes/_authed/admin/positions/new'
 import { Route as AuthedAdminPositionsPositionIdRouteImport } from './routes/_authed/admin/positions/$positionId'
+import { Route as AuthedAdminCertificationsNewRouteImport } from './routes/_authed/admin/certifications/new'
+import { Route as AuthedAdminCertificationsCertificationIdRouteImport } from './routes/_authed/admin/certifications/$certificationId'
 import { Route as AuthedAdminUsersUserIdRouteRouteImport } from './routes/_authed/admin/users/$userId/route'
 import { Route as AuthedAdminUsersUserIdIndexRouteImport } from './routes/_authed/admin/users/$userId/index'
 import { Route as AuthedAdminUsersUserIdProfileRouteImport } from './routes/_authed/admin/users/$userId/profile'
@@ -96,6 +100,12 @@ const AuthedAdminPositionsRouteRoute =
     path: '/positions',
     getParentRoute: () => AuthedAdminRouteRoute,
   } as any)
+const AuthedAdminCertificationsRouteRoute =
+  AuthedAdminCertificationsRouteRouteImport.update({
+    id: '/certifications',
+    path: '/certifications',
+    getParentRoute: () => AuthedAdminRouteRoute,
+  } as any)
 const AuthedCalendarTemplatesIndexRoute =
   AuthedCalendarTemplatesIndexRouteImport.update({
     id: '/',
@@ -112,6 +122,12 @@ const AuthedAdminPositionsIndexRoute =
     id: '/',
     path: '/',
     getParentRoute: () => AuthedAdminPositionsRouteRoute,
+  } as any)
+const AuthedAdminCertificationsIndexRoute =
+  AuthedAdminCertificationsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthedAdminCertificationsRouteRoute,
   } as any)
 const AuthedCalendarTemplatesNewRoute =
   AuthedCalendarTemplatesNewRouteImport.update({
@@ -152,6 +168,18 @@ const AuthedAdminPositionsPositionIdRoute =
     path: '/$positionId',
     getParentRoute: () => AuthedAdminPositionsRouteRoute,
   } as any)
+const AuthedAdminCertificationsNewRoute =
+  AuthedAdminCertificationsNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthedAdminCertificationsRouteRoute,
+  } as any)
+const AuthedAdminCertificationsCertificationIdRoute =
+  AuthedAdminCertificationsCertificationIdRouteImport.update({
+    id: '/$certificationId',
+    path: '/$certificationId',
+    getParentRoute: () => AuthedAdminCertificationsRouteRoute,
+  } as any)
 const AuthedAdminUsersUserIdRouteRoute =
   AuthedAdminUsersUserIdRouteRouteImport.update({
     id: '/users/$userId',
@@ -183,12 +211,15 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthedAdminRouteRouteWithChildren
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
+  '/admin/certifications': typeof AuthedAdminCertificationsRouteRouteWithChildren
   '/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
   '/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/': typeof AuthedAdminIndexRoute
   '/calendar/': typeof AuthedCalendarIndexRoute
   '/admin/users/$userId': typeof AuthedAdminUsersUserIdRouteRouteWithChildren
+  '/admin/certifications/$certificationId': typeof AuthedAdminCertificationsCertificationIdRoute
+  '/admin/certifications/new': typeof AuthedAdminCertificationsNewRoute
   '/admin/positions/$positionId': typeof AuthedAdminPositionsPositionIdRoute
   '/admin/positions/new': typeof AuthedAdminPositionsNewRoute
   '/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
@@ -196,6 +227,7 @@ export interface FileRoutesByFullPath {
   '/calendar/events/new': typeof AuthedCalendarEventsNewRoute
   '/calendar/templates/$templateId': typeof AuthedCalendarTemplatesTemplateIdRoute
   '/calendar/templates/new': typeof AuthedCalendarTemplatesNewRoute
+  '/admin/certifications/': typeof AuthedAdminCertificationsIndexRoute
   '/admin/positions/': typeof AuthedAdminPositionsIndexRoute
   '/admin/users/': typeof AuthedAdminUsersIndexRoute
   '/calendar/templates/': typeof AuthedCalendarTemplatesIndexRoute
@@ -211,6 +243,8 @@ export interface FileRoutesByTo {
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin': typeof AuthedAdminIndexRoute
   '/calendar': typeof AuthedCalendarIndexRoute
+  '/admin/certifications/$certificationId': typeof AuthedAdminCertificationsCertificationIdRoute
+  '/admin/certifications/new': typeof AuthedAdminCertificationsNewRoute
   '/admin/positions/$positionId': typeof AuthedAdminPositionsPositionIdRoute
   '/admin/positions/new': typeof AuthedAdminPositionsNewRoute
   '/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
@@ -218,6 +252,7 @@ export interface FileRoutesByTo {
   '/calendar/events/new': typeof AuthedCalendarEventsNewRoute
   '/calendar/templates/$templateId': typeof AuthedCalendarTemplatesTemplateIdRoute
   '/calendar/templates/new': typeof AuthedCalendarTemplatesNewRoute
+  '/admin/certifications': typeof AuthedAdminCertificationsIndexRoute
   '/admin/positions': typeof AuthedAdminPositionsIndexRoute
   '/admin/users': typeof AuthedAdminUsersIndexRoute
   '/calendar/templates': typeof AuthedCalendarTemplatesIndexRoute
@@ -234,12 +269,15 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_authed/': typeof AuthedIndexRoute
+  '/_authed/admin/certifications': typeof AuthedAdminCertificationsRouteRouteWithChildren
   '/_authed/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
   '/_authed/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authed/admin/': typeof AuthedAdminIndexRoute
   '/_authed/calendar/': typeof AuthedCalendarIndexRoute
   '/_authed/admin/users/$userId': typeof AuthedAdminUsersUserIdRouteRouteWithChildren
+  '/_authed/admin/certifications/$certificationId': typeof AuthedAdminCertificationsCertificationIdRoute
+  '/_authed/admin/certifications/new': typeof AuthedAdminCertificationsNewRoute
   '/_authed/admin/positions/$positionId': typeof AuthedAdminPositionsPositionIdRoute
   '/_authed/admin/positions/new': typeof AuthedAdminPositionsNewRoute
   '/_authed/calendar/$year/$month': typeof AuthedCalendarYearMonthRoute
@@ -247,6 +285,7 @@ export interface FileRoutesById {
   '/_authed/calendar/events/new': typeof AuthedCalendarEventsNewRoute
   '/_authed/calendar/templates/$templateId': typeof AuthedCalendarTemplatesTemplateIdRoute
   '/_authed/calendar/templates/new': typeof AuthedCalendarTemplatesNewRoute
+  '/_authed/admin/certifications/': typeof AuthedAdminCertificationsIndexRoute
   '/_authed/admin/positions/': typeof AuthedAdminPositionsIndexRoute
   '/_authed/admin/users/': typeof AuthedAdminUsersIndexRoute
   '/_authed/calendar/templates/': typeof AuthedCalendarTemplatesIndexRoute
@@ -262,12 +301,15 @@ export interface FileRouteTypes {
     | '/admin'
     | '/register'
     | '/sign-in'
+    | '/admin/certifications'
     | '/admin/positions'
     | '/calendar/templates'
     | '/api/auth/$'
     | '/admin/'
     | '/calendar/'
     | '/admin/users/$userId'
+    | '/admin/certifications/$certificationId'
+    | '/admin/certifications/new'
     | '/admin/positions/$positionId'
     | '/admin/positions/new'
     | '/calendar/$year/$month'
@@ -275,6 +317,7 @@ export interface FileRouteTypes {
     | '/calendar/events/new'
     | '/calendar/templates/$templateId'
     | '/calendar/templates/new'
+    | '/admin/certifications/'
     | '/admin/positions/'
     | '/admin/users/'
     | '/calendar/templates/'
@@ -290,6 +333,8 @@ export interface FileRouteTypes {
     | '/api/auth/$'
     | '/admin'
     | '/calendar'
+    | '/admin/certifications/$certificationId'
+    | '/admin/certifications/new'
     | '/admin/positions/$positionId'
     | '/admin/positions/new'
     | '/calendar/$year/$month'
@@ -297,6 +342,7 @@ export interface FileRouteTypes {
     | '/calendar/events/new'
     | '/calendar/templates/$templateId'
     | '/calendar/templates/new'
+    | '/admin/certifications'
     | '/admin/positions'
     | '/admin/users'
     | '/calendar/templates'
@@ -312,12 +358,15 @@ export interface FileRouteTypes {
     | '/_auth/register'
     | '/_auth/sign-in'
     | '/_authed/'
+    | '/_authed/admin/certifications'
     | '/_authed/admin/positions'
     | '/_authed/calendar/templates'
     | '/api/auth/$'
     | '/_authed/admin/'
     | '/_authed/calendar/'
     | '/_authed/admin/users/$userId'
+    | '/_authed/admin/certifications/$certificationId'
+    | '/_authed/admin/certifications/new'
     | '/_authed/admin/positions/$positionId'
     | '/_authed/admin/positions/new'
     | '/_authed/calendar/$year/$month'
@@ -325,6 +374,7 @@ export interface FileRouteTypes {
     | '/_authed/calendar/events/new'
     | '/_authed/calendar/templates/$templateId'
     | '/_authed/calendar/templates/new'
+    | '/_authed/admin/certifications/'
     | '/_authed/admin/positions/'
     | '/_authed/admin/users/'
     | '/_authed/calendar/templates/'
@@ -426,6 +476,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAdminPositionsRouteRouteImport
       parentRoute: typeof AuthedAdminRouteRoute
     }
+    '/_authed/admin/certifications': {
+      id: '/_authed/admin/certifications'
+      path: '/certifications'
+      fullPath: '/admin/certifications'
+      preLoaderRoute: typeof AuthedAdminCertificationsRouteRouteImport
+      parentRoute: typeof AuthedAdminRouteRoute
+    }
     '/_authed/calendar/templates/': {
       id: '/_authed/calendar/templates/'
       path: '/'
@@ -446,6 +503,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/positions/'
       preLoaderRoute: typeof AuthedAdminPositionsIndexRouteImport
       parentRoute: typeof AuthedAdminPositionsRouteRoute
+    }
+    '/_authed/admin/certifications/': {
+      id: '/_authed/admin/certifications/'
+      path: '/'
+      fullPath: '/admin/certifications/'
+      preLoaderRoute: typeof AuthedAdminCertificationsIndexRouteImport
+      parentRoute: typeof AuthedAdminCertificationsRouteRoute
     }
     '/_authed/calendar/templates/new': {
       id: '/_authed/calendar/templates/new'
@@ -496,6 +560,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAdminPositionsPositionIdRouteImport
       parentRoute: typeof AuthedAdminPositionsRouteRoute
     }
+    '/_authed/admin/certifications/new': {
+      id: '/_authed/admin/certifications/new'
+      path: '/new'
+      fullPath: '/admin/certifications/new'
+      preLoaderRoute: typeof AuthedAdminCertificationsNewRouteImport
+      parentRoute: typeof AuthedAdminCertificationsRouteRoute
+    }
+    '/_authed/admin/certifications/$certificationId': {
+      id: '/_authed/admin/certifications/$certificationId'
+      path: '/$certificationId'
+      fullPath: '/admin/certifications/$certificationId'
+      preLoaderRoute: typeof AuthedAdminCertificationsCertificationIdRouteImport
+      parentRoute: typeof AuthedAdminCertificationsRouteRoute
+    }
     '/_authed/admin/users/$userId': {
       id: '/_authed/admin/users/$userId'
       path: '/users/$userId'
@@ -541,6 +619,25 @@ const AuthRouteRouteWithChildren = AuthRouteRoute._addFileChildren(
   AuthRouteRouteChildren,
 )
 
+interface AuthedAdminCertificationsRouteRouteChildren {
+  AuthedAdminCertificationsCertificationIdRoute: typeof AuthedAdminCertificationsCertificationIdRoute
+  AuthedAdminCertificationsNewRoute: typeof AuthedAdminCertificationsNewRoute
+  AuthedAdminCertificationsIndexRoute: typeof AuthedAdminCertificationsIndexRoute
+}
+
+const AuthedAdminCertificationsRouteRouteChildren: AuthedAdminCertificationsRouteRouteChildren =
+  {
+    AuthedAdminCertificationsCertificationIdRoute:
+      AuthedAdminCertificationsCertificationIdRoute,
+    AuthedAdminCertificationsNewRoute: AuthedAdminCertificationsNewRoute,
+    AuthedAdminCertificationsIndexRoute: AuthedAdminCertificationsIndexRoute,
+  }
+
+const AuthedAdminCertificationsRouteRouteWithChildren =
+  AuthedAdminCertificationsRouteRoute._addFileChildren(
+    AuthedAdminCertificationsRouteRouteChildren,
+  )
+
 interface AuthedAdminPositionsRouteRouteChildren {
   AuthedAdminPositionsPositionIdRoute: typeof AuthedAdminPositionsPositionIdRoute
   AuthedAdminPositionsNewRoute: typeof AuthedAdminPositionsNewRoute
@@ -578,6 +675,7 @@ const AuthedAdminUsersUserIdRouteRouteWithChildren =
   )
 
 interface AuthedAdminRouteRouteChildren {
+  AuthedAdminCertificationsRouteRoute: typeof AuthedAdminCertificationsRouteRouteWithChildren
   AuthedAdminPositionsRouteRoute: typeof AuthedAdminPositionsRouteRouteWithChildren
   AuthedAdminIndexRoute: typeof AuthedAdminIndexRoute
   AuthedAdminUsersUserIdRouteRoute: typeof AuthedAdminUsersUserIdRouteRouteWithChildren
@@ -585,6 +683,8 @@ interface AuthedAdminRouteRouteChildren {
 }
 
 const AuthedAdminRouteRouteChildren: AuthedAdminRouteRouteChildren = {
+  AuthedAdminCertificationsRouteRoute:
+    AuthedAdminCertificationsRouteRouteWithChildren,
   AuthedAdminPositionsRouteRoute: AuthedAdminPositionsRouteRouteWithChildren,
   AuthedAdminIndexRoute: AuthedAdminIndexRoute,
   AuthedAdminUsersUserIdRouteRoute:

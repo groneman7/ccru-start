@@ -1,8 +1,15 @@
 import { db } from '~/server/db';
-import { userInBetterAuth as users } from '~/server/db/schema';
+import {
+  certificationsInAuthz as certifications,
+  userInBetterAuth as users,
+} from '~/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import type { infer as Infer } from 'zod';
-import type { userSchemaForCombobox } from './schema';
+import type {
+  createCertificationSchema,
+  updateCertificationSchema,
+  userSchemaForCombobox,
+} from './schema';
 
 type UpdateOnboardingProfileInput = {
   userId: string;
@@ -75,6 +82,41 @@ export const userRepository = {
       .set({ userTypeId })
       .where(eq(users.id, userId))
       .returning({ id: users.id });
+
+    return row;
+  },
+};
+
+export const certificationRepository = {
+  all: async () => {
+    const rows = await db.select().from(certifications);
+
+    return rows;
+  },
+  byId: async (input: { certificationId: string }) => {
+    const { certificationId } = input;
+    const [row] = await db
+      .select()
+      .from(certifications)
+      .where(eq(certifications.id, certificationId));
+
+    return row;
+  },
+  create: async (input: Infer<typeof createCertificationSchema>) => {
+    const [row] = await db
+      .insert(certifications)
+      .values(input)
+      .returning({ id: certifications.id });
+
+    return row;
+  },
+  update: async (input: Infer<typeof updateCertificationSchema>) => {
+    const { certificationId, data } = input;
+    const [row] = await db
+      .update(certifications)
+      .set(data)
+      .where(eq(certifications.id, certificationId))
+      .returning({ id: certifications.id });
 
     return row;
   },

@@ -1,6 +1,35 @@
 import { createServerFn } from '@tanstack/react-start';
-import { userService as user } from '~/features/users/services';
-import { nullable, object, optional, string } from 'zod';
+import {
+  createCertificationSchema,
+  updateCertificationSchema,
+} from '~/features/users/schema';
+import {
+  certificationService as certification,
+  userService as user,
+} from '~/features/users/services';
+import { nullable, object, optional, string, uuidv7 } from 'zod';
+
+export const allCertificationsServerFn = createServerFn().handler(async () => {
+  return await certification.all();
+});
+
+export const getCertificationByIdServerFn = createServerFn()
+  .inputValidator(object({ certificationId: uuidv7() }))
+  .handler(async ({ data }) => {
+    return await certification.byId(data);
+  });
+
+export const createCertificationServerFn = createServerFn()
+  .inputValidator(createCertificationSchema)
+  .handler(async ({ data }) => {
+    return await certification.create(data);
+  });
+
+export const updateCertificationServerFn = createServerFn()
+  .inputValidator(updateCertificationSchema)
+  .handler(async ({ data }) => {
+    return await certification.update(data);
+  });
 
 export const allUsersServerFn = createServerFn().handler(async () => {
   return await user.all();
@@ -54,4 +83,11 @@ export const userServerFns = {
   updateOnboardingProfile: updateOnboardingProfileServerFn,
   updateSystemRole: updateSystemRoleServerFn,
   updateUserType: updateUserTypeServerFn,
+};
+
+export const certificationServerFns = {
+  all: allCertificationsServerFn,
+  byId: getCertificationByIdServerFn,
+  create: createCertificationServerFn,
+  update: updateCertificationServerFn,
 };

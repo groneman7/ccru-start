@@ -1,4 +1,7 @@
-import { userRepository as user } from '~/features/users/repository';
+import {
+  certificationRepository as certification,
+  userRepository as user,
+} from '~/features/users/repository';
 
 export const userService = {
   all: async () => {
@@ -27,5 +30,31 @@ export const userService = {
   },
   updateUserType: async (input: { userId: string; userTypeId: string }) => {
     return await user.updateUserType(input);
+  },
+};
+
+export const certificationService = {
+  all: async () => {
+    return await certification.all();
+  },
+  byId: async (input: { certificationId: string }) => {
+    return await certification.byId(input);
+  },
+  create: async (input: {
+    name: string;
+    display: string;
+    parent: string | null;
+  }) => {
+    return await certification.create(input);
+  },
+  update: async (input: {
+    certificationId: string;
+    data: {
+      name?: string;
+      display?: string;
+      parent?: string | null;
+    };
+  }) => {
+    return await certification.update(input);
   },
 };

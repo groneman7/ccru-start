@@ -1,5 +1,27 @@
 import { mutationOptions } from '@tanstack/react-query';
-import { userServerFns as user } from '~/features/users/functions';
+import {
+  certificationServerFns as certification,
+  userServerFns as user,
+} from '~/features/users/functions';
+import type {
+  createCertificationSchema,
+  updateCertificationSchema,
+} from '~/features/users/schema';
+import type { infer as Infer } from 'zod';
+
+export function createCertificationMutation() {
+  return mutationOptions({
+    mutationFn: (input: Infer<typeof createCertificationSchema>) =>
+      certification.create({ data: input }),
+  });
+}
+
+export function updateCertificationMutation() {
+  return mutationOptions({
+    mutationFn: (input: Infer<typeof updateCertificationSchema>) =>
+      certification.update({ data: input }),
+  });
+}
 
 export function completeOnboardingMutation() {
   return mutationOptions({
