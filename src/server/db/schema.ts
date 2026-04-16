@@ -232,8 +232,16 @@ export const certificationsInAuthz = authz.table(
       .notNull(),
     name: text().notNull(),
     display: text().notNull(),
+    parent: uuid(),
   },
-  (table) => [unique('certifications_name_key').on(table.name)],
+  (table) => [
+    foreignKey({
+      columns: [table.parent],
+      foreignColumns: [table.id],
+      name: 'parent_id',
+    }),
+    unique('certifications_name_key').on(table.name),
+  ],
 );
 
 export const accountInBetterAuth = betterAuth.table('account', {

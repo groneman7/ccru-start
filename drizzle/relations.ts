@@ -1,5 +1,5 @@
 import { relations } from "drizzle-orm/relations";
-import { userInBetterAuth, sessionInBetterAuth, templatesInCalendar, junctionTemplatePositionsInCalendar, positionsInCalendar, eventsInCalendar, userTypesInAuthz, junctionShiftsInCalendar, junctionSlotsInCalendar } from "./schema";
+import { userInBetterAuth, sessionInBetterAuth, templatesInCalendar, junctionTemplatePositionsInCalendar, positionsInCalendar, eventsInCalendar, userTypesInAuthz, junctionShiftsInCalendar, certificationsInAuthz, junctionSlotsInCalendar } from "./schema";
 
 export const sessionInBetterAuthRelations = relations(sessionInBetterAuth, ({one}) => ({
 	userInBetterAuth: one(userInBetterAuth, {
@@ -60,6 +60,17 @@ export const junctionShiftsInCalendarRelations = relations(junctionShiftsInCalen
 		references: [positionsInCalendar.id]
 	}),
 	junctionSlotsInCalendars: many(junctionSlotsInCalendar),
+}));
+
+export const certificationsInAuthzRelations = relations(certificationsInAuthz, ({one, many}) => ({
+	certificationsInAuthz: one(certificationsInAuthz, {
+		fields: [certificationsInAuthz.parent],
+		references: [certificationsInAuthz.id],
+		relationName: "certificationsInAuthz_parent_certificationsInAuthz_id"
+	}),
+	certificationsInAuthzs: many(certificationsInAuthz, {
+		relationName: "certificationsInAuthz_parent_certificationsInAuthz_id"
+	}),
 }));
 
 export const junctionSlotsInCalendarRelations = relations(junctionSlotsInCalendar, ({one}) => ({

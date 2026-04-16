@@ -1,4 +1,4 @@
-import { boolean, email, object, string, url, uuidv7 } from 'zod';
+import { boolean, email, nullable, object, string, url, uuidv7 } from 'zod';
 
 export const userSchema = object({
   id: uuidv7(),
@@ -19,6 +19,13 @@ export const userSchema = object({
   timestampUpdatedAt: string().min(1),
   role: string().nullable(),
   userTypeId: uuidv7().nullable(),
+});
+
+export const certificationSchema = object({
+  id: uuidv7(),
+  name: string().min(1),
+  display: string().min(1),
+  parent: nullable(uuidv7()),
 });
 
 export const userSchemaForCombobox = userSchema.pick({
@@ -55,3 +62,19 @@ export const updateUserSchema = userSchema
     userTypeId: true,
   })
   .partial();
+
+export const createCertificationSchema = certificationSchema.omit({
+  id: true,
+});
+
+export const updateCertificationSchema = object({
+  certificationId: uuidv7(),
+  data: certificationSchema
+    .omit({
+      id: true,
+    })
+    .partial()
+    .refine((data) => Object.keys(data).length > 0, {
+      message: 'At least one field must be updated',
+    }),
+});
