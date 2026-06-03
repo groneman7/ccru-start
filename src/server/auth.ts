@@ -11,6 +11,8 @@ import { admin /* , phoneNumber */ } from 'better-auth/plugins';
 import { adminAc, userAc } from 'better-auth/plugins/admin/access';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
 import { config } from 'dotenv';
+import type { infer as Infer } from 'zod';
+import type { userTypeSchema } from '~/features/authz/schema';
 
 config({ path: '.env.local' });
 
@@ -104,7 +106,12 @@ export const auth = betterAuth({
 
 export type AuthSession = typeof auth.$Infer.Session;
 export type AuthUser = AuthSession['user'];
+export type CurrentUserType = Infer<typeof userTypeSchema>;
+export type AuthSessionWithUserType = AuthSession & {
+  userType: CurrentUserType | null;
+};
 export type CurrentUser = Omit<AuthUser, 'name'> & {
   display: AuthUser['name'];
   impersonatedBy?: string;
+  userType: CurrentUserType | null;
 };

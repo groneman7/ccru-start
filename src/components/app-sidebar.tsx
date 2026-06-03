@@ -92,8 +92,7 @@ export function AppSidebar() {
                         {currentUser.display}
                       </span>
                       <span className="text-xs text-slate-600">
-                        {/* {currentUser.userType?.display} */}
-                        User type
+                        {currentUser.userType?.display}
                       </span>
                     </div>
                   </SidebarMenuButton>
