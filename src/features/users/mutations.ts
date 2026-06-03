@@ -52,6 +52,15 @@ export function updateSystemRoleMutation() {
   });
 }
 
+export function updateUserStatusMutation() {
+  return mutationOptions({
+    mutationFn: (input: {
+      userId: string;
+      status: 'active' | 'inactive';
+    }) => user.updateStatus({ data: input }),
+  });
+}
+
 export function updateUserTypeMutation() {
   return mutationOptions({
     mutationFn: (input: { userId: string; userTypeId: string }) =>

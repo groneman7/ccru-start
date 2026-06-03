@@ -1,4 +1,18 @@
-import { boolean, email, nullable, object, string, url, uuidv7 } from 'zod';
+import {
+  boolean,
+  email,
+  enum as zodEnum,
+  nullable,
+  object,
+  string,
+  url,
+  uuidv7,
+} from 'zod';
+
+export const USER_STATUS_VALUES = ['active', 'inactive', 'invited'] as const;
+export const USER_TOGGLEABLE_STATUS_VALUES = ['active', 'inactive'] as const;
+export const userStatusSchema = zodEnum(USER_STATUS_VALUES);
+export const userToggleableStatusSchema = zodEnum(USER_TOGGLEABLE_STATUS_VALUES);
 
 export const userSchema = object({
   id: uuidv7(),
@@ -12,7 +26,7 @@ export const userSchema = object({
   phoneNumber: string().nullable(),
   phoneNumberVerified: boolean(),
   postNominals: string().nullable(),
-  status: string().min(1),
+  status: userStatusSchema,
   timestampCreatedAt: string().min(1),
   timestampFirstLogin: string().min(1),
   timestampOnboardingCompleted: string().min(1),

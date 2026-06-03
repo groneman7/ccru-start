@@ -4,6 +4,8 @@ import {
   userServerFns as user,
 } from '~/features/users/functions';
 
+// Certifications -------------------------------------------------------------
+
 export function allCertificationsQuery() {
   return queryOptions({
     queryKey: ['allCertifications'],
@@ -19,6 +21,8 @@ export function getCertificationByIdQuery(certificationId: string) {
   });
 }
 
+// Users ----------------------------------------------------------------------
+
 export function allUsersQuery() {
   return queryOptions({
     queryKey: ['allUsers'],
@@ -30,5 +34,12 @@ export function allUsersForComboboxQuery() {
   return queryOptions({
     queryKey: ['allUsersForCombobox'],
     queryFn: () => user.allForCombobox(),
+  });
+}
+
+export function userByIdQuery(userId: string) {
+  return queryOptions({
+    queryKey: ['userById', userId],
+    queryFn: () => user.byId({ data: { userId } }),
   });
 }

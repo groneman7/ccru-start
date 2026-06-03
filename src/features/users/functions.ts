@@ -2,12 +2,15 @@ import { createServerFn } from '@tanstack/react-start';
 import {
   createCertificationSchema,
   updateCertificationSchema,
+  userToggleableStatusSchema,
 } from '~/features/users/schema';
 import {
   certificationService as certification,
   userService as user,
 } from '~/features/users/services';
 import { nullable, object, optional, string, uuidv7 } from 'zod';
+
+// Certifications -------------------------------------------------------------
 
 export const allCertificationsServerFn = createServerFn().handler(async () => {
   return await certification.all();
@@ -31,6 +34,8 @@ export const updateCertificationServerFn = createServerFn()
     return await certification.update(data);
   });
 
+// Users ----------------------------------------------------------------------
+
 export const allUsersServerFn = createServerFn().handler(async () => {
   return await user.all();
 });
@@ -40,6 +45,12 @@ export const allUsersForComboboxServerFn = createServerFn().handler(
     return await user.allForCombobox();
   },
 );
+
+export const getUserByIdServerFn = createServerFn()
+  .inputValidator(object({ userId: uuidv7() }))
+  .handler(async ({ data }) => {
+    return await user.byId(data);
+  });
 
 export const completeOnboardingServerFn = createServerFn()
   .inputValidator(object({ userId: string() }))
@@ -70,24 +81,34 @@ export const updateSystemRoleServerFn = createServerFn()
     return await user.updateSystemRole(data);
   });
 
+export const updateUserStatusServerFn = createServerFn()
+  .inputValidator(
+    object({ userId: string(), status: userToggleableStatusSchema }),
+  )
+  .handler(async ({ data }) => {
+    return await user.updateStatus(data);
+  });
+
 export const updateUserTypeServerFn = createServerFn()
   .inputValidator(object({ userId: string(), userTypeId: string() }))
   .handler(async ({ data }) => {
     return await user.updateUserType(data);
   });
 
-export const userServerFns = {
-  all: allUsersServerFn,
-  allForCombobox: allUsersForComboboxServerFn,
-  completeOnboarding: completeOnboardingServerFn,
-  updateOnboardingProfile: updateOnboardingProfileServerFn,
-  updateSystemRole: updateSystemRoleServerFn,
-  updateUserType: updateUserTypeServerFn,
-};
-
 export const certificationServerFns = {
   all: allCertificationsServerFn,
   byId: getCertificationByIdServerFn,
   create: createCertificationServerFn,
   update: updateCertificationServerFn,
+};
+
+export const userServerFns = {
+  all: allUsersServerFn,
+  allForCombobox: allUsersForComboboxServerFn,
+  byId: getUserByIdServerFn,
+  completeOnboarding: completeOnboardingServerFn,
+  updateOnboardingProfile: updateOnboardingProfileServerFn,
+  updateSystemRole: updateSystemRoleServerFn,
+  updateStatus: updateUserStatusServerFn,
+  updateUserType: updateUserTypeServerFn,
 };

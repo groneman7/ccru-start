@@ -19,6 +19,7 @@ export const Route = createFileRoute('/_authed')({
     const currentUser: CurrentUser = {
       ...user,
       display: name,
+      userType: session.userType,
     };
     if (session.session.impersonatedBy) {
       currentUser.impersonatedBy = session.session.impersonatedBy;

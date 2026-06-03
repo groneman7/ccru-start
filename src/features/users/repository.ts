@@ -2,6 +2,7 @@ import { db } from '~/server/db';
 import {
   certificationsInAuthz as certifications,
   userInBetterAuth as users,
+  userTypesInAuthz,
 } from '~/server/db/schema';
 import { eq, sql } from 'drizzle-orm';
 import type { infer as Infer } from 'zod';
@@ -42,6 +43,22 @@ export const userRepository = {
 
     return rows;
   },
+  byId: async (input: { userId: string }) => {
+    const { userId } = input;
+    const [userRow] = await db.select().from(users).where(eq(users.id, userId));
+
+    let userTypeDisplay: string | null = null;
+    if (userRow.userTypeId) {
+      const [userTypeRow] = await db
+        .select({ userTypeDisplay: userTypesInAuthz.display })
+        .from(userTypesInAuthz)
+        .where(eq(userTypesInAuthz.id, userRow.userTypeId));
+
+      userTypeDisplay = userTypeRow.userTypeDisplay;
+    }
+
+    return { ...userRow, userTypeDisplay };
+  },
   completeOnboarding: async (input: { userId: string }) => {
     const { userId } = input;
     const [row] = await db
@@ -70,6 +87,16 @@ export const userRepository = {
     const [row] = await db
       .update(users)
       .set({ role })
+      .where(eq(users.id, userId))
+      .returning({ id: users.id });
+
+    return row;
+  },
+  updateStatus: async (input: { userId: string; status: 'active' | 'inactive' }) => {
+    const { userId, status } = input;
+    const [row] = await db
+      .update(users)
+      .set({ status, timestampUpdatedAt: sql`CURRENT_TIMESTAMP` })
       .where(eq(users.id, userId))
       .returning({ id: users.id });
 

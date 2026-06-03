@@ -10,6 +10,9 @@ export const userService = {
   allForCombobox: async () => {
     return await user.allForCombobox();
   },
+  byId: async (input: { userId: string }) => {
+    return await user.byId(input);
+  },
   completeOnboarding: async (input: { userId: string }) => {
     return await user.completeOnboarding(input);
   },
@@ -27,6 +30,12 @@ export const userService = {
   },
   updateSystemRole: async (input: { userId: string; role: string }) => {
     return await user.updateSystemRole(input);
+  },
+  updateStatus: async (input: {
+    userId: string;
+    status: 'active' | 'inactive';
+  }) => {
+    return await user.updateStatus(input);
   },
   updateUserType: async (input: { userId: string; userTypeId: string }) => {
     return await user.updateUserType(input);

@@ -1,8 +1,9 @@
-import { IconEye } from '@tabler/icons-react';
+import { IconEye, IconUserCancel } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
 import {
+  Badge,
   Button,
   Combobox,
   ComboboxContent,
@@ -16,10 +17,12 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Toggle,
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '~/components/ui';
+import { authSessionQueryKey } from '~/features/auth/queries';
 import {
   allSystemRolesQuery,
   allUserTypesQuery,
@@ -28,10 +31,10 @@ import type { userTypeSchema } from '~/features/authz/schema';
 import { SYSTEM_ROLES } from '~/features/authz/schema';
 import {
   updateSystemRoleMutation,
+  updateUserStatusMutation,
   updateUserTypeMutation,
 } from '~/features/users/mutations';
-import { allUsersQuery } from '~/features/users/queries';
-import { authSessionQueryKey } from '~/features/auth/queries';
+import { allUsersQuery, userByIdQuery } from '~/features/users/queries';
 import { authClient } from '~/lib/auth-client';
 import { getUserPermissions } from '~/server/permissions';
 import { ListFilterIcon } from 'lucide-react';
@@ -57,6 +60,9 @@ function RouteComponent() {
   const [pendingUserTypeIds, setPendingUserTypeIds] = useState<
     Record<string, string | null>
   >({});
+  const [pendingStatuses, setPendingStatuses] = useState<
+    Record<string, 'active' | 'inactive'>
+  >({});
 
   // Queries
   const { data: users, isLoading: usersLoading } = useQuery(allUsersQuery());
@@ -68,9 +74,16 @@ function RouteComponent() {
     ...updateSystemRoleMutation(),
   });
 
+  const { mutate: updateUserStatus } = useMutation({
+    ...updateUserStatusMutation(),
+  });
+
   const { mutate: updateUserType } = useMutation({
     ...updateUserTypeMutation(),
   });
+
+  const formatStatusLabel = (status: string) =>
+    status.slice(0, 1).toUpperCase() + status.slice(1);
 
   const userTypeOptions = [
     { id: 'any', display: 'Any' },
@@ -258,11 +271,15 @@ function RouteComponent() {
               userTypes?.find(
                 (userType) => userType.id === selectedUserTypeId,
               ) ?? null;
+            const resolvedStatus = pendingStatuses[user.id] ?? user.status;
+            const isToggleableStatus = user.status !== 'invited';
+            const isActive = resolvedStatus === 'active';
 
             return (
               <div
+                data-user-active={isActive}
                 key={user.id}
-                className="flex items-center gap-4 rounded-sm p-2 shadow-sm"
+                className="flex items-center gap-4 rounded-sm p-2 shadow-sm data-[user-active=false]:bg-gray-50/80 data-[user-active=false]:text-gray-500"
               >
                 <div className="flex w-1/5 flex-col gap-1">
                   <div>
@@ -398,7 +415,88 @@ function RouteComponent() {
                     </ComboboxContent>
                   </Combobox>
                 </div>
-                <div className="flex flex-1 items-center justify-end">
+                <div className="w-1/6">
+                  {isToggleableStatus ? (
+                    <Toggle
+                      className="w-full justify-center"
+                      variant="outline"
+                      aria-label={`Set ${user.display} to ${
+                        isActive ? 'inactive' : 'active'
+                      }`}
+                      disabled={user.id in pendingStatuses}
+                      pressed={isActive}
+                      onPressedChange={(pressed) => {
+                        const nextStatus = pressed ? 'active' : 'inactive';
+                        setPendingStatuses((prev) => ({
+                          ...prev,
+                          [user.id]: nextStatus,
+                        }));
+
+                        updateUserStatus(
+                          {
+                            userId: user.id,
+                            status: nextStatus,
+                          },
+                          {
+                            onError: () => {
+                              setPendingStatuses((prev) => {
+                                const next = { ...prev };
+                                delete next[user.id];
+                                return next;
+                              });
+                            },
+                            onSuccess: async () => {
+                              const fullName = [user.nameFirst, user.nameLast]
+                                .filter(Boolean)
+                                .join(' ');
+                              toast.success(
+                                `${fullName} is now ${formatStatusLabel(nextStatus)}`,
+                              );
+                              await Promise.all([
+                                queryClient.invalidateQueries({
+                                  queryKey: allUsersQuery().queryKey,
+                                }),
+                                queryClient.invalidateQueries({
+                                  queryKey: userByIdQuery(user.id).queryKey,
+                                }),
+                              ]);
+                              setPendingStatuses((prev) => {
+                                const next = { ...prev };
+                                delete next[user.id];
+                                return next;
+                              });
+                            },
+                          },
+                        );
+                      }}
+                    >
+                      {isActive ? 'Active' : 'Inactive'}
+                    </Toggle>
+                  ) : (
+                    <Badge variant="secondary">
+                      {formatStatusLabel(resolvedStatus)}
+                    </Badge>
+                  )}
+                </div>
+                <div className="flex flex-1 items-center justify-end gap-1">
+                  <Tooltip>
+                    <TooltipTrigger
+                      render={
+                        <div>
+                          <Button size="icon">
+                            <IconUserCancel />
+                          </Button>
+                        </div>
+                      }
+                    />
+                    <TooltipContent sideOffset={8}>
+                      {isToggleableStatus
+                        ? isActive
+                          ? 'Deactivate user'
+                          : 'Activate user'
+                        : 'Cannot change status of an invited user'}
+                    </TooltipContent>
+                  </Tooltip>
                   {permissions.can('impersonate', 'System') &&
                     user.id !== currentUser.id && (
                       <Tooltip>
