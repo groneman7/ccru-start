@@ -105,11 +105,7 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 }
               />
-              <DropdownMenuContent
-                side="top"
-                className="w-[--radix-dropdown-menu-trigger-width]"
-                align="start"
-              >
+              <DropdownMenuContent side="top" align="start">
                 {currentUser.impersonatedBy ? (
                   <DropdownMenuItem
                     onClick={async () => {
