@@ -112,7 +112,7 @@ export function Calendar({ events, month }: CalendarProps) {
                   date.isSame(month, 'month') ? 'bg-white' : 'bg-secondary/20',
                   index % 7 < 6 && 'border-r',
                   date.isBefore(endOfCalendar.subtract(1, 'week')) &&
-                    'border-b-1',
+                    'border-b',
                 )}
               >
                 {/* Date */}
