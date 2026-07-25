@@ -62,6 +62,13 @@ export function AppSidebar() {
                   </SidebarMenuButton>
                 </SidebarMenuItem>
               ) : null}
+              {permissions.can('dev-tools', 'System') ? (
+                <SidebarMenuItem>
+                  <SidebarMenuButton>
+                    <Link to="/dev-tools">Developer Tools</Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ) : null}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>

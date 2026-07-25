@@ -12,7 +12,7 @@ type ShiftSubject = 'Shift';
 type ShiftPermission = ['modify', ShiftSubject];
 
 type SystemSubject = 'System';
-type SystemPermission = ['manage' | 'impersonate', SystemSubject];
+type SystemPermission = ['dev-tools' | 'impersonate' | 'manage', SystemSubject];
 
 type Permissions = CalendarEventPermission | ShiftPermission | SystemPermission;
 
@@ -26,6 +26,7 @@ export function getUserPermissions(user?: CurrentUser) {
   if (user && user.role) {
     if (user.role === 'Developer') {
       allow('impersonate', 'System');
+      allow('dev-tools', 'System');
     } else {
       forbid('impersonate', 'System');
     }
