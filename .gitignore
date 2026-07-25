@@ -15,3 +15,5 @@ todos.json
 .vercel
 .env.local
 auth-schema.ts
+
+.pnpm*
