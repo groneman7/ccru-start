@@ -1,7 +1,7 @@
+import { DayPicker } from '@daypicker/react';
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { cn } from '~/lib/utils';
 import type { ComponentProps } from 'react';
-import { DayPicker } from 'react-day-picker';
 
 export type CalendarProps = ComponentProps<typeof DayPicker>;
 
