@@ -1,4 +1,4 @@
-import { postgres } from 'vite-plugin-db';
+import { postgres } from 'vite-plugin-neon-new';
 
 export default postgres({
   seed: {
