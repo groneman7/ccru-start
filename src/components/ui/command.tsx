@@ -1,3 +1,4 @@
+import { IconCheck, IconSearch } from '@tabler/icons-react';
 import {
   Dialog,
   DialogContent,
@@ -8,7 +9,6 @@ import {
 import { InputGroup, InputGroupAddon } from '~/components/ui/input-group';
 import { cn } from '~/lib/utils';
 import { Command as CommandPrimitive } from 'cmdk';
-import { CheckIcon, SearchIcon } from 'lucide-react';
 import * as React from 'react';
 
 function Command({
@@ -76,7 +76,7 @@ function CommandInput({
           {...props}
         />
         <InputGroupAddon>
-          <SearchIcon className="size-4 shrink-0 opacity-50" />
+          <IconSearch className="size-4 shrink-0 opacity-50" />
         </InputGroupAddon>
       </InputGroup>
     </div>
@@ -156,7 +156,7 @@ function CommandItem({
       {...props}
     >
       {children}
-      <CheckIcon className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
+      <IconCheck className="ml-auto opacity-0 group-has-data-[slot=command-shortcut]/command-item:hidden group-data-[checked=true]/command-item:opacity-100" />
     </CommandPrimitive.Item>
   );
 }

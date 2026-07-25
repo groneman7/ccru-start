@@ -1,4 +1,4 @@
-import { IconEye, IconUserCancel } from '@tabler/icons-react';
+import { IconEye, IconFilter2, IconUserCancel } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
@@ -37,7 +37,6 @@ import {
 import { allUsersQuery, userByIdQuery } from '~/features/users/queries';
 import { authClient } from '~/lib/auth-client';
 import { getUserPermissions } from '~/server/permissions';
-import { ListFilterIcon } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { infer as Infer } from 'zod';
@@ -134,7 +133,7 @@ function RouteComponent() {
             <PopoverTrigger
               render={
                 <Button variant="outline">
-                  <ListFilterIcon />
+                  <IconFilter2 />
                   Filters
                 </Button>
               }

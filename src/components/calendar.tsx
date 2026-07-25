@@ -1,10 +1,10 @@
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '~/components/ui';
 import type { eventSchema } from '~/features/calendar/schema';
 import { cn } from '~/lib/utils';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { infer as Infer } from 'zod';
 
 type CalendarProps = {
@@ -51,7 +51,7 @@ export function Calendar({ events, month }: CalendarProps) {
               size="icon"
               variant="ghost"
             >
-              <ChevronLeft className="mr-0.5" size={20} />
+              <IconChevronLeft className="mr-0.5" size={20} />
             </Button>
             <div className="flex items-center">
               <span className="w-40 text-center text-xl font-bold select-none">
@@ -72,7 +72,7 @@ export function Calendar({ events, month }: CalendarProps) {
               size="icon"
               variant="ghost"
             >
-              <ChevronRight className="ml-0.5" size={20} />
+              <IconChevronRight className="ml-0.5" size={20} />
             </Button>
           </div>
           <div className="flex items-center gap-1">

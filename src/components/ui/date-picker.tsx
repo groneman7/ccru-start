@@ -1,3 +1,4 @@
+import { IconCalendarWeekFilled } from '@tabler/icons-react';
 import {
   Button,
   DaypickerCalendar,
@@ -6,7 +7,6 @@ import {
   PopoverTrigger,
 } from '~/components/ui';
 import dayjs from 'dayjs';
-import { CalendarIcon } from 'lucide-react';
 import { useState } from 'react';
 
 function isValidISOString(value: string) {
@@ -63,7 +63,7 @@ export function DatePicker({
             ) : (
               <span className="text-muted-foreground">{placeholder}</span>
             )}
-            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+            <IconCalendarWeekFilled className="ml-auto h-4 w-4 opacity-50" />
           </Button>
         }
       />

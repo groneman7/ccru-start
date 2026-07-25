@@ -1,3 +1,4 @@
+import { IconCheck, IconX } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
@@ -15,7 +16,6 @@ import {
 import { createEventMutation } from '~/features/calendar/mutations';
 import { locationFormSchema } from '~/features/calendar/schema';
 import dayjs from 'dayjs';
-import { CheckIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { iso, object, string, union, null as zNull } from 'zod';
 
@@ -141,7 +141,7 @@ function NewEventPage() {
                 type="button"
                 onClick={() => nav({ to: '/calendar' })}
               >
-                <XIcon />
+                <IconX />
                 Cancel
               </Button>
               <Button
@@ -150,7 +150,7 @@ function NewEventPage() {
                 variant="solid"
                 onClick={() => form.handleSubmit()}
               >
-                <CheckIcon />
+                <IconCheck />
                 Save
               </Button>
             </div>

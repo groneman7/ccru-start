@@ -10,6 +10,7 @@ import {
   IconPlus,
   IconSparkles2,
   IconTrash,
+  IconUserCircle,
   IconUserPlus,
   IconX,
 } from '@tabler/icons-react';
@@ -96,7 +97,6 @@ import type { userSchemaForCombobox } from '~/features/users/schema';
 import { cn } from '~/lib/utils';
 import { getUserPermissions } from '~/server/permissions';
 import dayjs from 'dayjs';
-import { UserRound } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { infer as Infer } from 'zod';
@@ -708,7 +708,7 @@ function SlotDisplay({
               variant="ghost"
             >
               <div className="flex size-8 items-center justify-center overflow-hidden rounded-full border bg-gray-100">
-                <UserRound className="size-8 translate-y-1 scale-120 fill-gray-500/30 stroke-0" />
+                <IconUserCircle className="size-8 translate-y-1 scale-120 fill-gray-500/30 stroke-0" />
               </div>
               <ComboboxValue />
             </Button>
@@ -747,7 +747,7 @@ function SlotDisplay({
   ) : (
     <div className="flex flex-1 items-center gap-2 px-3 py-2">
       <div className="flex size-8 items-center justify-center overflow-hidden rounded-full border bg-gray-100">
-        <UserRound className="size-8 translate-y-1 scale-120 fill-gray-500/30 stroke-0" />
+        <IconUserCircle className="size-8 translate-y-1 scale-120 fill-gray-500/30 stroke-0" />
       </div>
       <span>{slot.user.display}</span>
     </div>
@@ -1023,7 +1023,7 @@ function PopoverAddShifts({
                     </div>
                   ))}
                   <Combobox
-                    items={positions.filter(
+                    items={positions?.filter(
                       (position) =>
                         !existingShifts.includes(position.id) &&
                         !form.state.values.shiftsToCreate.some(

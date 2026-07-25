@@ -1,3 +1,4 @@
+import { IconCheck, IconX } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useAppForm } from '~/components/form';
@@ -18,7 +19,6 @@ import {
 import { buildCertificationTree } from '~/features/users/certifications';
 import { createCertificationMutation } from '~/features/users/mutations';
 import { allCertificationsQuery } from '~/features/users/queries';
-import { CheckIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { nullable, object, string } from 'zod';
 
@@ -190,7 +190,7 @@ function NewCertificationPage() {
             type="button"
             onClick={() => nav({ to: '/admin/certifications' })}
           >
-            <XIcon />
+            <IconX />
             Cancel
           </Button>
           <Button
@@ -199,7 +199,7 @@ function NewCertificationPage() {
             variant="solid"
             onClick={() => form.handleSubmit()}
           >
-            <CheckIcon />
+            <IconCheck />
             Save
           </Button>
         </div>

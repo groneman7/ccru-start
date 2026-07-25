@@ -1,4 +1,15 @@
-import { IconAlignLeft, IconForms, IconTrash } from '@tabler/icons-react';
+import {
+  IconAlignLeft,
+  IconCheck,
+  IconClock,
+  IconForms,
+  IconMapPin,
+  IconMinus,
+  IconPencil,
+  IconPlus,
+  IconTrash,
+  IconX,
+} from '@tabler/icons-react';
 import { useStore } from '@tanstack/react-form';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
@@ -65,19 +76,6 @@ import type {
 import { locationFormSchema } from '~/features/calendar/schema';
 import { parseAndFormatTime } from '~/lib/utils';
 import dayjs from 'dayjs';
-import {
-  Check,
-  CheckIcon,
-  Clock,
-  MapPin,
-  Minus,
-  PencilIcon,
-  Plus,
-  PlusIcon,
-  TextAlignStart,
-  X,
-  XIcon,
-} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { literal, object, string, union } from 'zod';
@@ -241,7 +239,7 @@ function RouteComponent() {
           <div className="flex items-center gap-2">
             {!isEditing && (
               <Button size="sm" onClick={() => setIsEditing(true)}>
-                <PencilIcon />
+                <IconPencil />
                 Edit
               </Button>
             )}
@@ -327,11 +325,11 @@ function RouteComponent() {
                 }}
                 type="button"
               >
-                <XIcon />
+                <IconX />
                 Cancel
               </Button>
               <Button disabled={isSavingDetails} variant="solid" type="submit">
-                <CheckIcon />
+                <IconCheck />
                 Save
               </Button>
             </div>
@@ -343,12 +341,12 @@ function RouteComponent() {
               <span className="text-lg">{template.display}</span>
             </div>
             <div className="flex items-center gap-2">
-              <Clock className="size-4" />
+              <IconClock className="size-4" />
               <span className="flex-1">{`${formatTime(template.timeBegin)}${template.timeEnd ? ` - ${formatTime(template.timeEnd)}` : ''}`}</span>
             </div>
             {formatLocationLines(template.location).length > 0 && (
               <div className="flex items-center gap-2">
-                <MapPin className="size-4" />
+                <IconMapPin className="size-4" />
                 <div className="flex flex-1 flex-col">
                   {formatLocationLines(template.location).map((line) => (
                     <span key={line}>{line}</span>
@@ -358,7 +356,7 @@ function RouteComponent() {
             )}
             {template.description && (
               <div className="flex items-start gap-2">
-                <TextAlignStart className="mt-1 size-4" />
+                <IconAlignLeft className="mt-1 size-4" />
                 <span className="flex-1 whitespace-pre-wrap">
                   {template.description}
                 </span>
@@ -451,7 +449,7 @@ function DialogCreateEventFromTemplate({
       <DialogTrigger
         render={
           <Button size="sm" variant="solid">
-            <PlusIcon />
+            <IconPlus />
             Create event
           </Button>
         }
@@ -480,7 +478,7 @@ function DialogCreateEventFromTemplate({
           <DialogClose
             render={
               <Button disabled={isPending}>
-                <XIcon />
+                <IconX />
                 Cancel
               </Button>
             }
@@ -490,7 +488,7 @@ function DialogCreateEventFromTemplate({
             variant="solid"
             onClick={() => form.handleSubmit()}
           >
-            <CheckIcon />
+            <IconCheck />
             Create
           </Button>
         </DialogFooter>
@@ -542,7 +540,7 @@ function PopoverTemplatePositionQuantity({
               variant="ghost"
               onClick={() => setQuantity((v) => v - 1)}
             >
-              <Minus className="size-3" />
+              <IconMinus className="size-3" />
             </Button>
             <Input
               className="w-12 [&_input]:text-center"
@@ -567,7 +565,7 @@ function PopoverTemplatePositionQuantity({
               variant="ghost"
               onClick={() => setQuantity((v) => v + 1)}
             >
-              <Plus className="size-3" />
+              <IconPlus className="size-3" />
             </Button>
           </div>
           <div className="flex items-center gap-1">
@@ -578,7 +576,7 @@ function PopoverTemplatePositionQuantity({
                   variant="ghost"
                   onClick={() => setQuantity(templatePosition.quantity)}
                 >
-                  <X />
+                  <IconX />
                 </Button>
               }
             />
@@ -600,7 +598,7 @@ function PopoverTemplatePositionQuantity({
                     })
                   }
                 >
-                  <Check />
+                  <IconCheck />
                   Save
                 </Button>
               }
@@ -659,7 +657,7 @@ function DialogAddTemplatePosition({
       <DialogTrigger
         render={
           <Button variant="ghost">
-            <PlusIcon />
+            <IconPlus />
             Add position
           </Button>
         }
@@ -709,7 +707,7 @@ function DialogAddTemplatePosition({
                                 quantityField.handleChange((v) => v - 1)
                               }
                             >
-                              <Minus className="size-3" />
+                              <IconMinus className="size-3" />
                             </Button>
                             <Input
                               className="w-12 [&_input]:text-center"
@@ -743,7 +741,7 @@ function DialogAddTemplatePosition({
                                 quantityField.handleChange((v) => v + 1)
                               }
                             >
-                              <Plus className="size-3" />
+                              <IconPlus className="size-3" />
                             </Button>
                           </div>
                         )}
@@ -754,12 +752,12 @@ function DialogAddTemplatePosition({
                         variant="ghost"
                         onClick={() => templatePositionsField.removeValue(i)}
                       >
-                        <X />
+                        <IconX />
                       </Button>
                     </div>
                   ))}
                   <Combobox
-                    items={positions.filter(
+                    items={positions?.filter(
                       (position) =>
                         !existingPositionIds.includes(position.id) &&
                         !form.state.values.templatePositionsToCreate.some(
@@ -803,7 +801,7 @@ function DialogAddTemplatePosition({
           <DialogClose
             render={
               <Button>
-                <XIcon />
+                <IconX />
                 Cancel
               </Button>
             }
@@ -823,7 +821,7 @@ function DialogAddTemplatePosition({
                       form.handleSubmit();
                     }}
                   >
-                    <CheckIcon />
+                    <IconCheck />
                     Save
                   </Button>
                 </div>

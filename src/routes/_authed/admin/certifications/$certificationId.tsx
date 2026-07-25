@@ -1,4 +1,10 @@
-import { IconForms, IconHierarchy2 } from '@tabler/icons-react';
+import {
+  IconCheck,
+  IconForms,
+  IconHierarchy2,
+  IconPencil,
+  IconX,
+} from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute } from '@tanstack/react-router';
 import { useAppForm } from '~/components/form';
@@ -25,7 +31,6 @@ import {
   allCertificationsQuery,
   getCertificationByIdQuery,
 } from '~/features/users/queries';
-import { CheckIcon, PencilIcon, XIcon } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { nullable, object, string } from 'zod';
@@ -149,7 +154,7 @@ function CertificationPage() {
         <span className="text-xl font-semibold">Details</span>
         {!isEditing && (
           <Button size="sm" onClick={() => setIsEditing(true)} type="button">
-            <PencilIcon />
+            <IconPencil />
             Edit
           </Button>
         )}
@@ -262,11 +267,11 @@ function CertificationPage() {
               }}
               type="button"
             >
-              <XIcon />
+              <IconX />
               Cancel
             </Button>
             <Button disabled={isSaving} type="submit" variant="solid">
-              <CheckIcon />
+              <IconCheck />
               Save
             </Button>
           </div>

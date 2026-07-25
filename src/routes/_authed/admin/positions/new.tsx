@@ -1,10 +1,10 @@
+import { IconCheck, IconX } from '@tabler/icons-react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useAppForm } from '~/components/form';
 import { Button, Field, FieldLabel, Input, Textarea } from '~/components/ui';
 import { createPositionMutation } from '~/features/calendar/mutations';
 import { allPositionsQuery } from '~/features/calendar/queries';
-import { CheckIcon, XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { object, string } from 'zod';
 
@@ -119,7 +119,7 @@ function NewPositionPage() {
             type="button"
             onClick={() => nav({ to: '/admin/positions' })}
           >
-            <XIcon />
+            <IconX />
             Cancel
           </Button>
           <Button
@@ -128,7 +128,7 @@ function NewPositionPage() {
             variant="solid"
             onClick={() => form.handleSubmit()}
           >
-            <CheckIcon />
+            <IconCheck />
             Save
           </Button>
         </div>

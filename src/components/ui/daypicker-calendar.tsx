@@ -1,5 +1,5 @@
+import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { cn } from '~/lib/utils';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
 import type { ComponentProps } from 'react';
 import { DayPicker } from 'react-day-picker';
 
@@ -38,7 +38,7 @@ export function DaypickerCalendar({
       }}
       components={{
         NextMonthButton: ({ className, onClick }) => (
-          <ChevronRight
+          <IconChevronRight
             className={cn(
               'absolute top-3 right-3 h-6 w-6 rounded p-1 hover:bg-accent',
               className,
@@ -49,7 +49,7 @@ export function DaypickerCalendar({
           />
         ),
         PreviousMonthButton: ({ className, onClick }) => (
-          <ChevronLeft
+          <IconChevronLeft
             className={cn(
               'absolute top-3 left-3 h-6 w-6 rounded p-1 hover:bg-accent',
               className,

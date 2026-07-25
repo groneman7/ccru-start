@@ -1,4 +1,5 @@
 // import { usePostHog } from '@posthog/react';
+import { IconUserCircle } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useRouteContext } from '@tanstack/react-router';
 // import { SignedOut } from '~/components';
@@ -21,7 +22,6 @@ import { authSessionQueryKey } from '~/features/auth/queries';
 import { authClient } from '~/lib/auth-client';
 import { cn } from '~/lib/utils';
 import { getUserPermissions } from '~/server/permissions';
-import { CircleUserRound } from 'lucide-react';
 
 export function AppSidebar() {
   // const posthog = usePostHog();
@@ -91,7 +91,7 @@ export function AppSidebar() {
                           className="size-8 rounded-full object-cover"
                         />
                       ) : (
-                        <CircleUserRound className="size-8 rounded-full bg-slate-50 text-slate-500" />
+                        <IconUserCircle className="size-8 rounded-full bg-slate-50 text-slate-500" />
                       )}
                     </div>
                     <div className="flex flex-col justify-center text-left">
