@@ -21,13 +21,13 @@ import { iso, number, object, uuidv7 } from 'zod';
 // Events ---------------------------------------------------------------------
 
 const createEventServerFn = createServerFn()
-  .inputValidator(createEventSchema)
+  .validator(createEventSchema)
   .handler(async ({ data }) => {
     return event.create(data);
   });
 
 const createEventFromTemplateServerFn = createServerFn()
-  .inputValidator(
+  .validator(
     object({
       templateId: uuidv7(),
       date: iso.date(),
@@ -39,19 +39,19 @@ const createEventFromTemplateServerFn = createServerFn()
   });
 
 const getEventByIdServerFn = createServerFn()
-  .inputValidator(object({ eventId: uuidv7() }))
+  .validator(object({ eventId: uuidv7() }))
   .handler(async ({ data: { eventId } }) => {
     return await event.byId({ eventId });
   });
 
 const getEventsByMonthServerFn = createServerFn()
-  .inputValidator(object({ month: number(), year: number() }))
+  .validator(object({ month: number(), year: number() }))
   .handler(async ({ data: { month, year } }) => {
     return await event.byMonth({ month, year });
   });
 
 const updateEventServerFn = createServerFn()
-  .inputValidator(updateEventSchema)
+  .validator(updateEventSchema)
   .handler(async ({ data }) => {
     return await event.update(data);
   });
@@ -71,19 +71,19 @@ const allPositionsServerFn = createServerFn().handler(async () => {
 });
 
 const createPositionServerFn = createServerFn()
-  .inputValidator(createPositionSchema)
+  .validator(createPositionSchema)
   .handler(async ({ data }) => {
     return position.create(data);
   });
 
 const getPositionByIdServerFn = createServerFn()
-  .inputValidator(object({ positionId: uuidv7() }))
+  .validator(object({ positionId: uuidv7() }))
   .handler(async ({ data: { positionId } }) => {
     return await position.byId({ positionId });
   });
 
 const updatePositionServerFn = createServerFn()
-  .inputValidator(updatePositionDetailsSchema)
+  .validator(updatePositionDetailsSchema)
   .handler(async ({ data }) => {
     return await position.update(data);
   });
@@ -98,19 +98,19 @@ export const positionServerFns = {
 // Shifts ---------------------------------------------------------------------
 
 const createShiftServerFn = createServerFn()
-  .inputValidator(createShiftSchema)
+  .validator(createShiftSchema)
   .handler(async ({ data }) => {
     return shift.create(data);
   });
 
 const deleteShiftServerFn = createServerFn()
-  .inputValidator(object({ shiftId: uuidv7() }))
+  .validator(object({ shiftId: uuidv7() }))
   .handler(async ({ data: { shiftId } }) => {
     return await shift.delete({ shiftId });
   });
 
 const updateSlotQuantityServerFn = createServerFn()
-  .inputValidator(object({ shiftId: uuidv7(), quantity: number() }))
+  .validator(object({ shiftId: uuidv7(), quantity: number() }))
   .handler(async ({ data }) => {
     return await shift.updateSlotQuantity(data);
   });
@@ -124,31 +124,31 @@ export const shiftServerFns = {
 // Slots ----------------------------------------------------------------------
 
 const assignUserServerFn = createServerFn()
-  .inputValidator(object({ shiftId: uuidv7(), userId: uuidv7() }))
+  .validator(object({ shiftId: uuidv7(), userId: uuidv7() }))
   .handler(async ({ data }) => {
     return await slot.assignUser(data);
   });
 
 const getSlotsByEventServerFn = createServerFn()
-  .inputValidator(object({ eventId: uuidv7() }))
+  .validator(object({ eventId: uuidv7() }))
   .handler(async ({ data: { eventId } }) => {
     return await slot.byEventId({ eventId });
   });
 
 const createSlotServerFn = createServerFn()
-  .inputValidator(createSlotSchema)
+  .validator(createSlotSchema)
   .handler(async ({ data }) => {
     return slot.create(data);
   });
 
 const deleteSlotServerFn = createServerFn()
-  .inputValidator(object({ slotId: uuidv7() }))
+  .validator(object({ slotId: uuidv7() }))
   .handler(async ({ data: { slotId } }) => {
     return await slot.delete({ slotId });
   });
 
 const reassignUserServerFn = createServerFn()
-  .inputValidator(object({ slotId: uuidv7(), userId: uuidv7() }))
+  .validator(object({ slotId: uuidv7(), userId: uuidv7() }))
   .handler(async ({ data }) => {
     return await slot.reassignUser(data);
   });
@@ -168,37 +168,37 @@ const allTemplatesServerFn = createServerFn().handler(async () => {
 });
 
 const getTemplateByIdServerFn = createServerFn()
-  .inputValidator(object({ templateId: uuidv7() }))
+  .validator(object({ templateId: uuidv7() }))
   .handler(async ({ data }) => {
     return await template.byId(data);
   });
 
 const createTemplatePositionsServerFn = createServerFn()
-  .inputValidator(createTemplatePositionsSchema)
+  .validator(createTemplatePositionsSchema)
   .handler(async ({ data }) => {
     return await template.createTemplatePositions(data);
   });
 
 const deleteTemplatePositionServerFn = createServerFn()
-  .inputValidator(object({ templatePositionId: uuidv7() }))
+  .validator(object({ templatePositionId: uuidv7() }))
   .handler(async ({ data }) => {
     return await template.deleteTemplatePosition(data);
   });
 
 const updateTemplateDetailsServerFn = createServerFn()
-  .inputValidator(updateTemplateSchema)
+  .validator(updateTemplateSchema)
   .handler(async ({ data }) => {
     return await template.updateDetails(data);
   });
 
 const updateTemplatePositionQuantityServerFn = createServerFn()
-  .inputValidator(object({ templatePositionId: uuidv7(), quantity: number() }))
+  .validator(object({ templatePositionId: uuidv7(), quantity: number() }))
   .handler(async ({ data }) => {
     return await template.updatePositionQuantity(data);
   });
 
 //  const createEventFromTemplateServerFn = createServerFn()
-//   .inputValidator(createEventFromTemplateSchema)
+//   .validator(createEventFromTemplateSchema)
 //   .handler(async ({ data }) => {
 //     return await template.createEventFromTemplate(data);
 //   });

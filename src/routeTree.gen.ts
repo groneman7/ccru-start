@@ -9,73 +9,68 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as PendingRouteImport } from './routes/pending'
-import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
-import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
-import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
+import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
+import { Route as PendingRouteImport } from './routes/pending'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
+import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
+import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
 import { Route as AuthedAdminRouteRouteImport } from './routes/_authed/admin/route'
-import { Route as AuthedCalendarIndexRouteImport } from './routes/_authed/calendar/index'
 import { Route as AuthedAdminIndexRouteImport } from './routes/_authed/admin/index'
-import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
-import { Route as AuthedCalendarTemplatesRouteRouteImport } from './routes/_authed/calendar/templates/route'
-import { Route as AuthedAdminPositionsRouteRouteImport } from './routes/_authed/admin/positions/route'
 import { Route as AuthedAdminCertificationsRouteRouteImport } from './routes/_authed/admin/certifications/route'
-import { Route as AuthedCalendarTemplatesIndexRouteImport } from './routes/_authed/calendar/templates/index'
-import { Route as AuthedAdminUsersIndexRouteImport } from './routes/_authed/admin/users/index'
-import { Route as AuthedAdminPositionsIndexRouteImport } from './routes/_authed/admin/positions/index'
+import { Route as AuthedAdminPositionsRouteRouteImport } from './routes/_authed/admin/positions/route'
+import { Route as AuthedCalendarIndexRouteImport } from './routes/_authed/calendar/index'
+import { Route as AuthedCalendarTemplatesRouteRouteImport } from './routes/_authed/calendar/templates/route'
+import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 import { Route as AuthedAdminCertificationsIndexRouteImport } from './routes/_authed/admin/certifications/index'
-import { Route as AuthedCalendarTemplatesNewRouteImport } from './routes/_authed/calendar/templates/new'
-import { Route as AuthedCalendarTemplatesTemplateIdRouteImport } from './routes/_authed/calendar/templates/$templateId'
-import { Route as AuthedCalendarEventsNewRouteImport } from './routes/_authed/calendar/events.new'
-import { Route as AuthedCalendarEventsEventIdRouteImport } from './routes/_authed/calendar/events.$eventId'
-import { Route as AuthedCalendarYearMonthRouteImport } from './routes/_authed/calendar/$year.$month'
-import { Route as AuthedAdminPositionsNewRouteImport } from './routes/_authed/admin/positions/new'
-import { Route as AuthedAdminPositionsPositionIdRouteImport } from './routes/_authed/admin/positions/$positionId'
-import { Route as AuthedAdminCertificationsNewRouteImport } from './routes/_authed/admin/certifications/new'
 import { Route as AuthedAdminCertificationsCertificationIdRouteImport } from './routes/_authed/admin/certifications/$certificationId'
+import { Route as AuthedAdminCertificationsNewRouteImport } from './routes/_authed/admin/certifications/new'
+import { Route as AuthedAdminPositionsIndexRouteImport } from './routes/_authed/admin/positions/index'
+import { Route as AuthedAdminPositionsPositionIdRouteImport } from './routes/_authed/admin/positions/$positionId'
+import { Route as AuthedAdminPositionsNewRouteImport } from './routes/_authed/admin/positions/new'
+import { Route as AuthedAdminUsersIndexRouteImport } from './routes/_authed/admin/users/index'
 import { Route as AuthedAdminUsersUserIdRouteRouteImport } from './routes/_authed/admin/users/$userId/route'
+import { Route as AuthedCalendarYearMonthRouteImport } from './routes/_authed/calendar/$year.$month'
+import { Route as AuthedCalendarEventsEventIdRouteImport } from './routes/_authed/calendar/events.$eventId'
+import { Route as AuthedCalendarEventsNewRouteImport } from './routes/_authed/calendar/events.new'
+import { Route as AuthedCalendarTemplatesIndexRouteImport } from './routes/_authed/calendar/templates/index'
+import { Route as AuthedCalendarTemplatesTemplateIdRouteImport } from './routes/_authed/calendar/templates/$templateId'
+import { Route as AuthedCalendarTemplatesNewRouteImport } from './routes/_authed/calendar/templates/new'
 import { Route as AuthedAdminUsersUserIdIndexRouteImport } from './routes/_authed/admin/users/$userId/index'
-import { Route as AuthedAdminUsersUserIdProfileRouteImport } from './routes/_authed/admin/users/$userId/profile'
 import { Route as AuthedAdminUsersUserIdHistoryRouteImport } from './routes/_authed/admin/users/$userId/history'
+import { Route as AuthedAdminUsersUserIdProfileRouteImport } from './routes/_authed/admin/users/$userId/profile'
 
-const PendingRoute = PendingRouteImport.update({
-  id: '/pending',
-  path: '/pending',
+const AuthRouteRoute = AuthRouteRouteImport.update({
+  id: '/_auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRouteRoute = AuthRouteRouteImport.update({
-  id: '/_auth',
+const PendingRoute = PendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
   getParentRoute: () => rootRouteImport,
-} as any)
-const AuthedIndexRoute = AuthedIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthSignInRoute = AuthSignInRouteImport.update({
-  id: '/sign-in',
-  path: '/sign-in',
-  getParentRoute: () => AuthRouteRoute,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/register',
   path: '/register',
   getParentRoute: () => AuthRouteRoute,
 } as any)
+const AuthSignInRoute = AuthSignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => AuthRouteRoute,
+} as any)
+const AuthedIndexRoute = AuthedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
 const AuthedAdminRouteRoute = AuthedAdminRouteRouteImport.update({
   id: '/admin',
   path: '/admin',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedCalendarIndexRoute = AuthedCalendarIndexRouteImport.update({
-  id: '/calendar/',
-  path: '/calendar/',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
 const AuthedAdminIndexRoute = AuthedAdminIndexRouteImport.update({
@@ -83,16 +78,11 @@ const AuthedAdminIndexRoute = AuthedAdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AuthedAdminRouteRoute,
 } as any)
-const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
-  id: '/api/auth/$',
-  path: '/api/auth/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthedCalendarTemplatesRouteRoute =
-  AuthedCalendarTemplatesRouteRouteImport.update({
-    id: '/calendar/templates',
-    path: '/calendar/templates',
-    getParentRoute: () => AuthedRouteRoute,
+const AuthedAdminCertificationsRouteRoute =
+  AuthedAdminCertificationsRouteRouteImport.update({
+    id: '/certifications',
+    path: '/certifications',
+    getParentRoute: () => AuthedAdminRouteRoute,
   } as any)
 const AuthedAdminPositionsRouteRoute =
   AuthedAdminPositionsRouteRouteImport.update({
@@ -100,78 +90,26 @@ const AuthedAdminPositionsRouteRoute =
     path: '/positions',
     getParentRoute: () => AuthedAdminRouteRoute,
   } as any)
-const AuthedAdminCertificationsRouteRoute =
-  AuthedAdminCertificationsRouteRouteImport.update({
-    id: '/certifications',
-    path: '/certifications',
-    getParentRoute: () => AuthedAdminRouteRoute,
-  } as any)
-const AuthedCalendarTemplatesIndexRoute =
-  AuthedCalendarTemplatesIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
-  } as any)
-const AuthedAdminUsersIndexRoute = AuthedAdminUsersIndexRouteImport.update({
-  id: '/users/',
-  path: '/users/',
-  getParentRoute: () => AuthedAdminRouteRoute,
+const AuthedCalendarIndexRoute = AuthedCalendarIndexRouteImport.update({
+  id: '/calendar/',
+  path: '/calendar/',
+  getParentRoute: () => AuthedRouteRoute,
 } as any)
-const AuthedAdminPositionsIndexRoute =
-  AuthedAdminPositionsIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AuthedAdminPositionsRouteRoute,
+const AuthedCalendarTemplatesRouteRoute =
+  AuthedCalendarTemplatesRouteRouteImport.update({
+    id: '/calendar/templates',
+    path: '/calendar/templates',
+    getParentRoute: () => AuthedRouteRoute,
   } as any)
+const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
+  id: '/api/auth/$',
+  path: '/api/auth/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthedAdminCertificationsIndexRoute =
   AuthedAdminCertificationsIndexRouteImport.update({
     id: '/',
     path: '/',
-    getParentRoute: () => AuthedAdminCertificationsRouteRoute,
-  } as any)
-const AuthedCalendarTemplatesNewRoute =
-  AuthedCalendarTemplatesNewRouteImport.update({
-    id: '/new',
-    path: '/new',
-    getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
-  } as any)
-const AuthedCalendarTemplatesTemplateIdRoute =
-  AuthedCalendarTemplatesTemplateIdRouteImport.update({
-    id: '/$templateId',
-    path: '/$templateId',
-    getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
-  } as any)
-const AuthedCalendarEventsNewRoute = AuthedCalendarEventsNewRouteImport.update({
-  id: '/calendar/events/new',
-  path: '/calendar/events/new',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedCalendarEventsEventIdRoute =
-  AuthedCalendarEventsEventIdRouteImport.update({
-    id: '/calendar/events/$eventId',
-    path: '/calendar/events/$eventId',
-    getParentRoute: () => AuthedRouteRoute,
-  } as any)
-const AuthedCalendarYearMonthRoute = AuthedCalendarYearMonthRouteImport.update({
-  id: '/calendar/$year/$month',
-  path: '/calendar/$year/$month',
-  getParentRoute: () => AuthedRouteRoute,
-} as any)
-const AuthedAdminPositionsNewRoute = AuthedAdminPositionsNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => AuthedAdminPositionsRouteRoute,
-} as any)
-const AuthedAdminPositionsPositionIdRoute =
-  AuthedAdminPositionsPositionIdRouteImport.update({
-    id: '/$positionId',
-    path: '/$positionId',
-    getParentRoute: () => AuthedAdminPositionsRouteRoute,
-  } as any)
-const AuthedAdminCertificationsNewRoute =
-  AuthedAdminCertificationsNewRouteImport.update({
-    id: '/new',
-    path: '/new',
     getParentRoute: () => AuthedAdminCertificationsRouteRoute,
   } as any)
 const AuthedAdminCertificationsCertificationIdRoute =
@@ -180,11 +118,73 @@ const AuthedAdminCertificationsCertificationIdRoute =
     path: '/$certificationId',
     getParentRoute: () => AuthedAdminCertificationsRouteRoute,
   } as any)
+const AuthedAdminCertificationsNewRoute =
+  AuthedAdminCertificationsNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthedAdminCertificationsRouteRoute,
+  } as any)
+const AuthedAdminPositionsIndexRoute =
+  AuthedAdminPositionsIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthedAdminPositionsRouteRoute,
+  } as any)
+const AuthedAdminPositionsPositionIdRoute =
+  AuthedAdminPositionsPositionIdRouteImport.update({
+    id: '/$positionId',
+    path: '/$positionId',
+    getParentRoute: () => AuthedAdminPositionsRouteRoute,
+  } as any)
+const AuthedAdminPositionsNewRoute = AuthedAdminPositionsNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => AuthedAdminPositionsRouteRoute,
+} as any)
+const AuthedAdminUsersIndexRoute = AuthedAdminUsersIndexRouteImport.update({
+  id: '/users/',
+  path: '/users/',
+  getParentRoute: () => AuthedAdminRouteRoute,
+} as any)
 const AuthedAdminUsersUserIdRouteRoute =
   AuthedAdminUsersUserIdRouteRouteImport.update({
     id: '/users/$userId',
     path: '/users/$userId',
     getParentRoute: () => AuthedAdminRouteRoute,
+  } as any)
+const AuthedCalendarYearMonthRoute = AuthedCalendarYearMonthRouteImport.update({
+  id: '/calendar/$year/$month',
+  path: '/calendar/$year/$month',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedCalendarEventsEventIdRoute =
+  AuthedCalendarEventsEventIdRouteImport.update({
+    id: '/calendar/events/$eventId',
+    path: '/calendar/events/$eventId',
+    getParentRoute: () => AuthedRouteRoute,
+  } as any)
+const AuthedCalendarEventsNewRoute = AuthedCalendarEventsNewRouteImport.update({
+  id: '/calendar/events/new',
+  path: '/calendar/events/new',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedCalendarTemplatesIndexRoute =
+  AuthedCalendarTemplatesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
+  } as any)
+const AuthedCalendarTemplatesTemplateIdRoute =
+  AuthedCalendarTemplatesTemplateIdRouteImport.update({
+    id: '/$templateId',
+    path: '/$templateId',
+    getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
+  } as any)
+const AuthedCalendarTemplatesNewRoute =
+  AuthedCalendarTemplatesNewRouteImport.update({
+    id: '/new',
+    path: '/new',
+    getParentRoute: () => AuthedCalendarTemplatesRouteRoute,
   } as any)
 const AuthedAdminUsersUserIdIndexRoute =
   AuthedAdminUsersUserIdIndexRouteImport.update({
@@ -192,16 +192,16 @@ const AuthedAdminUsersUserIdIndexRoute =
     path: '/',
     getParentRoute: () => AuthedAdminUsersUserIdRouteRoute,
   } as any)
-const AuthedAdminUsersUserIdProfileRoute =
-  AuthedAdminUsersUserIdProfileRouteImport.update({
-    id: '/profile',
-    path: '/profile',
-    getParentRoute: () => AuthedAdminUsersUserIdRouteRoute,
-  } as any)
 const AuthedAdminUsersUserIdHistoryRoute =
   AuthedAdminUsersUserIdHistoryRouteImport.update({
     id: '/history',
     path: '/history',
+    getParentRoute: () => AuthedAdminUsersUserIdRouteRoute,
+  } as any)
+const AuthedAdminUsersUserIdProfileRoute =
+  AuthedAdminUsersUserIdProfileRouteImport.update({
+    id: '/profile',
+    path: '/profile',
     getParentRoute: () => AuthedAdminUsersUserIdRouteRoute,
   } as any)
 
@@ -392,11 +392,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/pending': {
-      id: '/pending'
-      path: '/pending'
-      fullPath: '/pending'
-      preLoaderRoute: typeof PendingRouteImport
+    '/_auth': {
+      id: '/_auth'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authed': {
@@ -406,26 +406,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_auth': {
-      id: '/_auth'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthRouteRouteImport
+    '/pending': {
+      id: '/pending'
+      path: '/pending'
+      fullPath: '/pending'
+      preLoaderRoute: typeof PendingRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/_authed/': {
-      id: '/_authed/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof AuthedIndexRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_auth/sign-in': {
-      id: '/_auth/sign-in'
-      path: '/sign-in'
-      fullPath: '/sign-in'
-      preLoaderRoute: typeof AuthSignInRouteImport
-      parentRoute: typeof AuthRouteRoute
     }
     '/_auth/register': {
       id: '/_auth/register'
@@ -434,18 +420,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRegisterRouteImport
       parentRoute: typeof AuthRouteRoute
     }
+    '/_auth/sign-in': {
+      id: '/_auth/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof AuthSignInRouteImport
+      parentRoute: typeof AuthRouteRoute
+    }
+    '/_authed/': {
+      id: '/_authed/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthedIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
     '/_authed/admin': {
       id: '/_authed/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthedAdminRouteRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/calendar/': {
-      id: '/_authed/calendar/'
-      path: '/calendar'
-      fullPath: '/calendar/'
-      preLoaderRoute: typeof AuthedCalendarIndexRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
     '/_authed/admin/': {
@@ -455,19 +448,12 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAdminIndexRouteImport
       parentRoute: typeof AuthedAdminRouteRoute
     }
-    '/api/auth/$': {
-      id: '/api/auth/$'
-      path: '/api/auth/$'
-      fullPath: '/api/auth/$'
-      preLoaderRoute: typeof ApiAuthSplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authed/calendar/templates': {
-      id: '/_authed/calendar/templates'
-      path: '/calendar/templates'
-      fullPath: '/calendar/templates'
-      preLoaderRoute: typeof AuthedCalendarTemplatesRouteRouteImport
-      parentRoute: typeof AuthedRouteRoute
+    '/_authed/admin/certifications': {
+      id: '/_authed/admin/certifications'
+      path: '/certifications'
+      fullPath: '/admin/certifications'
+      preLoaderRoute: typeof AuthedAdminCertificationsRouteRouteImport
+      parentRoute: typeof AuthedAdminRouteRoute
     }
     '/_authed/admin/positions': {
       id: '/_authed/admin/positions'
@@ -476,95 +462,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAdminPositionsRouteRouteImport
       parentRoute: typeof AuthedAdminRouteRoute
     }
-    '/_authed/admin/certifications': {
-      id: '/_authed/admin/certifications'
-      path: '/certifications'
-      fullPath: '/admin/certifications'
-      preLoaderRoute: typeof AuthedAdminCertificationsRouteRouteImport
-      parentRoute: typeof AuthedAdminRouteRoute
+    '/_authed/calendar/': {
+      id: '/_authed/calendar/'
+      path: '/calendar'
+      fullPath: '/calendar/'
+      preLoaderRoute: typeof AuthedCalendarIndexRouteImport
+      parentRoute: typeof AuthedRouteRoute
     }
-    '/_authed/calendar/templates/': {
-      id: '/_authed/calendar/templates/'
-      path: '/'
-      fullPath: '/calendar/templates/'
-      preLoaderRoute: typeof AuthedCalendarTemplatesIndexRouteImport
-      parentRoute: typeof AuthedCalendarTemplatesRouteRoute
+    '/_authed/calendar/templates': {
+      id: '/_authed/calendar/templates'
+      path: '/calendar/templates'
+      fullPath: '/calendar/templates'
+      preLoaderRoute: typeof AuthedCalendarTemplatesRouteRouteImport
+      parentRoute: typeof AuthedRouteRoute
     }
-    '/_authed/admin/users/': {
-      id: '/_authed/admin/users/'
-      path: '/users'
-      fullPath: '/admin/users/'
-      preLoaderRoute: typeof AuthedAdminUsersIndexRouteImport
-      parentRoute: typeof AuthedAdminRouteRoute
-    }
-    '/_authed/admin/positions/': {
-      id: '/_authed/admin/positions/'
-      path: '/'
-      fullPath: '/admin/positions/'
-      preLoaderRoute: typeof AuthedAdminPositionsIndexRouteImport
-      parentRoute: typeof AuthedAdminPositionsRouteRoute
+    '/api/auth/$': {
+      id: '/api/auth/$'
+      path: '/api/auth/$'
+      fullPath: '/api/auth/$'
+      preLoaderRoute: typeof ApiAuthSplatRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_authed/admin/certifications/': {
       id: '/_authed/admin/certifications/'
       path: '/'
       fullPath: '/admin/certifications/'
       preLoaderRoute: typeof AuthedAdminCertificationsIndexRouteImport
-      parentRoute: typeof AuthedAdminCertificationsRouteRoute
-    }
-    '/_authed/calendar/templates/new': {
-      id: '/_authed/calendar/templates/new'
-      path: '/new'
-      fullPath: '/calendar/templates/new'
-      preLoaderRoute: typeof AuthedCalendarTemplatesNewRouteImport
-      parentRoute: typeof AuthedCalendarTemplatesRouteRoute
-    }
-    '/_authed/calendar/templates/$templateId': {
-      id: '/_authed/calendar/templates/$templateId'
-      path: '/$templateId'
-      fullPath: '/calendar/templates/$templateId'
-      preLoaderRoute: typeof AuthedCalendarTemplatesTemplateIdRouteImport
-      parentRoute: typeof AuthedCalendarTemplatesRouteRoute
-    }
-    '/_authed/calendar/events/new': {
-      id: '/_authed/calendar/events/new'
-      path: '/calendar/events/new'
-      fullPath: '/calendar/events/new'
-      preLoaderRoute: typeof AuthedCalendarEventsNewRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/calendar/events/$eventId': {
-      id: '/_authed/calendar/events/$eventId'
-      path: '/calendar/events/$eventId'
-      fullPath: '/calendar/events/$eventId'
-      preLoaderRoute: typeof AuthedCalendarEventsEventIdRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/calendar/$year/$month': {
-      id: '/_authed/calendar/$year/$month'
-      path: '/calendar/$year/$month'
-      fullPath: '/calendar/$year/$month'
-      preLoaderRoute: typeof AuthedCalendarYearMonthRouteImport
-      parentRoute: typeof AuthedRouteRoute
-    }
-    '/_authed/admin/positions/new': {
-      id: '/_authed/admin/positions/new'
-      path: '/new'
-      fullPath: '/admin/positions/new'
-      preLoaderRoute: typeof AuthedAdminPositionsNewRouteImport
-      parentRoute: typeof AuthedAdminPositionsRouteRoute
-    }
-    '/_authed/admin/positions/$positionId': {
-      id: '/_authed/admin/positions/$positionId'
-      path: '/$positionId'
-      fullPath: '/admin/positions/$positionId'
-      preLoaderRoute: typeof AuthedAdminPositionsPositionIdRouteImport
-      parentRoute: typeof AuthedAdminPositionsRouteRoute
-    }
-    '/_authed/admin/certifications/new': {
-      id: '/_authed/admin/certifications/new'
-      path: '/new'
-      fullPath: '/admin/certifications/new'
-      preLoaderRoute: typeof AuthedAdminCertificationsNewRouteImport
       parentRoute: typeof AuthedAdminCertificationsRouteRoute
     }
     '/_authed/admin/certifications/$certificationId': {
@@ -574,12 +497,89 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAdminCertificationsCertificationIdRouteImport
       parentRoute: typeof AuthedAdminCertificationsRouteRoute
     }
+    '/_authed/admin/certifications/new': {
+      id: '/_authed/admin/certifications/new'
+      path: '/new'
+      fullPath: '/admin/certifications/new'
+      preLoaderRoute: typeof AuthedAdminCertificationsNewRouteImport
+      parentRoute: typeof AuthedAdminCertificationsRouteRoute
+    }
+    '/_authed/admin/positions/': {
+      id: '/_authed/admin/positions/'
+      path: '/'
+      fullPath: '/admin/positions/'
+      preLoaderRoute: typeof AuthedAdminPositionsIndexRouteImport
+      parentRoute: typeof AuthedAdminPositionsRouteRoute
+    }
+    '/_authed/admin/positions/$positionId': {
+      id: '/_authed/admin/positions/$positionId'
+      path: '/$positionId'
+      fullPath: '/admin/positions/$positionId'
+      preLoaderRoute: typeof AuthedAdminPositionsPositionIdRouteImport
+      parentRoute: typeof AuthedAdminPositionsRouteRoute
+    }
+    '/_authed/admin/positions/new': {
+      id: '/_authed/admin/positions/new'
+      path: '/new'
+      fullPath: '/admin/positions/new'
+      preLoaderRoute: typeof AuthedAdminPositionsNewRouteImport
+      parentRoute: typeof AuthedAdminPositionsRouteRoute
+    }
+    '/_authed/admin/users/': {
+      id: '/_authed/admin/users/'
+      path: '/users'
+      fullPath: '/admin/users/'
+      preLoaderRoute: typeof AuthedAdminUsersIndexRouteImport
+      parentRoute: typeof AuthedAdminRouteRoute
+    }
     '/_authed/admin/users/$userId': {
       id: '/_authed/admin/users/$userId'
       path: '/users/$userId'
       fullPath: '/admin/users/$userId'
       preLoaderRoute: typeof AuthedAdminUsersUserIdRouteRouteImport
       parentRoute: typeof AuthedAdminRouteRoute
+    }
+    '/_authed/calendar/$year/$month': {
+      id: '/_authed/calendar/$year/$month'
+      path: '/calendar/$year/$month'
+      fullPath: '/calendar/$year/$month'
+      preLoaderRoute: typeof AuthedCalendarYearMonthRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/calendar/events/$eventId': {
+      id: '/_authed/calendar/events/$eventId'
+      path: '/calendar/events/$eventId'
+      fullPath: '/calendar/events/$eventId'
+      preLoaderRoute: typeof AuthedCalendarEventsEventIdRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/calendar/events/new': {
+      id: '/_authed/calendar/events/new'
+      path: '/calendar/events/new'
+      fullPath: '/calendar/events/new'
+      preLoaderRoute: typeof AuthedCalendarEventsNewRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/calendar/templates/': {
+      id: '/_authed/calendar/templates/'
+      path: '/'
+      fullPath: '/calendar/templates/'
+      preLoaderRoute: typeof AuthedCalendarTemplatesIndexRouteImport
+      parentRoute: typeof AuthedCalendarTemplatesRouteRoute
+    }
+    '/_authed/calendar/templates/$templateId': {
+      id: '/_authed/calendar/templates/$templateId'
+      path: '/$templateId'
+      fullPath: '/calendar/templates/$templateId'
+      preLoaderRoute: typeof AuthedCalendarTemplatesTemplateIdRouteImport
+      parentRoute: typeof AuthedCalendarTemplatesRouteRoute
+    }
+    '/_authed/calendar/templates/new': {
+      id: '/_authed/calendar/templates/new'
+      path: '/new'
+      fullPath: '/calendar/templates/new'
+      preLoaderRoute: typeof AuthedCalendarTemplatesNewRouteImport
+      parentRoute: typeof AuthedCalendarTemplatesRouteRoute
     }
     '/_authed/admin/users/$userId/': {
       id: '/_authed/admin/users/$userId/'
@@ -588,18 +588,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthedAdminUsersUserIdIndexRouteImport
       parentRoute: typeof AuthedAdminUsersUserIdRouteRoute
     }
-    '/_authed/admin/users/$userId/profile': {
-      id: '/_authed/admin/users/$userId/profile'
-      path: '/profile'
-      fullPath: '/admin/users/$userId/profile'
-      preLoaderRoute: typeof AuthedAdminUsersUserIdProfileRouteImport
-      parentRoute: typeof AuthedAdminUsersUserIdRouteRoute
-    }
     '/_authed/admin/users/$userId/history': {
       id: '/_authed/admin/users/$userId/history'
       path: '/history'
       fullPath: '/admin/users/$userId/history'
       preLoaderRoute: typeof AuthedAdminUsersUserIdHistoryRouteImport
+      parentRoute: typeof AuthedAdminUsersUserIdRouteRoute
+    }
+    '/_authed/admin/users/$userId/profile': {
+      id: '/_authed/admin/users/$userId/profile'
+      path: '/profile'
+      fullPath: '/admin/users/$userId/profile'
+      preLoaderRoute: typeof AuthedAdminUsersUserIdProfileRouteImport
       parentRoute: typeof AuthedAdminUsersUserIdRouteRoute
     }
   }

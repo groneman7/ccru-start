@@ -17,19 +17,19 @@ export const allCertificationsServerFn = createServerFn().handler(async () => {
 });
 
 export const getCertificationByIdServerFn = createServerFn()
-  .inputValidator(object({ certificationId: uuidv7() }))
+  .validator(object({ certificationId: uuidv7() }))
   .handler(async ({ data }) => {
     return await certification.byId(data);
   });
 
 export const createCertificationServerFn = createServerFn()
-  .inputValidator(createCertificationSchema)
+  .validator(createCertificationSchema)
   .handler(async ({ data }) => {
     return await certification.create(data);
   });
 
 export const updateCertificationServerFn = createServerFn()
-  .inputValidator(updateCertificationSchema)
+  .validator(updateCertificationSchema)
   .handler(async ({ data }) => {
     return await certification.update(data);
   });
@@ -47,19 +47,19 @@ export const allUsersForComboboxServerFn = createServerFn().handler(
 );
 
 export const getUserByIdServerFn = createServerFn()
-  .inputValidator(object({ userId: uuidv7() }))
+  .validator(object({ userId: uuidv7() }))
   .handler(async ({ data }) => {
     return await user.byId(data);
   });
 
 export const completeOnboardingServerFn = createServerFn()
-  .inputValidator(object({ userId: string() }))
+  .validator(object({ userId: string() }))
   .handler(async ({ data }) => {
     return await user.completeOnboarding(data);
   });
 
 export const updateOnboardingProfileServerFn = createServerFn()
-  .inputValidator(
+  .validator(
     object({
       userId: string(),
       display: optional(string()),
@@ -76,21 +76,19 @@ export const updateOnboardingProfileServerFn = createServerFn()
   });
 
 export const updateSystemRoleServerFn = createServerFn()
-  .inputValidator(object({ userId: string(), role: string() }))
+  .validator(object({ userId: string(), role: string() }))
   .handler(async ({ data }) => {
     return await user.updateSystemRole(data);
   });
 
 export const updateUserStatusServerFn = createServerFn()
-  .inputValidator(
-    object({ userId: string(), status: userToggleableStatusSchema }),
-  )
+  .validator(object({ userId: string(), status: userToggleableStatusSchema }))
   .handler(async ({ data }) => {
     return await user.updateStatus(data);
   });
 
 export const updateUserTypeServerFn = createServerFn()
-  .inputValidator(object({ userId: string(), userTypeId: string() }))
+  .validator(object({ userId: string(), userTypeId: string() }))
   .handler(async ({ data }) => {
     return await user.updateUserType(data);
   });
