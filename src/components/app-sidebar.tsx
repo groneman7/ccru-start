@@ -1,9 +1,19 @@
 // import { usePostHog } from '@posthog/react';
-import { IconUserCircle } from '@tabler/icons-react';
+import {
+  IconBriefcase,
+  IconCalendarWeek,
+  IconCertificate2,
+  IconChevronRight,
+  IconPointer2,
+  IconUserCircle,
+} from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Link, useNavigate, useRouteContext } from '@tanstack/react-router';
 // import { SignedOut } from '~/components';
 import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
@@ -13,10 +23,14 @@ import {
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
+  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
+  SidebarMenuSub,
+  SidebarMenuSubButton,
+  SidebarMenuSubItem,
 } from '~/components/ui';
 import { authSessionQueryKey } from '~/features/auth/queries';
 import { authClient } from '~/lib/auth-client';
@@ -51,27 +65,78 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               <SidebarMenuItem>
-                <Link to="/calendar">
-                  <SidebarMenuButton>Calendar</SidebarMenuButton>
-                </Link>
+                <SidebarMenuButton
+                  tooltip="Calendar"
+                  render={<Link to="/calendar" />}
+                >
+                  <IconCalendarWeek />
+                  Calendar
+                </SidebarMenuButton>
               </SidebarMenuItem>
-              {permissions.can('manage', 'System') ? (
-                <SidebarMenuItem>
-                  <SidebarMenuButton>
-                    <Link to="/admin">Admin</Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ) : null}
-              {permissions.can('dev-tools', 'System') ? (
-                <SidebarMenuItem>
-                  <SidebarMenuButton>
-                    <Link to="/dev-tools">Developer Tools</Link>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ) : null}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        {permissions.can('manage', 'System') ? (
+          <SidebarGroup>
+            <SidebarGroupLabel>Admin Tools</SidebarGroupLabel>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Certifications"
+                  render={<Link to="/admin/certifications" />}
+                >
+                  <IconCertificate2 />
+                  Certifications
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Positions"
+                  render={<Link to="/admin/positions" />}
+                >
+                  <IconBriefcase />
+                  Positions
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="Users"
+                  render={<Link to="/admin/users" />}
+                >
+                  <IconUserCircle />
+                  Users
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroup>
+        ) : null}
+        {permissions.can('dev-tools', 'System') ? (
+          <SidebarGroup>
+            <SidebarGroupLabel>Developer Tools</SidebarGroupLabel>
+            <SidebarMenu>
+              <Collapsible asChild defaultOpen className="group/collapsible">
+                <SidebarMenuItem>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton tooltip="UI Testing">
+                      <IconPointer2 />
+                      <span>UI Testing</span>
+                      <IconChevronRight className="ml-auto transition-transform duration-150 group-data-[state=open]/collapsible:rotate-90" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      <SidebarMenuSubItem>
+                        <SidebarMenuSubButton render={<Link to="/" />}>
+                          Pragmatic DnD Tree
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </SidebarMenuItem>
+              </Collapsible>
+            </SidebarMenu>
+          </SidebarGroup>
+        ) : null}
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>

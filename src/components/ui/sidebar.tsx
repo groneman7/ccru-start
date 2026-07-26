@@ -514,7 +514,10 @@ function SidebarMenuButton({
       },
       props,
     ),
-    render: !tooltip ? render : TooltipTrigger,
+    // Compose the tooltip trigger with a consumer-provided rendered element
+    // (for example, a router Link). Passing TooltipTrigger directly here
+    // replaces `render`, which causes the link behavior to be lost.
+    render: tooltip ? <TooltipTrigger render={render} /> : render,
     state: {
       slot: 'sidebar-menu-button',
       sidebar: 'menu-button',
