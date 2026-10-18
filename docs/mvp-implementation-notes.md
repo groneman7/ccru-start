@@ -70,3 +70,7 @@ Propose a deletion timestamp, actor, and deletion-operation identifier for casca
 ## October 18 timestamp verification
 
 The source-of-truth assignment table `junctionSlotsInCalendar` in `src/server/db/schema.ts`, the generated `drizzle/schema.ts`, the initial migration, and checked-in migration snapshots contain only slot ID, shift ID, user ID, and status. No explicit assignment creation/update timestamp is defined. Slot creation writes shift/user IDs and reassignment updates the user ID; neither writes an assignment timestamp. Slot UUIDs default to `uuid_generate_v7()`; UUID generation time, if recoverable for a particular ID, would describe slot creation and not necessarily the current owner’s assignment time after replacement. A read-only `information_schema.columns` query against the configured live database on October 18 confirmed the same four columns on `calendar.junction_slots` and no timestamps on `calendar.junction_shifts`. Only column metadata was read; no assignment records were read or changed.
+
+## October 18 retained-data audit
+
+A later [aggregate-only inspection for issue #3](audits/2026-10-18-retained-data.md) counted the actual retained-data gaps and audited physical-delete paths in an enforced read-only transaction. It records the required migration decisions and includes reproducible SQL. This later inspection extends the earlier column-only observation; it does not approve a repair policy or change application data.
