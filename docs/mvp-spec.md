@@ -1,6 +1,6 @@
 # Scheduling MVP specification
 
-Publication status: draft prepared for `/to-spec`; awaiting confirmation of the testing seams before creating the GitHub issue with `ready-for-agent`.
+Publication status: published as [GitHub issue #2](https://github.com/groneman7/ccru-start/issues/2) with `ready-for-agent`; the product owner confirmed the testing seams on October 18, 2026.
 
 ## Problem Statement
 
@@ -211,7 +211,7 @@ Use the approved domain vocabulary and preserve the boundaries between opt-in co
 
 ## Testing Decisions
 
-**Proposed seams, awaiting the workflow's user confirmation:**
+**Testing seams approved by the product owner on October 18, 2026:**
 
 - **Primary seam: server operations.** Exercise the existing server-function command/query boundary with real session authorization and an isolated PostgreSQL test database. Drive calendar, users, grants/settings, certifications, invitations, review/notification reads, cancellation/deletion/restoration, and audience projections through the authoritative operations callers actually use. Extend the existing boundary instead of creating test-only entry points. Assert returned/persisted domain outcomes, permission denials, and visible messages; avoid mocks of repositories, transaction counts, internal helper calls, or exact implementation structure. DB fixtures establish scenarios without testing through repository methods.
 - **Authentication boundary where required.** Test Better Auth's public handlers for email/password and Google onboarding/claim behavior, session revocation, plugin authorization, and email change. Replace only external provider/email delivery with controlled test adapters; exercise application identity/authorization and database state for real. Do not contact real volunteers or providers in tests. This additional boundary is necessary because auth/plugin endpoints can bypass ordinary domain server functions.
@@ -257,5 +257,5 @@ Use the approved domain vocabulary and preserve the boundaries between opt-in co
 - [Implementation notes](mvp-implementation-notes.md) contain recommendations and dated observations, not additional approved business rules. Rechecked source on October 18, 2026 confirms existing server-function/service/repository boundaries, broadly permissive current authorization, active/deleted slot state without assignment timestamps, nullable event/template end, physical calendar deletion paths, and placeholder profile/history UI. No live domain rows were read and no application/database behavior was changed while preparing this spec.
 - Suggested delivery order: lifecycle/settings/authorization/schema foundations; identity/onboarding/invitations/certifications/user management; expressions/shifts/templates/locations; transactional slot commands/monthly limits/withdrawals/replacement; requested detection/targeted resolution; notifications/alerts/cancellation/restoration; complete audience/history UI. Include schema/service/UI in practical vertical slices and add behavior checks with each slice. This is one MVP spec; implementation tickets can be derived separately.
 - There are no unresolved interview questions. The sole conditional product prerequisite is an explicit repair/backfill decision if retained existing data actually lacks required values; inspect that data at migration time and block only dependent work.
-- Intended tracker: GitHub Issues in `groneman7/ccru-start`; intended triage label: `ready-for-agent`. No open issues were present during the duplicate check. Publication is pending the `/to-spec` testing-seam check; no issue has yet been created.
-- Before GitHub publication, convert these document-relative references to repository links pinned to the baseline revision when available. The baseline/glossary/ADRs are currently untracked locally, so do not invent remotely accessible source links or imply they are committed. Preserve the local source documents and do not commit them merely to publish this issue.
+- Tracker: GitHub Issues in `groneman7/ccru-start`; triage label: `ready-for-agent`. The product owner approved the testing seams on October 18, 2026.
+- Source availability: the baseline, glossary, and ADRs are currently untracked locally. The issue names these local sources without inventing remotely accessible links or implying they are committed. Preserve the source documents; publishing this issue does not commit or publish them.

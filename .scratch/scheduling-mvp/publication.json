@@ -1,0 +1,232 @@
+{
+  "parent": "https://github.com/groneman7/ccru-start/issues/2",
+  "approved": true,
+  "tickets": {
+    "1": {
+      "number": 3,
+      "url": "https://github.com/groneman7/ccru-start/issues/3",
+      "parent_linked": true,
+      "blockers_linked": [],
+      "id": 5913366311
+    },
+    "2": {
+      "number": 4,
+      "url": "https://github.com/groneman7/ccru-start/issues/4",
+      "parent_linked": true,
+      "blockers_linked": [],
+      "id": 5913367006
+    },
+    "3": {
+      "number": 5,
+      "url": "https://github.com/groneman7/ccru-start/issues/5",
+      "parent_linked": true,
+      "blockers_linked": [2],
+      "id": 5913367714
+    },
+    "4": {
+      "number": 6,
+      "url": "https://github.com/groneman7/ccru-start/issues/6",
+      "parent_linked": true,
+      "blockers_linked": [1, 2],
+      "id": 5913368810
+    },
+    "5": {
+      "number": 7,
+      "url": "https://github.com/groneman7/ccru-start/issues/7",
+      "parent_linked": true,
+      "blockers_linked": [4],
+      "id": 5913370282
+    },
+    "6": {
+      "number": 8,
+      "url": "https://github.com/groneman7/ccru-start/issues/8",
+      "parent_linked": true,
+      "blockers_linked": [5],
+      "id": 5913371519
+    },
+    "7": {
+      "number": 9,
+      "url": "https://github.com/groneman7/ccru-start/issues/9",
+      "parent_linked": true,
+      "blockers_linked": [3, 4],
+      "id": 5913372731
+    },
+    "8": {
+      "number": 10,
+      "url": "https://github.com/groneman7/ccru-start/issues/10",
+      "parent_linked": true,
+      "blockers_linked": [2],
+      "id": 5913374099
+    },
+    "9": {
+      "number": 11,
+      "url": "https://github.com/groneman7/ccru-start/issues/11",
+      "parent_linked": true,
+      "blockers_linked": [3, 4, 8],
+      "id": 5913375248
+    },
+    "10": {
+      "number": 12,
+      "url": "https://github.com/groneman7/ccru-start/issues/12",
+      "parent_linked": true,
+      "blockers_linked": [9],
+      "id": 5913376939
+    },
+    "11": {
+      "number": 13,
+      "url": "https://github.com/groneman7/ccru-start/issues/13",
+      "parent_linked": true,
+      "blockers_linked": [1, 2],
+      "id": 5913378007
+    },
+    "12": {
+      "number": 14,
+      "url": "https://github.com/groneman7/ccru-start/issues/14",
+      "parent_linked": true,
+      "blockers_linked": [11],
+      "id": 5913379380
+    },
+    "13": {
+      "number": 15,
+      "url": "https://github.com/groneman7/ccru-start/issues/15",
+      "parent_linked": true,
+      "blockers_linked": [5, 10, 11],
+      "id": 5913380606
+    },
+    "14": {
+      "number": 16,
+      "url": "https://github.com/groneman7/ccru-start/issues/16",
+      "parent_linked": true,
+      "blockers_linked": [13],
+      "id": 5913382345
+    },
+    "15": {
+      "number": 17,
+      "url": "https://github.com/groneman7/ccru-start/issues/17",
+      "parent_linked": true,
+      "blockers_linked": [13],
+      "id": 5913383518
+    },
+    "16": {
+      "number": 18,
+      "url": "https://github.com/groneman7/ccru-start/issues/18",
+      "parent_linked": true,
+      "blockers_linked": [15],
+      "id": 5913384661
+    },
+    "17": {
+      "number": 19,
+      "url": "https://github.com/groneman7/ccru-start/issues/19",
+      "parent_linked": true,
+      "blockers_linked": [14, 16],
+      "id": 5913385878
+    },
+    "18": {
+      "number": 20,
+      "url": "https://github.com/groneman7/ccru-start/issues/20",
+      "parent_linked": true,
+      "blockers_linked": [16],
+      "id": 5913387315
+    },
+    "19": {
+      "number": 21,
+      "url": "https://github.com/groneman7/ccru-start/issues/21",
+      "parent_linked": true,
+      "blockers_linked": [18],
+      "id": 5913388555
+    },
+    "20": {
+      "number": 22,
+      "url": "https://github.com/groneman7/ccru-start/issues/22",
+      "parent_linked": true,
+      "blockers_linked": [17, 19],
+      "id": 5913389711
+    },
+    "21": {
+      "number": 23,
+      "url": "https://github.com/groneman7/ccru-start/issues/23",
+      "parent_linked": true,
+      "blockers_linked": [20],
+      "id": 5913391030
+    },
+    "22": {
+      "number": 24,
+      "url": "https://github.com/groneman7/ccru-start/issues/24",
+      "parent_linked": true,
+      "blockers_linked": [20],
+      "id": 5913392073
+    },
+    "23": {
+      "number": 25,
+      "url": "https://github.com/groneman7/ccru-start/issues/25",
+      "parent_linked": true,
+      "blockers_linked": [20],
+      "id": 5913393116
+    },
+    "24": {
+      "number": 26,
+      "url": "https://github.com/groneman7/ccru-start/issues/26",
+      "parent_linked": true,
+      "blockers_linked": [23],
+      "id": 5913394137
+    },
+    "25": {
+      "number": 27,
+      "url": "https://github.com/groneman7/ccru-start/issues/27",
+      "parent_linked": true,
+      "blockers_linked": [24],
+      "id": 5913395182
+    },
+    "26": {
+      "number": 28,
+      "url": "https://github.com/groneman7/ccru-start/issues/28",
+      "parent_linked": true,
+      "blockers_linked": [25],
+      "id": 5913396315
+    },
+    "27": {
+      "number": 29,
+      "url": "https://github.com/groneman7/ccru-start/issues/29",
+      "parent_linked": true,
+      "blockers_linked": [12, 25],
+      "id": 5913397302
+    },
+    "28": {
+      "number": 30,
+      "url": "https://github.com/groneman7/ccru-start/issues/30",
+      "parent_linked": true,
+      "blockers_linked": [27],
+      "id": 5913398646
+    },
+    "29": {
+      "number": 31,
+      "url": "https://github.com/groneman7/ccru-start/issues/31",
+      "parent_linked": true,
+      "blockers_linked": [13],
+      "id": 5913399713
+    },
+    "30": {
+      "number": 33,
+      "url": "https://github.com/groneman7/ccru-start/issues/33",
+      "parent_linked": true,
+      "blockers_linked": [28, 29],
+      "id": 5913400888
+    },
+    "31": {
+      "number": 34,
+      "url": "https://github.com/groneman7/ccru-start/issues/34",
+      "parent_linked": true,
+      "blockers_linked": [22, 26, 30],
+      "id": 5913402289
+    },
+    "32": {
+      "number": 35,
+      "url": "https://github.com/groneman7/ccru-start/issues/35",
+      "parent_linked": true,
+      "blockers_linked": [31],
+      "id": 5913403986
+    }
+  },
+  "publication_complete": true,
+  "verified": true
+}

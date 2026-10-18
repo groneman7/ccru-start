@@ -1,0 +1,563 @@
+{
+  "parent": "https://github.com/groneman7/ccru-start/issues/2",
+  "status": "Published and verified: 32 ready-for-agent sub-issues and 43 native blocking relationships",
+  "tickets": [
+    {
+      "id": 1,
+      "title": "Audit retained-data readiness for the scheduling MVP",
+      "blocked_by": [],
+      "delivers": "A read-only readiness report identifying exactly which retained records need an approved repair policy before affected schema changes or monthly enforcement can proceed.",
+      "stories": [114, 115],
+      "criteria": [
+        "Inspect the actual records that must be retained, using read-only access, and report counts/categories of missing or ambiguous user statuses, missing event/template end times, missing current-owner assignment timestamps, and any unexpected user-certification verification data. Do not expose personal data in the report.",
+        "Document the agreed legacy active-slot to confirmed and deleted-slot to soft-deleted mappings, preserving identity, roles, explicit statuses, users, and relationships.",
+        "Distinguish slot creation from the current owner's assignment time; do not infer priority from UUIDs, a shared migration timestamp, or another unapproved fallback.",
+        "Produce an actionable migration-readiness result, including the specific product-owner decisions needed if incomplete retained data exists. Inspection is complete when these findings are recorded; approval of any repair policy remains an explicit prerequisite for the affected downstream migration.",
+        "Audit physical-delete operations and cascading declarations so the relevant workflow tickets can replace them without silently losing domain records.",
+        "Do not mutate records, run production migrations, or deploy. If live read access is unavailable, report that limitation rather than claiming the retained-data prerequisite is resolved; unrelated implementation can proceed."
+      ],
+      "issue_number": 3,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/3"
+    },
+    {
+      "id": 2,
+      "title": "Enforce hierarchical roles and independent Officer capabilities",
+      "blocked_by": [],
+      "delivers": "Administrators can grant the two Officer capabilities in the UI, while existing application and authentication operations enforce the approved authority boundaries on the server.",
+      "stories": [24, 25, 26, 27, 28],
+      "criteria": [
+        "Persist and manage exactly the scheduling-management and user-management Officer grants; ordinary Users cannot receive them, Officers cannot delegate them, and Administrator/Developer effectively have both.",
+        "Keep exactly one hierarchical role per user. Administrators can change User/Officer/Administrator roles; only Developers can grant Developer or change an existing Developer's role.",
+        "Resolve actor identity from the trusted session and protect existing calendar, profile, certification, authorization, onboarding, and relevant Better Auth/plugin operations. Client actor IDs, roles, grants, or completion flags cannot establish authority.",
+        "Preserve every Officer's full-profile viewing and saved-location-management authority independently of mutation grants. Restrict restoration to Developers and avoid a granular authorization-rules editor.",
+        "First consolidate only the guards/entry points necessary to close existing bypasses; retain the application stack and existing usable UI rather than introducing a separate architecture rewrite.",
+        "Introduce the minimal isolated PostgreSQL/session test harness with this behavior slice. Direct-operation and auth/plugin tests prove the role/grant matrix and bypass denials; UI checks verify grant controls reflect effective authority. Preserve explicit existing roles rather than inventing missing user lifecycle values."
+      ],
+      "issue_number": 4,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/4"
+    },
+    {
+      "id": 3,
+      "title": "Deliver authorized profile management and user type labels",
+      "blocked_by": [2],
+      "delivers": "Every Officer can view full profiles, and user managers can edit managed profile information and reusable user type labels through working profile screens.",
+      "stories": [24, 30],
+      "criteria": [
+        "Replace placeholder profile views with full permitted profile/contact information; every Officer can view others, while ordinary Users cannot query others' full profiles even through direct operations.",
+        "User managers can edit permitted managed profile fields and create/rename/assign reusable user type labels; viewing a profile never implicitly grants mutation authority.",
+        "Treat user type as a display label only, separate from system role, Officer grants, and scheduling eligibility.",
+        "Retain user type records through soft deletion and reject deletion while assigned to a non-deleted profile; deleted references alone do not block it.",
+        "Use current profile/type values in permitted responses and avoid adding historical snapshots or exposing extra profile fields through selection/combobox queries.",
+        "Verify direct-operation access and mutation denials for each audience, along with profile rendering and user type management. Later certification and history slices extend these views with their own domain information."
+      ],
+      "issue_number": 5,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/5"
+    },
+    {
+      "id": 4,
+      "title": "Activate verified registration through required onboarding",
+      "blocked_by": [1, 2],
+      "delivers": "Email/password and Google users follow organization registration mode, verify their email, and complete required onboarding before ordinary scheduling access becomes active.",
+      "stories": [3, 5, 6, 7, 8, 9, 21, 29],
+      "criteria": [
+        "Persist organization registration mode with invitation-only as its initial value. Administrator/Developer can change it in the UI; open registration activates ordinary users after verified email and completed onboarding without approval.",
+        "Both authentication providers deny uninvited account creation in invitation-only mode and show the instruction to contact the organization. The invitation slice later supplies the permitted invited-identity path.",
+        "Require first name, last name, email, and a phone number with country code; accept ordinary formatting and normalize phone without phone verification. Middle name, image, and post-nominals remain optional; generate display name from name components.",
+        "Derive onboarding completion and activation server-side, preserve existing verified identity, and deny volunteer scheduling access to unverified, incomplete, invited, or inactive identities as appropriate. Do not trust a client-set completion timestamp.",
+        "Use controlled external Google/email adapters for auth-handler tests while exercising real application identity/session/database behavior. Verify both-provider gating and completed/incomplete onboarding outcomes through the UI and server.",
+        "Use the retained-data audit findings before changing required status/name fields. If retained data needs repair, obtain the explicit policy before that migration/activation behavior is enabled; do not invent statuses or change explicit existing roles. No production migration or deployment is authorized."
+      ],
+      "issue_number": 6,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/6"
+    },
+    {
+      "id": 5,
+      "title": "Create invited profiles and atomically claim their identities",
+      "blocked_by": [4],
+      "delivers": "A user manager can pre-create a profile, send/resend/revoke an invitation, and the volunteer can claim that same profile through either supported authentication method.",
+      "stories": [4, 13, 14, 15, 16, 17, 20, 21, 29],
+      "criteria": [
+        "Provide a create-profile form with first/last name and email, optional middle name, and optional separate invitation sending; phone may be supplied at onboarding. Preserve the created profile when an invitation is revoked.",
+        "Deliver an invitation through the required email mechanism. Invitations do not expire; resend invalidates the previous link and revoke prevents claiming through that credential.",
+        "Verified case-insensitive matching email through email/password or Google claims the existing profile rather than creating a duplicate; preserve its identity and existing assignments. Review account linking against this verified identity contract.",
+        "Make claim/resend/revoke atomic: the first completed operation governs subsequent valid actions. A claimed profile cannot subsequently be treated as an unclaimed invitation.",
+        "In open mode, verified matching self-registration may claim an existing profile after invitation revocation, but revoked credentials remain unusable. Outstanding invitations survive a change to open mode.",
+        "Unclaimed profiles cannot obtain volunteer scheduling access until verified sign-in and required onboarding. Expose invited profiles as permitted scheduler assignment targets without making inactive users assignable.",
+        "Test both providers, mismatched/unverified identity, case-insensitive duplicates, stale invitation links, retained assignments, and claim/resend/revoke races with a test email sink and isolated database."
+      ],
+      "issue_number": 7,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/7"
+    },
+    {
+      "id": 6,
+      "title": "Create and invite profiles with per-row bulk results",
+      "blocked_by": [5],
+      "delivers": "User managers can submit a multi-row creation/invitation form and retain successful rows even when other rows fail.",
+      "stories": [18, 19],
+      "criteria": [
+        "Provide a multi-row form using the same profile creation and optional invitation commands as individual creation; do not add CSV upload.",
+        "Persist valid rows and report each invalid/duplicate row individually, including duplicate emails within the batch and emails belonging to existing profiles.",
+        "An existing-email row fails rather than silently editing, merging, or reinviting an existing profile.",
+        "Retain successful profile/invitation results when another row fails, and show which rows can be corrected without re-running successful creation implicitly.",
+        "Verify partial success, concurrent duplicate creation, per-row authorization/validation, delivery outcomes, and useful row feedback through operation-level and focused form tests."
+      ],
+      "issue_number": 8,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/8"
+    },
+    {
+      "id": 7,
+      "title": "Edit own profiles and safely verify email changes",
+      "blocked_by": [3, 4],
+      "delivers": "Users can maintain their basic profile and change email without making the unverified new address a sign-in identifier prematurely.",
+      "stories": [8, 9, 10, 11, 12],
+      "criteria": [
+        "Expose own basic profile editing with required name/contact validation, normalized country-code phone, generated display name, and optional middle name/photo/post-nominals.",
+        "Do not allow own profile editing to change role, Officer grants, user type, verification state, lifecycle status, or onboarding authority.",
+        "Store/request the pending email change without replacing the currently verified sign-in identity until the new address is verified; the existing verified sign-in remains usable in the interim.",
+        "Send verification at the new address and a security notice at the old address through the authentication email mechanism, without an operational in-app email-change notification.",
+        "Verify successful and unverified changes, conflicting identities, spoofed ownership, both supported authentication paths where relevant, and correct destination addresses using controlled email/provider adapters."
+      ],
+      "issue_number": 9,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/9"
+    },
+    {
+      "id": 8,
+      "title": "Manage the hierarchical certification catalog",
+      "blocked_by": [2],
+      "delivers": "User managers can create, organize, rename, and safely remove reusable certification definitions in the catalog UI.",
+      "stories": [31, 37, 109],
+      "criteria": [
+        "Support the existing parent/child certification hierarchy through working user-manager screens and server validation; training levels and specialties use this same catalog.",
+        "Renaming preserves certification identity and changes displayed names wherever that certification is referenced.",
+        "Reject invalid hierarchy relationships, including cycles, without creating another eligibility dimension or certification effective/expiration dates.",
+        "Soft-delete catalog records, exclude them from normal selection, and block deletion for current non-deleted children or other existing live references. Later relation/expression slices add their reference guards with the new references.",
+        "Test authorized and unauthorized catalog changes, hierarchy behavior, stable identity on rename, and retained deleted references through server operations and focused catalog UI checks."
+      ],
+      "issue_number": 10,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/10"
+    },
+    {
+      "id": 9,
+      "title": "Submit and review certifications with a shared inbox",
+      "blocked_by": [3, 4, 8],
+      "delivers": "Volunteers submit certifications, user managers review them, and a usable in-app inbox supports shared review state, personal dismissal, and rejection messages.",
+      "stories": [32, 33, 34, 35, 36, 37, 38, 97, 98, 99, 100, 102],
+      "criteria": [
+        "Persist a user-certification relation with pending/verified/rejected status separate from the catalog. Volunteer submission is pending; manager creation/approval is verified immediately.",
+        "Allow own pending edit while keeping pending, own pending withdrawal by soft deletion, and rejected edit/resubmission on the same record. Only a user manager can remove verified certifications.",
+        "Provide the shared user-management review queue, visible to effective user managers, without claiming work. Each recipient has independent read/dismiss state; resolving the underlying submission closes the item globally.",
+        "Pending edits keep the same review item current; withdrawal resolves it. Rejection retains the record and delivers an optional reviewer comment to the volunteer. Approval does not create a certification-approval notification.",
+        "Introduce the reusable in-app personal/shared notification behavior through this working flow. Delivered text is copied independently of later comment/review changes; notification/comment records use appropriate soft deletion.",
+        "Display certification information on permitted profiles and block catalog deletion while linked by non-deleted user-certification records; deleted links alone do not block.",
+        "Test full submit/edit/withdraw/approve/reject/resubmit flows, mutation authority versus full-profile viewing, individual versus global state, immutable delivered text, and intentional absence of approval messages."
+      ],
+      "issue_number": 11,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/11"
+    },
+    {
+      "id": 10,
+      "title": "Author position eligibility with branch-preserving explanations",
+      "blocked_by": [9],
+      "delivers": "Schedulers can author validated nested position requirements and users can understand the alternative qualification branches.",
+      "stories": [39, 40, 41, 42],
+      "criteria": [
+        "Extend position management with arbitrary nested AND/OR over verified exact/descendant-inclusive certifications and hierarchical minimum system role.",
+        "Validate expression shape and referenced records on the server. Reject NOT, exact-role predicates, user-type predicates, and other unapproved dimensions.",
+        "No expression permits otherwise assignable active users, retaining the scheduler exception for invited profiles. Unverified certifications and user type do not satisfy eligibility or change platform authority.",
+        "Use a shared eligibility behavior for subsequent assignment/replacement/recheck commands; provide a working requirement/explanation UI that preserves OR alternatives rather than treating every leaf as mandatory.",
+        "Keep expressions global to positions, without event/template alternatives. Editing alone does not scan current assignments or preview conflicts.",
+        "Block certification deletion for non-deleted expression references and keep historical references renderable.",
+        "Test nested alternatives, exact versus descendant matching, role inheritance, empty requirements, invalid references/language, and explanation rendering at the approved operation/UI seams."
+      ],
+      "issue_number": 12,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/12"
+    },
+    {
+      "id": 11,
+      "title": "Publish valid events and privacy-safe public listings",
+      "blocked_by": [1, 2],
+      "delivers": "Schedulers create/edit events with valid local times, and signed-out visitors see only permitted current event details until event end.",
+      "stories": [1, 2, 83, 89],
+      "criteria": [
+        "Require event start and end with end strictly later on the same America/New_York calendar date; new events publish immediately without drafts or cross-midnight support.",
+        "Implement authoritative upcoming/in-progress/past boundaries: upcoming before start, in progress from start inclusive to end exclusive, past at end.",
+        "Provide signed-out event listing/detail responses containing only title/name, date, time, location, description. Do not return staffing, positions, capacity, vacancy counts, assignments, roster names, or profile data.",
+        "Remove cancelled/deleted events and remove public events exactly at end; no public past-event access. Use explicit audience projections, not browser-only hiding.",
+        "Schedulers can edit past events indefinitely and use current related data without snapshots, closure deadlines, or attendance outcomes. Assignment notifications are added when the assignment/cancellation slice integrates them.",
+        "Apply the retained-data audit findings before enforcing required end times; missing existing end values need explicit correction rather than an inferred duration.",
+        "Verify direct public payloads and routes, timezone/host independence, positive duration and local-date boundaries, past editing, and exact start/end behavior with a controllable clock."
+      ],
+      "issue_number": 13,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/13"
+    },
+    {
+      "id": 12,
+      "title": "Manage saved locations and copy their values into event forms",
+      "blocked_by": [11],
+      "delivers": "Every Officer can maintain saved locations and use editable autofill in event forms without later source edits changing existing events.",
+      "stories": [24, 92, 109],
+      "criteria": [
+        "Provide saved-location creation/editing/soft deletion for every Officer, Administrator, and Developer independently of scheduling/user-management grants.",
+        "Event forms allow manual name/address entry or saved-location autofill that copies values into editable event data.",
+        "Later saved-location edits/deletion do not propagate into existing event values. Keep saved-location management authority distinct from permission to save an event.",
+        "Retain deleted saved locations for later Developer recovery and exclude them from normal selection.",
+        "Verify full Officer access matrix, unauthorized ordinary-user attempts, editable copied values, and no propagation through operation-level and focused form tests. Template autofill is integrated when its complete template slice lands."
+      ],
+      "issue_number": 14,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/14"
+    },
+    {
+      "id": 13,
+      "title": "Assign volunteers through lifecycle-aware shifts and atomic capacity",
+      "blocked_by": [5, 10, 11],
+      "delivers": "Schedulers can create shifts and assign active or invited users with authoritative confirmed/pending state, reserved capacity, conflict explanations, and in-app outcomes.",
+      "stories": [20, 45, 46, 49, 52, 54, 55, 57, 72, 96, 100, 109, 114],
+      "criteria": [
+        "Introduce the approved confirmed/pending/available/rejected/cancelled slot lifecycle, orthogonal soft deletion, assignment-creation timestamp, and latest transition comment/actor/time. Confirmed/pending/available occupy capacity; rejected/cancelled/deleted do not.",
+        "Provide one live shift per event/position, positive integer capacity, and UI/server rejection of capacity reductions below active-capacity occupancy.",
+        "Before changing the mutation behavior, consolidate existing assignment/capacity writes into one authoritative command and select a supported transactional/concurrency mechanism compatible with the application database adapter. Keep the existing stack.",
+        "Scheduler assignment admits active and invited profiles, rejects inactive users, evaluates the current eligibility/duplicate-event conflicts, and offers suppress-all confirmed or unsuppressed pending when conflicts exist. No conflict lists or suppression history are persisted.",
+        "Atomically create the assignment and grow maximum slots by one on scheduler overflow. Concurrent writes cannot produce inconsistent occupancy or lose an update.",
+        "Connect pending assignments to the shared scheduling queue and deliver the approved affected-volunteer assignment messages through the existing inbox. Optional comments never become backend-required, and absent new comment clears prior text.",
+        "Preserve legacy records with agreed active/deleted mappings. If retained assignments lack current-owner timestamps, require the explicitly approved repair policy before dependent behavior is enabled; never invent monthly priority.",
+        "Verify direct authorization, active/invited/inactive assignment, confirmed/pending occupancy, duplicate live shifts, capacity races and overflow rollback, retained data, and current-state UI. Monthly-limit evaluation extends this command in its own slice before volunteer signup is enabled."
+      ],
+      "issue_number": 15,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/15"
+    },
+    {
+      "id": 14,
+      "title": "Show volunteer rosters and restricted assignment history",
+      "blocked_by": [13],
+      "delivers": "Active volunteers can browse events and rosters and access their own relevant history without receiving other volunteers' review/profile information.",
+      "stories": [43, 87, 89, 93, 94, 95],
+      "criteria": [
+        "Show active signed-in volunteers upcoming events regardless of certifications, roster names, and their own pending status. Later available-slot actions use the same restricted projection.",
+        "Omit other volunteers' pending/review/conflict indicators and staff decision comments from volunteer responses; roster access never grants full profile access.",
+        "At event end, permit volunteer past-event access only where that volunteer was assigned, including retained cancelled-event relationships. Unrelated history and direct query bypasses are denied.",
+        "Schedulers can access all scheduling events/history, including cancellations and review information; public responses remain limited to the public projection.",
+        "Render current related profile/position/user-type data, keeping permitted past-event joins renderable after catalog soft deletion without snapshots or event closure.",
+        "Verify exact start/end boundaries and adversarial direct responses for public, volunteer, Officer without scheduling grant, and scheduler audiences; add focused roster/history UI checks."
+      ],
+      "issue_number": 16,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/16"
+    },
+    {
+      "id": 15,
+      "title": "Enforce monthly event participation and assignment priority",
+      "blocked_by": [13],
+      "delivers": "Schedulers configure the monthly limit and assignment decisions consistently rank distinct event participation in America/New_York.",
+      "stories": [57, 58, 59, 60, 68, 81],
+      "criteria": [
+        "Persist the organization-wide monthly limit, default 3, with scheduler-only settings UI/server changes.",
+        "Count distinct non-cancelled/non-deleted events with remaining confirmed/pending/available participation, including past events in the event-start month; exclude rejected/cancelled/deleted assignments and avoid candidate double-counting.",
+        "Rank each event by the earliest timestamp among the volunteer's remaining active-capacity assignments in that event, not confirmation time. Multiple positions count once; removing the earliest may change priority.",
+        "Evaluate in America/New_York event-start month regardless of request/replacement time or host timezone. Preserve same-event priority and support new timestamps for different-event moves/replacement integration.",
+        "Integrate over-limit conflicts into scheduler assignment explanations and suppression/pending decisions. Only participation beyond the first N is over-limit; overlapping separate-event times are not a conflict rule.",
+        "Changing a limit does not perform opt-out detection scans/previews. Subsequent resolution/recheck slices add their respective targeted behaviors without conflating them.",
+        "Refuse to enable enforcement over incomplete retained assignment timestamps without the approved policy from the conditional audit prerequisite.",
+        "Verify first-N ordering, pending reservations, multiple positions, past current-month events, candidate exclusion, concurrent same-user requests, year/month/DST boundaries, and settings authorization through real-database operations."
+      ],
+      "issue_number": 17,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/17"
+    },
+    {
+      "id": 16,
+      "title": "Review pending slots and suppress current conflicts",
+      "blocked_by": [15],
+      "delivers": "Schedulers can approve or reject reserved pending assignments in the shared review UI and volunteers receive the appropriate immutable decision message.",
+      "stories": [49, 50, 51, 69, 72, 96, 98, 99, 100, 102],
+      "criteria": [
+        "Provide shared pending-assignment review without claiming items; access follows effective scheduling capability, not full-profile viewing or user-management capability.",
+        "Approve into confirmed or reject into retained rejected state with optional comment. Rejection frees occupancy and monthly participation; permit later same-shift retry as a new slot.",
+        "Approval/suppression covers all current conflicts as one decision and never changes a position expression or persists conflict/suppression identifiers/history.",
+        "Keep only latest transition metadata; a new transition without comment clears prior text, while already delivered decision text remains unchanged.",
+        "Resolve underlying review globally while keeping personal read/dismiss independent, and send the approved volunteer approval/rejection notifications.",
+        "Make pending assignments read-only for end users, showing generic contact-schedulers instructions rather than editing/withdrawal or a new in-app contact workflow.",
+        "Verify decision authorization, concurrent/stale reviews, released capacity/monthly participation, retry, comment optionality/clearing, immutable messages, and shared-versus-personal queue behavior."
+      ],
+      "issue_number": 18,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/18"
+    },
+    {
+      "id": 17,
+      "title": "Request vacant seats with confirmed or pending outcomes",
+      "blocked_by": [14, 16],
+      "delivers": "An active volunteer can request a vacant seat before event start, receive one confirmation when eligible, or reserve a pending seat with understandable conflict reasons.",
+      "stories": [41, 44, 45, 46, 47, 48, 51, 69, 70, 101],
+      "criteria": [
+        "Allow only active, verified, onboarded volunteers to request strictly before event start through the authoritative assignment command.",
+        "Passing current eligibility/monthly checks creates confirmed; failed eligibility/monthly checks explain reasons preserving alternative branches and permit explicit pending submission.",
+        "Pending reserves the seat and monthly participation, displays own pending status, creates the shared scheduling review item, and is never a waitlist.",
+        "Hard-block another active-capacity assignment in the same event and full shifts without an available replacement. Do not reserve an over-capacity pending request.",
+        "Send exactly one confirmed-self-signup in-app confirmation; pending shows status/review without a duplicate confirmation. Reject end-user slot changes at start and any pending edit/withdrawal.",
+        "Retained rejection does not block a new same-shift request. End users cannot atomically switch positions.",
+        "Test successful/pending/fourth-distinct-event outcomes, full/duplicate blocking, two concurrent last-seat requests, simultaneous same-user requests, exact start cutoff, retry, and branch-preserving signup UI."
+      ],
+      "issue_number": 19,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/19"
+    },
+    {
+      "id": 18,
+      "title": "Move and remove assignments through scheduler drag and drop",
+      "blocked_by": [16],
+      "delivers": "Schedulers can reassign or remove volunteers atomically, including after start, with correct capacity, priority, and notifications.",
+      "stories": [49, 53, 59, 71, 72, 100],
+      "criteria": [
+        "Provide scheduler drag/drop reassignment through the same authoritative command rather than an alternate unchecked mutation path.",
+        "Move atomically with current eligibility/monthly/duplicate-event checks, optional suppress-all or pending decision, and destination capacity expansion when required.",
+        "Preserve assignment timestamp for a position move within one event; start a new timestamp for a move to another event and correctly recalculate remaining earliest participation priority.",
+        "Remove an assignment by soft deletion, release its capacity/monthly participation, retain original data, and deliver approved affected-volunteer messages with optional comments.",
+        "Permit scheduler action on in-progress/past events indefinitely while preserving end-user restrictions.",
+        "Prevent stale drag/drop/reassignment from overwriting a newer owner/state. Failed moves leave source/destination/notifications consistent without partial changes.",
+        "Verify real-database races, timestamp/priority behavior, overflow rollback, inactive target rejection, optional comments, notifications, and focused drag/drop UI behavior."
+      ],
+      "issue_number": 20,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/20"
+    },
+    {
+      "id": 19,
+      "title": "Automatically confirm affected eligible pending assignments",
+      "blocked_by": [18],
+      "delivers": "Existing pending assignments confirm automatically when their blockers disappear, without demoting confirmed assignments or introducing edit-driven conflict scans.",
+      "stories": [59, 72, 80, 81, 82, 100, 101, 102],
+      "criteria": [
+        "Reconsider only affected upcoming pending slots when certification approval, qualifying role change, reduced participation, relaxed requirements, or increased limit removes blockers.",
+        "Wire the existing qualification/role/position/limit/removal/move operations to targeted resolution; later release/replacement/cancellation commands must invoke the same behavior for affected participation.",
+        "Confirm only when all checks pass and the event ranks within the first N distinct participations, including past participation in that month and pending priority.",
+        "With A/B/C/D creation order and limit 3, approving B's needed certification can confirm B while D stays pending. Scheduler-approved over-limit confirmed events do not displace earlier pending priority.",
+        "Never demote confirmed, scan globally for new conflicts, require opt-in for resolution, or resolve withdrawal requests. Slots at/after start stay untouched.",
+        "Generate explanatory latest system comment and one in-app confirmation on successful automatic confirmation, resolving the shared review item globally without rewriting old messages.",
+        "Verify scoped effects and intentional non-effects across all existing triggers using real-database operations and a controllable clock, including no detection preview or volunteer demotion notification."
+      ],
+      "issue_number": 21,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/21"
+    },
+    {
+      "id": 20,
+      "title": "Withdraw confirmed assignments and review late requests",
+      "blocked_by": [17, 19],
+      "delivers": "Volunteers withdraw immediately outside the late window or retain responsibility in available state inside it, with scheduler release/denial controls.",
+      "stories": [60, 61, 62, 63, 64, 69, 70, 71, 82, 96, 100],
+      "criteria": [
+        "Persist and expose scheduler control of the organization-wide late-withdrawal window, default 72 hours, using event start and the operation clock.",
+        "Strictly before start, a confirmed volunteer outside the window immediately soft-deletes the slot with on-screen success and no additional in-app notification.",
+        "Inside the window set available, retaining incumbent responsibility, occupied capacity, monthly participation, and a shared withdrawal review item.",
+        "Display available status and incumbent name in the permitted roster projection. Available is replacement availability, not an understaffed vacancy or pending candidate.",
+        "Scheduler release soft-deletes and makes a genuinely vacant seat without a volunteer notification solely for release approval; denial returns confirmed and notifies with optional comment.",
+        "Release resolves the underlying withdrawal/warning and invokes targeted resolution for affected pending participation. End users cannot change pending slots or make any slot change at/after start; schedulers can act indefinitely, and available can persist after start.",
+        "Verify both sides of the configured window, exact start cutoff, preserved owner/capacity/monthly rank, generic pending contact UI, denial/release message rules, and affected automatic resolution."
+      ],
+      "issue_number": 22,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/22"
+    },
+    {
+      "id": 21,
+      "title": "Claim available slots with atomic volunteer replacement",
+      "blocked_by": [20],
+      "delivers": "A qualifying volunteer or authorized scheduler can replace an incumbent in the same available slot without extra capacity or a pending replacement candidate.",
+      "stories": [63, 65, 66, 67, 68, 70, 71, 100, 101, 102],
+      "criteria": [
+        "Provide an available-slot claim action strictly before start for active end users; require all eligibility, monthly, and duplicate-event checks to pass or hard-block.",
+        "Permit scheduler replacement after start/past end, but require immediate suppress-all for conflicts; never leave a replacement pending.",
+        "Atomically update the existing slot to the replacement owner and confirmed state, preserving slot identity/capacity while assigning the replacement a new assignment timestamp and latest replacement comment.",
+        "Release the incumbent's event participation only if no other active-capacity assignment remains there; use the event-start month for both users and trigger targeted resolution for the released participation.",
+        "Resolve withdrawal/review warnings, notify the released incumbent, and use the ordinary confirmation path for exactly one replacement confirmation; do not create a second candidate/incumbent slot or history archive.",
+        "Concurrent claims have one winner, stale ownership changes do not overwrite a newer replacement, and failure leaves the incumbent and occupancy intact.",
+        "Verify same-slot identity, January-event/December-claim counting, new priority, failed checks, scheduler suppression, concurrency, message deduplication, and takeable-slot UI. Once a release makes it vacant, ordinary pending signup rules apply."
+      ],
+      "issue_number": 23,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/23"
+    },
+    {
+      "id": 22,
+      "title": "Request scoped conflict rechecks without implicit scans",
+      "blocked_by": [20],
+      "delivers": "Staff editors can explicitly recheck the relevant upcoming assignments, while ordinary edits/reads remain free of conflict scans and available incumbents retain replacement availability.",
+      "stories": [73, 74, 75, 76, 77, 78, 79, 82, 96, 99],
+      "criteria": [
+        "Add default-OFF scoped opt-in controls to user role/certification, position requirement, event date/time, and monthly-limit edits; schedulers can explicitly request all upcoming slots.",
+        "Use the approved scopes: that user, that position, the changed event if its new start is upcoming, and affected event-start months. User-management-only Officers may request the edited user's check without manual slot authority.",
+        "Without explicit detection request, do not scan assignments, show conflict preview/count, or generate scan messages; preserve separate targeted automatic resolution when blockers disappear.",
+        "Exclude slots once start is reached. Current conflicts demote confirmed to pending even after previous suppression; failing pending remains pending. Generate explanatory system comment and scheduler review/own pending state without volunteer notification.",
+        "Available with conflicts remains available and gets a generic scheduler-only review item with requester/time, without persisted conflict details. Viewing does not scan; an explicit recheck supplies current reasons.",
+        "Suppression clears the warning until another requested check; release/replacement resolves it and unresolved warnings remain actionable after start. Integrate with replacement if present, and require later replacement code to preserve this resolution contract.",
+        "Verify every scope, grants, repeated/suppressed conflicts, no-scan reads/edits, immutable delivered messages, available warning lifecycle, and no automatic start/closure cleanup through server and focused controls tests."
+      ],
+      "issue_number": 24,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/24"
+    },
+    {
+      "id": 23,
+      "title": "Notify event changes and irreversibly cancel staffed events",
+      "blocked_by": [20],
+      "delivers": "Assigned volunteers receive logistical event changes, and schedulers can irreversibly cancel an event while retaining the appropriate notification/history access.",
+      "stories": [84, 85, 86, 87, 95, 99, 100, 102],
+      "criteria": [
+        "Notify assigned volunteers on date/time/location changes and cancellation; title/description edits do not notify. Requested rechecks remain independently default-OFF rather than implicit scans.",
+        "Expose scheduler cancellation with standard message plus optional custom text; atomically change all non-deleted active-capacity assignments to cancelled and retain their data.",
+        "Cancellation releases capacity/monthly participation, resolves underlying assignment/withdrawal review work, and runs targeted pending resolution only for affected released participation.",
+        "Cancellation cannot be undone. Public/ordinary volunteer calendars hide it, affected volunteers retain notification/history access, and schedulers retain full scheduling/history access.",
+        "Keep cancelled/rejected/already-deleted assignments out of newly cancelled active recipients and avoid duplicate notification delivery or partial state under concurrent cancellation/assignment.",
+        "Verify event-change delivery/non-delivery, immutable messages, cancellation atomicity, current participant recipient selection, released monthly priority, and direct history/calendar projections."
+      ],
+      "issue_number": 25,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/25"
+    },
+    {
+      "id": 24,
+      "title": "Soft-delete shifts and events with cascade provenance",
+      "blocked_by": [23],
+      "delivers": "Schedulers can remove staffing or eligible events without physical deletion, while provenance distinguishes descendants removed together from those deleted independently.",
+      "stories": [56, 88, 109, 112],
+      "criteria": [
+        "Removing a shift represents zero capacity, soft-deletes its active slots, releases participation, and notifies active-slot volunteers with optional custom text.",
+        "Block event deletion while active-capacity assignments exist; cancelled/rejected/deleted slots do not block. Cancellation or explicit removals can make the event deletable.",
+        "Permitted event deletion atomically soft-deletes its shifts and slots, preserving records, timestamps, and required links. Remove physical-delete/cascade-loss paths in these workflows.",
+        "Track root deletion operation provenance so independently deleted descendants retain their own deletion identity and are distinguishable for later recovery.",
+        "Resolve affected underlying review items and invoke targeted pending resolution for released participation. Domain records and delivered notifications are retained appropriately.",
+        "Verify deletion restrictions, entire-shift recipients, atomic rollback, normal-view filtering, independent-descendant provenance, and historical referential rendering. Later threshold creation must integrate its owned records into these cascade rules."
+      ],
+      "issue_number": 26,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/26"
+    },
+    {
+      "id": 25,
+      "title": "Configure and reconcile timed understaffing alerts",
+      "blocked_by": [24],
+      "delivers": "Schedulers configure optional per-shift thresholds and see real time-driven Warning/Critical alerts without relying on page visits or unrelated edits.",
+      "stories": [103, 104, 105, 106, 108],
+      "criteria": [
+        "Provide zero-or-more event-shift thresholds with lead time in days/hours and fixed Warning/amber or Critical/red; no separate minimum-filled target or custom severity colors.",
+        "Count confirmed/pending/available as filled against the shift's full maximum. An incumbent's available slot alone does not cause understaffing.",
+        "Choose and implement a supported server reconciliation mechanism that runs without page visits or unrelated changes; expose one current highest-unresolved-severity alert per shift with lower thresholds in details.",
+        "Resolve alerts on filled capacity, cancellation/deletion, or required event end, including time-driven expiry. Use shared scheduler notification/recipient semantics and integrate threshold records with shift/event soft deletion.",
+        "Persist domain/notification state rather than rendering client-only urgency. Keep assignment rechecks separate; alert reconciliation does not scan for assignment conflicts.",
+        "Verify threshold activation/end using the reconciliation entry point, controlled clock and isolated database, occupancy for every slot state, fixed presentation, repeated evaluation without duplicate actionable items, and no interaction needed."
+      ],
+      "issue_number": 27,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/27"
+    },
+    {
+      "id": 26,
+      "title": "Resolve thresholds individually and reopen recurring understaffing",
+      "blocked_by": [25],
+      "delivers": "Schedulers can manually resolve the current threshold without silencing later urgency, and alerts return when a filled shift becomes vacant again.",
+      "stories": [98, 99, 104, 107, 108],
+      "criteria": [
+        "Expose manual threshold-specific global resolution even while vacancies remain; reaching a different/new threshold creates an actionable alert according to severity/lead-time rules.",
+        "Filling a shift resolves the applicable alert; a later vacancy while a threshold remains active makes the alert actionable again.",
+        "Recompute one highest unresolved severity per shift and keep lower thresholds in details without making resolution shift-wide or event-wide.",
+        "Personal dismiss/read affects only that recipient and never globally resolves or suppresses new urgency.",
+        "Verify manual resolution, later threshold activation, fill/vacate cycles, multiple scheduler recipients, repeat reconciliation, and cancellation/deletion/end termination with controlled time and focused alert controls."
+      ],
+      "issue_number": 28,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/28"
+    },
+    {
+      "id": 27,
+      "title": "Create events from independent templates with copied alerts",
+      "blocked_by": [12, 25],
+      "delivers": "Schedulers maintain templates and create one event on a selected date with copied details, local times, location, positions/capacities, and alert thresholds.",
+      "stories": [54, 83, 90, 91, 92, 103],
+      "criteria": [
+        "Provide template create/edit and one-date event creation, validating required same-date positive-duration local times and at most one live position association per template.",
+        "Copy event details, time values interpreted on the selected America/New_York date, manual/autofilled location values, capacities, and all configured thresholds atomically into independent event records.",
+        "Saved-location autofill copies editable values; later saved-location edits do not change templates/events. Later template edits do not propagate to created events.",
+        "No threshold is required, and templates have no eligibility alternatives, recurring generation, or live alert linkage. Any source-template identifier is optional provenance only.",
+        "Template soft deletion is not blocked by events created from it; preserve created event data and rendering. Record provenance needed for restoring deleted template-owned records later.",
+        "Require explicit correction of retained missing template end times under the audit prerequisite rather than inferring them.",
+        "Verify complete copied values, independence after edits/deletion, duplicate-position and duration validation, atomic creation rollback, timezone boundaries, saved-location form behavior, and copied threshold reconciliation."
+      ],
+      "issue_number": 29,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/29"
+    },
+    {
+      "id": 28,
+      "title": "Complete reference-data deletion safeguards and retained history",
+      "blocked_by": [27],
+      "delivers": "Staff can safely remove positions, certifications, user types, templates, and saved locations using the approved live-reference restrictions rather than physical deletion or blanket historical blocks.",
+      "stories": [30, 37, 89, 91, 109],
+      "criteria": [
+        "Apply final reference checks across the now-working catalog, position, user type, template, and location management UIs/server operations, retaining appropriate deletion metadata and owned-record provenance.",
+        "Block position deletion while referenced by future events or templates, but permit it when only past-event references remain; past views must still render retained position data.",
+        "Block certification deletion for non-deleted user links, child certifications, or expression references. Block user type deletion while assigned to a non-deleted profile; deleted links alone do not block either.",
+        "Events created from a template never block that template's deletion. Saved-location copies remain independent and deleted records disappear from normal selectors.",
+        "Avoid physical domain deletion or blanket rejection merely because historical foreign keys exist. Audit remaining catalog/template/location physical-delete paths.",
+        "Verify each restriction with live versus deleted references, past/current joins, user-type label neutrality, copied-value independence, and direct mutation authority."
+      ],
+      "issue_number": 30,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/30"
+    },
+    {
+      "id": 29,
+      "title": "Deactivate users with immediate session revocation",
+      "blocked_by": [13],
+      "delivers": "User managers can deactivate a user only after upcoming active responsibilities are removed, and successful deactivation immediately ends access.",
+      "stories": [22, 23, 109],
+      "criteria": [
+        "Expose authorized activation/deactivation controls on managed profiles, preserving identity, role, explicit lifecycle data, and relationships.",
+        "Block deactivation for any upcoming non-deleted confirmed/pending/available assignment; exclude cancelled/rejected/deleted assignments and use start-strictly-future semantics.",
+        "Successful deactivation revokes existing sessions immediately, prevents new sign-in through both providers, and prevents assignment from every server path. Invited-profile assignment remains the approved exception rather than allowing inactive assignment.",
+        "Keep domain profiles retained. Removing revoked/expired sessions and one-use verification/reset tokens is allowed and must not preserve usable revoked credentials.",
+        "Avoid a race in which deactivation and assignment both succeed leaving an inactive user newly assigned; verify using concurrent real-database operations.",
+        "Test successful/blocked deactivation, active-session invalidation, exact upcoming boundary, both auth paths, invited/inactive differences, and profile UI feedback."
+      ],
+      "issue_number": 31,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/31"
+    },
+    {
+      "id": 30,
+      "title": "Restore profiles and reference records through Developer recovery",
+      "blocked_by": [28, 29],
+      "delivers": "Developers can inspect and recover retained profiles, reference data, templates, and notification records while preserving original data and revoked-credential safety.",
+      "stories": [109, 110, 111],
+      "criteria": [
+        "Provide a Developer-only recovery surface and server commands for retained user profiles, user types, certification catalog/user-certification records, positions, saved locations, templates/owned records, and soft-deleted notification/comment records where applicable. Include Developer soft deletion of historical items subject to their existing domain restrictions; no domain physical deletion.",
+        "Preserve original business values, statuses, timestamps, and identity. Restore only owned descendants deleted with the root operation; never revive independently deleted records implicitly.",
+        "Validate current reference/hierarchy/uniqueness integrity atomically before recovery, including restoration of links to currently deleted parents. Do not silently change approved eligibility or user-type semantics to make restoration pass.",
+        "Keep lifecycle deactivation and domain deletion distinct; profile recovery must not revive expired/revoked authentication credentials or invent a new active status.",
+        "Recovery is quiet: no new volunteer/staff/review messages, assignment rechecks, automatic pending confirmations, or redelivery of existing notifications. Existing review state and delivered text remain unchanged.",
+        "Verify Developer-only direct access, preserved values and soft-deletion boundaries, structural rollback, deleted-reference link checks, notification/comment retention without a full transition archive, and quiet qualification/profile recovery."
+      ],
+      "issue_number": 33,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/33"
+    },
+    {
+      "id": 31,
+      "title": "Quietly restore slots and shifts without workflow replay",
+      "blocked_by": [22, 26, 30],
+      "delivers": "Developers can restore a standalone slot or shift with original assignment state/priority while recoverable scheduling conflicts are suppressed and structural failures reject atomically.",
+      "stories": [109, 110, 111, 113],
+      "criteria": [
+        "Extend Developer recovery to standalone slots and shifts, preserving original owner, business values, assignment timestamps, and confirmed/pending/available states and latest metadata.",
+        "Suppress monthly-limit, eligibility, and duplicate-event conflicts as the approved exceptional restoration decision; do not persist conflict lists/suppression history or turn restoration into a new signup.",
+        "Reject duplicate live event/position associations, insufficient capacity, inactive users, and active assignments beneath cancelled or still-deleted parents. Restore a shift and only its cascade-deleted children atomically.",
+        "Create no new volunteer/staff/review notifications, rechecks, automatic confirmations, or message redelivery; preserve existing review states and keep confirmed confirmed and pending pending.",
+        "Restored participation retains original monthly priority. Do not automatically demote/flag/notify another newly over-limit assignment; later ordinary evaluations and explicit rechecks include restored data.",
+        "Restore owned alert configuration only according to cascade provenance and allow ordinary scheduled understaffing evaluation to resume, without conflating that later evaluation with restoration workflow replay.",
+        "Verify suppressed versus structural failures, whole-operation rollback, independently deleted descendants, states/timestamps, no automatic side effects, later explicit rechecks/signup evaluation, and subsequent normal alert reconciliation."
+      ],
+      "issue_number": 34,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/34"
+    },
+    {
+      "id": 32,
+      "title": "Restore event cascades atomically and preserve cancellation",
+      "blocked_by": [31],
+      "delivers": "Developers can recover an event and exactly the descendants deleted with it in one quiet operation, without reinstating a cancelled event or partially restoring invalid staffing.",
+      "stories": [110, 111, 112, 113],
+      "criteria": [
+        "Provide event recovery through the Developer surface and the established quiet restoration command boundary, restoring the original event and only descendants sharing its root deletion provenance.",
+        "Keep independently deleted shifts, slots, and owned records deleted; retain business values, original timestamps, assignment states, and copied configuration.",
+        "Validate all event/shift/slot structural conditions before commit and roll back the entire event on any failure; never partially recover the event.",
+        "Preserve a cancelled event's cancellation and cancelled slot states. Reject any active assignment beneath a cancelled or still-deleted parent rather than using recovery to reinstate it.",
+        "Suppress only the approved recoverable scheduling conflicts, retaining original monthly priority without notifying/demoting other assignments.",
+        "Create no action-triggered volunteer/staff/review messages, assignment rechecks, automatic confirmations, or old-message redelivery. Existing review state remains intact; ordinary later alert evaluation and explicit checks continue normally.",
+        "Verify a complete delete/recover workflow, independent prior deletions, all-or-nothing structural failures, cancelled-event recovery, visibility through normal permitted views, and quiet side effects through real-database operations."
+      ],
+      "issue_number": 35,
+      "issue_url": "https://github.com/groneman7/ccru-start/issues/35"
+    }
+  ]
+}
