@@ -74,3 +74,9 @@ The source-of-truth assignment table `junctionSlotsInCalendar` in `src/server/db
 ## October 18 retained-data audit
 
 A later [aggregate-only inspection for issue #3](audits/2026-10-18-retained-data.md) counted the actual retained-data gaps and audited physical-delete paths in an enforced read-only transaction. It records the required migration decisions and includes reproducible SQL. This later inspection extends the earlier column-only observation; it does not approve a repair policy or change application data.
+
+## October 19 migration baseline
+
+Issue [#36](https://github.com/groneman7/ccru-start/issues/36) introduces a [guarded current-schema baseline and migration procedure](database-migrations.md). A fresh read-only inspection confirmed the configured retained target matches the 12-table/87-column baseline and has no migration ledger; the new command's check mode plans adoption without applying it. Historical migration files remain unchanged. Feature migrations now append under `drizzle/mvp/`; independent authorization/catalog work is not blocked on applying this baseline. Assignment timestamp repair remains owned by #37.
+
+Validation for #36: 19 tests passed across the full suite, including isolated PostgreSQL migration rehearsal and real HTTP application reads/sign-in before and after reconciliation. The configured retained target was checked read-only; no ledger or business rows were written there. Offline migration generation reports no schema changes. Typechecking still reports the same four pre-existing errors from baseline `dbb5565`: unused `pgTable` in the old introspection schema, two template-editor array index-signature errors, and unused `Link` in the developer UI route. ESLint cannot start because the installed typescript-eslint does not support TypeScript 7. No dependency or unrelated application fixes were included.

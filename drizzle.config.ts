@@ -1,23 +1,17 @@
-import { config } from 'dotenv';
 import { defineConfig } from 'drizzle-kit';
 
-config({ path: '.env.local' });
-config({ path: '.env' });
-
-if (!process.env.DATABASE_URL) {
-  throw new Error('DATABASE_URL is not set in the .env file');
-}
-
+// Generation is offline. Introspection/studio require an explicitly chosen target;
+// migration execution goes through the guarded db:migrate command.
 export default defineConfig({
-  dbCredentials: {
-    url: process.env.DATABASE_URL,
-  },
+  ...(process.env.MIGRATION_DATABASE_URL
+    ? { dbCredentials: { url: process.env.MIGRATION_DATABASE_URL } }
+    : {}),
   dialect: 'postgresql',
   migrations: {
-    table: '_migrations',
+    table: '_mvp_migrations',
     schema: '_drizzle',
   },
   schema: './src/server/db/schema.ts',
-  schemaFilter: ['_migrations', 'authz', 'better-auth', 'calendar', 'public'],
-  out: './drizzle',
+  schemaFilter: ['authz', 'better-auth', 'calendar', 'public'],
+  out: './drizzle/mvp',
 });

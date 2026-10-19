@@ -15,9 +15,9 @@
     "check": "prettier --write . && eslint --fix",
     "start": "node --import ./.output/server/instrument.server.mjs .output/server/index.mjs",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate",
-    "db:push": "drizzle-kit push",
-    "db:pull": "drizzle-kit pull",
+    "db:migrate": "tsx scripts/db/migrate.ts",
+    "db:push": "node -e \"throw new Error('Direct schema push is disabled. Generate and review migrations, then use db:migrate --check.')\"",
+    "db:pull": "drizzle-kit pull --out=drizzle/introspection",
     "db:studio": "drizzle-kit studio"
   },
   "dependencies": {

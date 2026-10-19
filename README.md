@@ -255,3 +255,7 @@ Files prefixed with `demo` can be safely deleted. They are there to provide a st
 You can learn more about all of the offerings from TanStack in the [TanStack documentation](https://tanstack.com).
 
 For TanStack Start specific documentation, visit [TanStack Start](https://tanstack.com/start).
+
+## Database migrations
+
+Use the [retained-data migration procedure](docs/database-migrations.md) before changing database schemas. `db:migrate` plans changes read-only by default and requires an explicit `MIGRATION_DATABASE_URL`; application is a separate `--apply` operation.

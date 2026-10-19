@@ -1,0 +1,1404 @@
+{
+  "hash": "1c76bd1b18111a5375cf70c4c1533d60779c9b978d4eb4307938ab1ff0bddb26",
+  "catalog": {
+    "types": [
+      {
+        "kind": "e",
+        "name": "account_status",
+        "labels": ["active", "inactive", "invited"],
+        "schema": "public"
+      },
+      {
+        "kind": "e",
+        "name": "shift_status",
+        "labels": ["active", "deleted"],
+        "schema": "public"
+      },
+      {
+        "kind": "e",
+        "name": "single_multiple",
+        "labels": ["single", "multiple"],
+        "schema": "public"
+      },
+      {
+        "kind": "e",
+        "name": "slot_status",
+        "labels": ["active", "deleted"],
+        "schema": "public"
+      }
+    ],
+    "columns": [
+      {
+        "name": "display",
+        "type": "text",
+        "table": "certifications",
+        "schema": "authz",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "certifications",
+        "schema": "authz",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "table": "certifications",
+        "schema": "authz",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "parent",
+        "type": "uuid",
+        "table": "certifications",
+        "schema": "authz",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "display",
+        "type": "text",
+        "table": "user_types",
+        "schema": "authz",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "user_types",
+        "schema": "authz",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "table": "user_types",
+        "schema": "authz",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "access_token",
+        "type": "text",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "access_token_expires_at",
+        "type": "timestamp without time zone",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "account_id",
+        "type": "text",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp without time zone",
+        "table": "account",
+        "schema": "better-auth",
+        "default": "now()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "account",
+        "schema": "better-auth",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "id_token",
+        "type": "text",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "password",
+        "type": "text",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "provider_id",
+        "type": "text",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "refresh_token",
+        "type": "text",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "refresh_token_expires_at",
+        "type": "timestamp without time zone",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "scope",
+        "type": "text",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp without time zone",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "user_id",
+        "type": "text",
+        "table": "account",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp without time zone",
+        "table": "session",
+        "schema": "better-auth",
+        "default": "now()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "expires_at",
+        "type": "timestamp without time zone",
+        "table": "session",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "session",
+        "schema": "better-auth",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "impersonated_by",
+        "type": "text",
+        "table": "session",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "ip_address",
+        "type": "text",
+        "table": "session",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "token",
+        "type": "text",
+        "table": "session",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp without time zone",
+        "table": "session",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "user_agent",
+        "type": "text",
+        "table": "session",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "user_id",
+        "type": "uuid",
+        "table": "session",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "ban_expires",
+        "type": "timestamp without time zone",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "ban_reason",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "banned",
+        "type": "boolean",
+        "table": "user",
+        "schema": "better-auth",
+        "default": "false",
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "display",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "email",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "email_verified",
+        "type": "boolean",
+        "table": "user",
+        "schema": "better-auth",
+        "default": "false",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "user",
+        "schema": "better-auth",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "image",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "name_first",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "name_last",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "name_middle",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "phone_number",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "phone_number_verified",
+        "type": "boolean",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "post_nominals",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "role",
+        "type": "text",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "status",
+        "type": "account_status",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "timestamp_created_at",
+        "type": "timestamp without time zone",
+        "table": "user",
+        "schema": "better-auth",
+        "default": "now()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "timestamp_first_login",
+        "type": "timestamp without time zone",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "timestamp_onboarding_completed",
+        "type": "timestamp without time zone",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "timestamp_updated_at",
+        "type": "timestamp without time zone",
+        "table": "user",
+        "schema": "better-auth",
+        "default": "now()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "user_type_id",
+        "type": "uuid",
+        "table": "user",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "created_at",
+        "type": "timestamp without time zone",
+        "table": "verification",
+        "schema": "better-auth",
+        "default": "now()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "expires_at",
+        "type": "timestamp without time zone",
+        "table": "verification",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "verification",
+        "schema": "better-auth",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "identifier",
+        "type": "text",
+        "table": "verification",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "updated_at",
+        "type": "timestamp without time zone",
+        "table": "verification",
+        "schema": "better-auth",
+        "default": "now()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "value",
+        "type": "text",
+        "table": "verification",
+        "schema": "better-auth",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "created_by",
+        "type": "uuid",
+        "table": "events",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "table": "events",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "events",
+        "schema": "calendar",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "location",
+        "type": "jsonb",
+        "table": "events",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "table": "events",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "time_begin",
+        "type": "timestamp with time zone",
+        "table": "events",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "time_end",
+        "type": "timestamp with time zone",
+        "table": "events",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "event_id",
+        "type": "uuid",
+        "table": "junction_shifts",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "junction_shifts",
+        "schema": "calendar",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "position_id",
+        "type": "uuid",
+        "table": "junction_shifts",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "quantity",
+        "type": "integer",
+        "table": "junction_shifts",
+        "schema": "calendar",
+        "default": "1",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "status",
+        "type": "shift_status",
+        "table": "junction_shifts",
+        "schema": "calendar",
+        "default": "'active'::shift_status",
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "junction_slots",
+        "schema": "calendar",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "shift_id",
+        "type": "uuid",
+        "table": "junction_slots",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "status",
+        "type": "slot_status",
+        "table": "junction_slots",
+        "schema": "calendar",
+        "default": "'active'::slot_status",
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "user_id",
+        "type": "uuid",
+        "table": "junction_slots",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "junction_template_positions",
+        "schema": "calendar",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "position_id",
+        "type": "uuid",
+        "table": "junction_template_positions",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "quantity",
+        "type": "integer",
+        "table": "junction_template_positions",
+        "schema": "calendar",
+        "default": "1",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "template_id",
+        "type": "uuid",
+        "table": "junction_template_positions",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "table": "positions",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "display",
+        "type": "text",
+        "table": "positions",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "positions",
+        "schema": "calendar",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "table": "positions",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "description",
+        "type": "text",
+        "table": "templates",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "display",
+        "type": "text",
+        "table": "templates",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "id",
+        "type": "uuid",
+        "table": "templates",
+        "schema": "calendar",
+        "default": "uuid_generate_v7()",
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "location",
+        "type": "jsonb",
+        "table": "templates",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "name",
+        "type": "text",
+        "table": "templates",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "\"default\"",
+        "generated": ""
+      },
+      {
+        "name": "time_begin",
+        "type": "time without time zone",
+        "table": "templates",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": true,
+        "collation": "-",
+        "generated": ""
+      },
+      {
+        "name": "time_end",
+        "type": "time without time zone",
+        "table": "templates",
+        "schema": "calendar",
+        "default": null,
+        "identity": "",
+        "not_null": false,
+        "collation": "-",
+        "generated": ""
+      }
+    ],
+    "indexes": [
+      {
+        "ready": true,
+        "table": "certifications",
+        "valid": true,
+        "schema": "authz",
+        "definition": "CREATE UNIQUE INDEX certifications_name_key ON authz.certifications USING btree (name)"
+      },
+      {
+        "ready": true,
+        "table": "certifications",
+        "valid": true,
+        "schema": "authz",
+        "definition": "CREATE UNIQUE INDEX certifications_pkey ON authz.certifications USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "user_types",
+        "valid": true,
+        "schema": "authz",
+        "definition": "CREATE UNIQUE INDEX user_types_name_key ON authz.user_types USING btree (name)"
+      },
+      {
+        "ready": true,
+        "table": "user_types",
+        "valid": true,
+        "schema": "authz",
+        "definition": "CREATE UNIQUE INDEX user_types_pkey ON authz.user_types USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "account",
+        "valid": true,
+        "schema": "better-auth",
+        "definition": "CREATE UNIQUE INDEX account_pkey ON \"better-auth\".account USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "session",
+        "valid": true,
+        "schema": "better-auth",
+        "definition": "CREATE UNIQUE INDEX session_pkey ON \"better-auth\".session USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "session",
+        "valid": true,
+        "schema": "better-auth",
+        "definition": "CREATE UNIQUE INDEX session_token_unique ON \"better-auth\".session USING btree (token)"
+      },
+      {
+        "ready": true,
+        "table": "user",
+        "valid": true,
+        "schema": "better-auth",
+        "definition": "CREATE UNIQUE INDEX user_email_unique ON \"better-auth\".\"user\" USING btree (email)"
+      },
+      {
+        "ready": true,
+        "table": "user",
+        "valid": true,
+        "schema": "better-auth",
+        "definition": "CREATE UNIQUE INDEX user_pkey ON \"better-auth\".\"user\" USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "verification",
+        "valid": true,
+        "schema": "better-auth",
+        "definition": "CREATE UNIQUE INDEX verification_pkey ON \"better-auth\".verification USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "events",
+        "valid": true,
+        "schema": "calendar",
+        "definition": "CREATE UNIQUE INDEX events_pkey ON calendar.events USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "junction_shifts",
+        "valid": true,
+        "schema": "calendar",
+        "definition": "CREATE UNIQUE INDEX junction_shifts_pkey ON calendar.junction_shifts USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "junction_slots",
+        "valid": true,
+        "schema": "calendar",
+        "definition": "CREATE UNIQUE INDEX junction_slots_pkey ON calendar.junction_slots USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "junction_template_positions",
+        "valid": true,
+        "schema": "calendar",
+        "definition": "CREATE UNIQUE INDEX junction_template_positions_pkey ON calendar.junction_template_positions USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "positions",
+        "valid": true,
+        "schema": "calendar",
+        "definition": "CREATE UNIQUE INDEX positions_name_key ON calendar.positions USING btree (name)"
+      },
+      {
+        "ready": true,
+        "table": "positions",
+        "valid": true,
+        "schema": "calendar",
+        "definition": "CREATE UNIQUE INDEX positions_pkey ON calendar.positions USING btree (id)"
+      },
+      {
+        "ready": true,
+        "table": "templates",
+        "valid": true,
+        "schema": "calendar",
+        "definition": "CREATE UNIQUE INDEX templates_name_key ON calendar.templates USING btree (name)"
+      },
+      {
+        "ready": true,
+        "table": "templates",
+        "valid": true,
+        "schema": "calendar",
+        "definition": "CREATE UNIQUE INDEX templates_pkey ON calendar.templates USING btree (id)"
+      }
+    ],
+    "policies": [],
+    "triggers": [],
+    "relations": [
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "certifications",
+        "schema": "authz",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "user_types",
+        "schema": "authz",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "account",
+        "schema": "better-auth",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "session",
+        "schema": "better-auth",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "user",
+        "schema": "better-auth",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "verification",
+        "schema": "better-auth",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "events",
+        "schema": "calendar",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "junction_shifts",
+        "schema": "calendar",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "junction_slots",
+        "schema": "calendar",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "junction_template_positions",
+        "schema": "calendar",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "positions",
+        "schema": "calendar",
+        "force_rls": false
+      },
+      {
+        "rls": false,
+        "kind": "r",
+        "name": "templates",
+        "schema": "calendar",
+        "force_rls": false
+      }
+    ],
+    "constraints": [
+      {
+        "name": "certifications_name_key",
+        "table": "certifications",
+        "schema": "authz",
+        "validated": true,
+        "definition": "UNIQUE (name)"
+      },
+      {
+        "name": "certifications_pkey",
+        "table": "certifications",
+        "schema": "authz",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "parent_id",
+        "table": "certifications",
+        "schema": "authz",
+        "validated": true,
+        "definition": "FOREIGN KEY (parent) REFERENCES authz.certifications(id)"
+      },
+      {
+        "name": "user_types_name_key",
+        "table": "user_types",
+        "schema": "authz",
+        "validated": true,
+        "definition": "UNIQUE (name)"
+      },
+      {
+        "name": "user_types_pkey",
+        "table": "user_types",
+        "schema": "authz",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "account_pkey",
+        "table": "account",
+        "schema": "better-auth",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "session_pkey",
+        "table": "session",
+        "schema": "better-auth",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "session_token_unique",
+        "table": "session",
+        "schema": "better-auth",
+        "validated": true,
+        "definition": "UNIQUE (token)"
+      },
+      {
+        "name": "session_user_id_user_id_fk",
+        "table": "session",
+        "schema": "better-auth",
+        "validated": true,
+        "definition": "FOREIGN KEY (user_id) REFERENCES \"better-auth\".\"user\"(id) ON DELETE CASCADE"
+      },
+      {
+        "name": "user_email_unique",
+        "table": "user",
+        "schema": "better-auth",
+        "validated": true,
+        "definition": "UNIQUE (email)"
+      },
+      {
+        "name": "user_pkey",
+        "table": "user",
+        "schema": "better-auth",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "user_type_fkey",
+        "table": "user",
+        "schema": "better-auth",
+        "validated": true,
+        "definition": "FOREIGN KEY (user_type_id) REFERENCES authz.user_types(id) ON DELETE RESTRICT"
+      },
+      {
+        "name": "verification_pkey",
+        "table": "verification",
+        "schema": "better-auth",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "created_by",
+        "table": "events",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "FOREIGN KEY (created_by) REFERENCES \"better-auth\".\"user\"(id) ON UPDATE CASCADE"
+      },
+      {
+        "name": "events_pkey",
+        "table": "events",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "event_id",
+        "table": "junction_shifts",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "FOREIGN KEY (event_id) REFERENCES calendar.events(id) ON UPDATE CASCADE ON DELETE CASCADE"
+      },
+      {
+        "name": "junction_shifts_pkey",
+        "table": "junction_shifts",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "position_id",
+        "table": "junction_shifts",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "FOREIGN KEY (position_id) REFERENCES calendar.positions(id) ON UPDATE CASCADE ON DELETE CASCADE"
+      },
+      {
+        "name": "junction_slots_pkey",
+        "table": "junction_slots",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "shift_id",
+        "table": "junction_slots",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "FOREIGN KEY (shift_id) REFERENCES calendar.junction_shifts(id) ON UPDATE CASCADE ON DELETE CASCADE"
+      },
+      {
+        "name": "user_id",
+        "table": "junction_slots",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "FOREIGN KEY (user_id) REFERENCES \"better-auth\".\"user\"(id) ON UPDATE CASCADE ON DELETE SET NULL"
+      },
+      {
+        "name": "junction_template_positions_pkey",
+        "table": "junction_template_positions",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "position_id_fkey",
+        "table": "junction_template_positions",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "FOREIGN KEY (position_id) REFERENCES calendar.positions(id)"
+      },
+      {
+        "name": "template_id_fkey",
+        "table": "junction_template_positions",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "FOREIGN KEY (template_id) REFERENCES calendar.templates(id)"
+      },
+      {
+        "name": "positions_name_key",
+        "table": "positions",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "UNIQUE (name)"
+      },
+      {
+        "name": "positions_pkey",
+        "table": "positions",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      },
+      {
+        "name": "templates_name_key",
+        "table": "templates",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "UNIQUE (name)"
+      },
+      {
+        "name": "templates_pkey",
+        "table": "templates",
+        "schema": "calendar",
+        "validated": true,
+        "definition": "PRIMARY KEY (id)"
+      }
+    ]
+  }
+}
