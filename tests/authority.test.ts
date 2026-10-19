@@ -574,3 +574,55 @@ test('inactive identities cannot exercise authority even when a valid session al
     ),
   ).toMatchObject({ ok: true });
 }, 30000);
+
+test('a signed-in invited identity can complete its own profile without gaining scheduling authority', async () => {
+  const cookie = await signIn(app.baseURL, 'invite@example.invalid');
+  const userId = '01930000-0000-7000-8000-000000000005';
+  expect(
+    await operation(
+      app.baseURL,
+      'users',
+      'userServerFns',
+      'byId',
+      { userId },
+      cookie,
+    ),
+  ).toMatchObject({ ok: true, value: { status: 'invited' } });
+  expect(
+    await operation(
+      app.baseURL,
+      'users',
+      'userServerFns',
+      'updateOnboardingProfile',
+      { userId, nameFirst: 'Invited fixture' },
+      cookie,
+    ),
+  ).toMatchObject({ ok: true });
+  expect(
+    await operation(
+      app.baseURL,
+      'calendar',
+      'positionServerFns',
+      'create',
+      { name: 'invited-position', display: 'Denied', description: null },
+      cookie,
+    ),
+  ).toMatchObject({ ok: false, error: 'Forbidden' });
+  expect(
+    await operation(
+      app.baseURL,
+      'users',
+      'userServerFns',
+      'completeOnboarding',
+      {
+        userId,
+        timestampOnboardingCompleted: '2026-01-01',
+        emailVerified: true,
+      },
+      cookie,
+    ),
+  ).toMatchObject({
+    ok: false,
+    error: 'Complete verified profile requirements first',
+  });
+}, 30000);

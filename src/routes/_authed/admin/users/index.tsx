@@ -1,6 +1,11 @@
 import { IconEye, IconFilter2, IconUserCancel } from '@tabler/icons-react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
+import {
+  createFileRoute,
+  Link,
+  useNavigate,
+  useRouter,
+} from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
 import {
   Badge,
@@ -23,10 +28,7 @@ import {
   TooltipTrigger,
 } from '~/components/ui';
 import { authSessionQueryKey } from '~/features/auth/queries';
-import {
-  allSystemRolesQuery,
-  allUserTypesQuery,
-} from '~/features/authz/queries';
+import { allUserTypesQuery } from '~/features/authz/queries';
 import type { userTypeSchema } from '~/features/authz/schema';
 import { SYSTEM_ROLES } from '~/features/authz/schema';
 import {
@@ -37,10 +39,10 @@ import {
 } from '~/features/users/mutations';
 import { OfficerCapabilities } from '~/features/users/officer-capabilities';
 import { allUsersQuery, userByIdQuery } from '~/features/users/queries';
+import { SystemRoleSelect } from '~/features/users/system-role-select';
 import { authClient } from '~/lib/auth-client';
 import { getUserPermissions } from '~/server/permissions';
 import { hasAuthority } from '~/server/permissions/policy';
-import type { SystemRole } from '~/server/permissions/policy';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { infer as Infer } from 'zod';
@@ -51,6 +53,7 @@ export const Route = createFileRoute('/_authed/admin/users/')({
 
 function RouteComponent() {
   const nav = useNavigate();
+  const router = useRouter();
   const queryClient = useQueryClient();
   const { currentUser } = Route.useRouteContext();
   const permissions = getUserPermissions(currentUser);
@@ -75,12 +78,18 @@ function RouteComponent() {
 
   // Queries
   const { data: users, isLoading: usersLoading } = useQuery(allUsersQuery());
-  const { data: systemRoles } = useQuery(allSystemRolesQuery());
   const { data: userTypes } = useQuery(allUserTypesQuery());
 
   // Mutations
   const { mutate: updateSystemRole } = useMutation({
     ...updateSystemRoleMutation(),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: allUsersQuery().queryKey }),
+        queryClient.invalidateQueries({ queryKey: authSessionQueryKey }),
+      ]);
+      await router.invalidate();
+    },
   });
 
   const { mutate: updateUserStatus } = useMutation({
@@ -302,73 +311,21 @@ function RouteComponent() {
                   <span className="text-sm">{user.email}</span>
                 </div>
                 <div className="w-1/6 text-sm">
-                  <Combobox
-                    disabled={
-                      !hasAuthority(currentUser, 'roles') ||
-                      (user.role === 'Developer' &&
-                        currentUser.role !== 'Developer') ||
-                      user.role === 'Developer'
-                    }
+                  <SystemRoleSelect
+                    actor={currentUser}
                     value={user.role}
-                    items={(systemRoles ?? []).filter(
-                      (role) =>
-                        currentUser.role === 'Developer' ||
-                        role !== 'Developer' ||
-                        user.role === 'Developer',
-                    )}
-                    onValueChange={(value) => {
-                      if (
-                        !value ||
-                        !hasAuthority(currentUser, 'roles') ||
-                        (user.role === 'Developer' &&
-                          currentUser.role !== 'Developer')
-                      )
-                        return;
+                    onChange={(role) =>
                       updateSystemRole(
+                        { userId: user.id, role },
                         {
-                          userId: user.id,
-                          role: value as SystemRole,
-                        },
-                        {
-                          onSuccess: () => {
-                            const fullName = [user.nameFirst, user.nameLast]
-                              .filter(Boolean)
-                              .join(' ');
+                          onSuccess: () =>
                             toast.success(
-                              `System Role updated to ${value} for ${fullName}`,
-                            );
-                            // TODO: UI update for role change
-                          },
+                              `System role updated to ${role} for ${user.display}`,
+                            ),
                         },
-                      );
-                    }}
-                  >
-                    <ComboboxTrigger
-                      render={
-                        <Button
-                          className="w-full justify-start text-left font-normal"
-                          variant="ghost"
-                        >
-                          <ComboboxValue />
-                        </Button>
-                      }
-                    />
-                    <ComboboxContent>
-                      <ComboboxInput
-                        className="mb-1! h-7! text-sm"
-                        placeholder="Search"
-                        showTrigger={false}
-                      />
-                      <ComboboxEmpty>No system roles defined.</ComboboxEmpty>
-                      <ComboboxList>
-                        {(role: string) => (
-                          <ComboboxItem key={role} value={role}>
-                            {role}
-                          </ComboboxItem>
-                        )}
-                      </ComboboxList>
-                    </ComboboxContent>
-                  </Combobox>
+                      )
+                    }
+                  />
                 </div>
                 <OfficerCapabilities
                   user={user}

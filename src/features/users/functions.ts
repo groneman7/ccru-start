@@ -68,7 +68,7 @@ export const allUsersForComboboxServerFn = createServerFn().handler(
 export const getUserByIdServerFn = createServerFn()
   .validator(object({ userId: uuidv7() }))
   .handler(async ({ data }) => {
-    const actor = await requireAuthority('authenticated');
+    const actor = await requireAuthority('identity');
     if (data.userId !== actor.id && !hasAuthority(actor, 'profiles'))
       denyAuthority();
     return await user.byId(data);
@@ -77,7 +77,7 @@ export const getUserByIdServerFn = createServerFn()
 export const completeOnboardingServerFn = createServerFn({ method: 'POST' })
   .validator(object({ userId: string() }))
   .handler(async ({ data }) => {
-    const actor = await requireAuthority('authenticated');
+    const actor = await requireAuthority('identity');
     if (data.userId !== actor.id && !hasAuthority(actor, 'users'))
       denyAuthority();
     const profile = await user.byId(data);
@@ -107,7 +107,7 @@ export const updateOnboardingProfileServerFn = createServerFn({
     }),
   )
   .handler(async ({ data }) => {
-    const actor = await requireAuthority('authenticated');
+    const actor = await requireAuthority('identity');
     if (data.userId !== actor.id && !hasAuthority(actor, 'users'))
       denyAuthority();
     if (

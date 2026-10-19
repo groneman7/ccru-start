@@ -6,6 +6,7 @@ export const SYSTEM_ROLES = [
 ] as const;
 export type SystemRole = (typeof SYSTEM_ROLES)[number];
 export type Authority =
+  | 'identity'
   | 'authenticated'
   | 'profiles'
   | 'scheduling'
@@ -25,12 +26,10 @@ export function hasAuthority(
   user: AuthorityUser | null | undefined,
   authority: Authority,
 ) {
-  if (
-    !user ||
-    user.status !== 'active' ||
-    !SYSTEM_ROLES.includes(user.role as SystemRole)
-  )
-    return false;
+  if (!user || !SYSTEM_ROLES.includes(user.role as SystemRole)) return false;
+  if (authority === 'identity')
+    return user.status === 'active' || user.status === 'invited';
+  if (user.status !== 'active') return false;
   if (authority === 'restore') return user.role === 'Developer';
   if (authority === 'roles')
     return user.role === 'Administrator' || user.role === 'Developer';

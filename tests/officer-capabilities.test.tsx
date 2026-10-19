@@ -3,6 +3,7 @@ import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, expect, test } from 'vitest';
 import { OfficerCapabilities } from '../src/features/users/officer-capabilities';
 import type { OfficerCapabilityChange } from '../src/features/users/officer-capabilities';
+import { SystemRoleSelect } from '../src/features/users/system-role-select';
 
 afterEach(cleanup);
 test('capability controls send independent changes and show the existing grants', () => {
@@ -58,3 +59,24 @@ test('ordinary Users have no capability controls', () => {
   );
   expect(screen.queryByRole('group')).toBe(null);
 });
+
+test.each([
+  ['Developer', 'Developer', false],
+  ['Administrator', 'Developer', true],
+  ['Administrator', 'User', false],
+  ['Officer', 'User', true],
+])(
+  '%s editing %s has the correct role control availability',
+  (actorRole, targetRole, disabled) => {
+    render(
+      <SystemRoleSelect
+        actor={{ id: 'fixture', role: actorRole, status: 'active' }}
+        value={targetRole}
+        onChange={() => {}}
+      />,
+    );
+    expect(
+      (screen.getByLabelText('System role') as HTMLButtonElement).disabled,
+    ).toBe(disabled);
+  },
+);
