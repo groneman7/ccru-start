@@ -4,7 +4,7 @@ Issue [#37](https://github.com/groneman7/ccru-start/issues/37) records the curre
 
 ## Authoritative write contract
 
-The existing staffing page calls the same `slotServerFns.create` and `reassignUser` operations. Both require the fresh trusted scheduling authority established by #4, accept no caller timestamp, and return `{ id, assignedAt }` from the committed database write. Unknown input fields cannot select assignment priority.
+The existing staffing page calls the same `slotServerFns.assignUser` and `reassignUser` operations. Both require the fresh trusted scheduling authority established by #4, accept no caller timestamp, and return `{ id, assignedAt }` from the committed database write. The lower-level `slotServerFns.create` operation returns the same authoritative data. Unknown input fields cannot select assignment priority.
 
 A database trigger installed with the expansion enforces the contract for application writers, including an older writer running during rollout:
 

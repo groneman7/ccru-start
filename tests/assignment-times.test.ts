@@ -94,7 +94,7 @@ test('the staffing UI server operations return authoritative fresh and replaceme
       userId = '01930000-0000-7000-8000-000000000001';
     type Assignment = { id: string; assignedAt: string };
     const start = Date.now();
-    const created = await command<Assignment>('create', {
+    const created = await command<Assignment>('assignUser', {
       shiftId,
       userId,
       assignedAt: '2000-01-01T00:00:00Z',
@@ -130,7 +130,7 @@ test('the staffing UI server operations return authoritative fresh and replaceme
     expect(repeated).toEqual(replaced);
     const volunteer = await signIn(app.baseURL, 'user@example.invalid');
     for (const [action, data] of [
-      ['create', { shiftId, userId }],
+      ['assignUser', { shiftId, userId }],
       ['reassignUser', { slotId: created.value!.id, userId }],
     ] as const)
       expect(await command(action, data, volunteer)).toMatchObject({
