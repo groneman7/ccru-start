@@ -17,3 +17,6 @@ todos.json
 auth-schema.ts
 
 .pnpm*
+
+# Local ticket drafts and publication artifacts
+/.scratch/

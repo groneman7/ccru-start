@@ -1,9 +1,0 @@
-{
-  "parent": "https://github.com/groneman7/ccru-start/issues/2",
-  "tickets_verified": 32,
-  "native_blocking_edges_verified": 43,
-  "parent_title_body_state_unchanged": true,
-  "sub_issue_order_verified": true,
-  "all_open_with_ready_for_agent": true,
-  "all_bodies_match_approved_drafts": true
-}

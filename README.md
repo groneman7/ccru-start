@@ -258,4 +258,6 @@ For TanStack Start specific documentation, visit [TanStack Start](https://tansta
 
 ## Database migrations
 
+The [MVP ticket map](docs/mvp-tickets.md) preserves the published breakdown and user-story traceability. GitHub Issues hold current ticket status and acceptance criteria; `.scratch/` contains ignored local working files.
+
 Use the [retained-data migration procedure](docs/database-migrations.md) before changing database schemas. `db:migrate` plans changes read-only by default and requires an explicit `MIGRATION_DATABASE_URL`; application is a separate `--apply` operation.
