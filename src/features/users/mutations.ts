@@ -1,4 +1,5 @@
 import { mutationOptions } from '@tanstack/react-query';
+import type { SystemRole } from '~/features/authz/schema';
 import {
   certificationServerFns as certification,
   userServerFns as user,
@@ -7,7 +8,6 @@ import type {
   createCertificationSchema,
   updateCertificationSchema,
 } from '~/features/users/schema';
-import type { SystemRole } from '~/server/permissions/policy';
 import type { infer as Infer } from 'zod';
 
 export function createCertificationMutation() {

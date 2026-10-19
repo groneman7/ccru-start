@@ -1,4 +1,6 @@
+import { subject } from '@casl/ability';
 import { createServerFn } from '@tanstack/react-start';
+import { SYSTEM_ROLES } from '~/features/authz/schema';
 import {
   createCertificationSchema,
   updateCertificationSchema,
@@ -8,10 +10,12 @@ import {
   certificationService as certification,
   userService as user,
 } from '~/features/users/services';
-import { denyAuthority, requireAuthority } from '~/server/authority';
 import { db } from '~/server/db';
 import { userInBetterAuth as users } from '~/server/db/schema';
-import { hasAuthority, SYSTEM_ROLES } from '~/server/permissions/policy';
+import {
+  denyPermission,
+  requirePermission,
+} from '~/server/permissions/require-permission';
 import { and, eq, ne, sql } from 'drizzle-orm';
 import {
   boolean,
@@ -26,41 +30,41 @@ import {
 // Certifications -------------------------------------------------------------
 
 export const allCertificationsServerFn = createServerFn().handler(async () => {
-  await requireAuthority('authenticated');
+  await requirePermission('read', 'Certification');
   return await certification.all();
 });
 
 export const getCertificationByIdServerFn = createServerFn()
   .validator(object({ certificationId: uuidv7() }))
   .handler(async ({ data }) => {
-    await requireAuthority('authenticated');
+    await requirePermission('read', 'Certification');
     return await certification.byId(data);
   });
 
 export const createCertificationServerFn = createServerFn({ method: 'POST' })
   .validator(createCertificationSchema)
   .handler(async ({ data }) => {
-    await requireAuthority('users');
+    await requirePermission('create', 'Certification');
     return await certification.create(data);
   });
 
 export const updateCertificationServerFn = createServerFn({ method: 'POST' })
   .validator(updateCertificationSchema)
   .handler(async ({ data }) => {
-    await requireAuthority('users');
+    await requirePermission('update', 'Certification');
     return await certification.update(data);
   });
 
 // Users ----------------------------------------------------------------------
 
 export const allUsersServerFn = createServerFn().handler(async () => {
-  await requireAuthority('profiles');
+  await requirePermission('list', 'User');
   return await user.all();
 });
 
 export const allUsersForComboboxServerFn = createServerFn().handler(
   async () => {
-    await requireAuthority('scheduling');
+    await requirePermission('create', 'Slot');
     return await user.allForCombobox();
   },
 );
@@ -68,18 +72,14 @@ export const allUsersForComboboxServerFn = createServerFn().handler(
 export const getUserByIdServerFn = createServerFn()
   .validator(object({ userId: uuidv7() }))
   .handler(async ({ data }) => {
-    const actor = await requireAuthority('identity');
-    if (data.userId !== actor.id && !hasAuthority(actor, 'profiles'))
-      denyAuthority();
+    await requirePermission('read', subject('User', { id: data.userId }));
     return await user.byId(data);
   });
 
 export const completeOnboardingServerFn = createServerFn({ method: 'POST' })
   .validator(object({ userId: string() }))
   .handler(async ({ data }) => {
-    const actor = await requireAuthority('identity');
-    if (data.userId !== actor.id && !hasAuthority(actor, 'users'))
-      denyAuthority();
+    await requirePermission('update', subject('User', { id: data.userId }));
     const profile = await user.byId(data);
     if (
       !profile.emailVerified ||
@@ -87,7 +87,7 @@ export const completeOnboardingServerFn = createServerFn({ method: 'POST' })
       !profile.nameLast?.trim() ||
       !profile.phoneNumber?.trim()
     )
-      denyAuthority('Complete verified profile requirements first', 400);
+      denyPermission('Complete verified profile requirements first', 400);
     return await user.completeOnboarding(data);
   });
 
@@ -107,23 +107,22 @@ export const updateOnboardingProfileServerFn = createServerFn({
     }),
   )
   .handler(async ({ data }) => {
-    const actor = await requireAuthority('identity');
-    if (data.userId !== actor.id && !hasAuthority(actor, 'users'))
-      denyAuthority();
+    await requirePermission('update', subject('User', { id: data.userId }));
     if (
       data.email &&
       data.email !== (await user.byId({ userId: data.userId })).email
     )
-      denyAuthority('Use the verified email-change workflow', 400);
+      denyPermission('Use the verified email-change workflow', 400);
     return await user.updateOnboardingProfile(data);
   });
 
 export const updateSystemRoleServerFn = createServerFn({ method: 'POST' })
   .validator(object({ userId: uuidv7(), role: zodEnum(SYSTEM_ROLES) }))
   .handler(async ({ data }) => {
-    const actor = await requireAuthority('roles');
-    if (data.role === 'Developer' && actor.role !== 'Developer')
-      denyAuthority();
+    const { permissions } = await requirePermission(
+      'assign',
+      subject('SystemRole', { nextRole: data.role }),
+    );
     const [row] = await db
       .update(users)
       .set({
@@ -134,25 +133,33 @@ export const updateSystemRoleServerFn = createServerFn({ method: 'POST' })
       .where(
         and(
           eq(users.id, data.userId),
-          actor.role === 'Developer' ? undefined : ne(users.role, 'Developer'),
+          permissions.can(
+            'assign',
+            subject('SystemRole', {
+              currentRole: 'Developer',
+              nextRole: data.role,
+            }),
+          )
+            ? undefined
+            : ne(users.role, 'Developer'),
         ),
       )
       .returning({ id: users.id });
-    if (!row) denyAuthority();
+    if (!row) denyPermission();
     return row;
   });
 
 export const updateUserStatusServerFn = createServerFn({ method: 'POST' })
   .validator(object({ userId: string(), status: userToggleableStatusSchema }))
   .handler(async ({ data }) => {
-    await requireAuthority('users');
+    await requirePermission('update-status', 'User');
     return await user.updateStatus(data);
   });
 
 export const updateUserTypeServerFn = createServerFn({ method: 'POST' })
   .validator(object({ userId: string(), userTypeId: string() }))
   .handler(async ({ data }) => {
-    await requireAuthority('users');
+    await requirePermission('update-type', 'User');
     return await user.updateUserType(data);
   });
 
@@ -175,7 +182,7 @@ export const updateCapabilitiesServerFn = createServerFn({ method: 'POST' })
     ),
   )
   .handler(async ({ data }) => {
-    await requireAuthority('roles');
+    await requirePermission('update', 'OfficerCapabilities');
     const [row] = await db
       .update(users)
       .set({
@@ -189,7 +196,7 @@ export const updateCapabilitiesServerFn = createServerFn({ method: 'POST' })
         canManageUsers: users.canManageUsers,
       });
     if (!row)
-      denyAuthority('Capabilities may only be assigned to Officers', 400);
+      denyPermission('Capabilities may only be assigned to Officers', 400);
     return row;
   });
 

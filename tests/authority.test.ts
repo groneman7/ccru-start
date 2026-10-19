@@ -47,6 +47,27 @@ test('anonymous callers cannot create staffing positions by calling the server f
   });
 }, 30000);
 
+test.each([
+  ['officer@example.invalid', false],
+  ['admin@example.invalid', false],
+  ['developer@example.invalid', true],
+] as const)(
+  'Developer tools access for %s matches the shared CASL rules',
+  async (email, allowed) => {
+    const cookie = await signIn(app.baseURL, email);
+    const response = await fetch(`${app.baseURL}/dev-tools/ui`, {
+      headers: { cookie },
+    });
+    expect(response.status).toBe(200);
+    const page = await response.text();
+    expect(
+      page.includes('You do not have permission to access these tools.'),
+    ).toBe(!allowed);
+    expect(page.includes('Developer Tools')).toBe(allowed);
+  },
+  30000,
+);
+
 test('an Administrator grants and revokes scheduling authority independently of user management', async () => {
   const admin = await signIn(app.baseURL, 'admin@example.invalid');
   const officer = await signIn(app.baseURL, 'officer@example.invalid');
@@ -301,6 +322,26 @@ test('ordinary users cannot obtain authority from client actor, role, capability
       'userServerFns',
       'updateSystemRole',
       { userId: '01930000-0000-7000-8000-000000000001', ...spoof },
+    ],
+    [
+      'users',
+      'userServerFns',
+      'updateStatus',
+      {
+        userId: '01930000-0000-7000-8000-000000000001',
+        status: 'inactive',
+        ...spoof,
+      },
+    ],
+    [
+      'users',
+      'userServerFns',
+      'updateUserType',
+      {
+        userId: '01930000-0000-7000-8000-000000000001',
+        userTypeId: '01930000-0000-7000-8000-000000000101',
+        ...spoof,
+      },
     ],
     [
       'users',
@@ -598,6 +639,21 @@ test('a signed-in invited identity can complete its own profile without gaining 
       cookie,
     ),
   ).toMatchObject({ ok: true });
+  for (const action of ['byId', 'updateOnboardingProfile']) {
+    expect(
+      await operation(
+        app.baseURL,
+        'users',
+        'userServerFns',
+        action,
+        {
+          userId: '01930000-0000-7000-8000-000000000001',
+          nameFirst: 'Denied',
+        },
+        cookie,
+      ),
+    ).toMatchObject({ ok: false, error: 'Forbidden' });
+  }
   expect(
     await operation(
       app.baseURL,

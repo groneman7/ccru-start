@@ -1,3 +1,4 @@
+import { subject } from '@casl/ability';
 import {
   Button,
   Combobox,
@@ -9,30 +10,36 @@ import {
   ComboboxTrigger,
   ComboboxValue,
 } from '~/components/ui';
-import { hasAuthority, SYSTEM_ROLES } from '~/server/permissions/policy';
-import type { AuthorityUser, SystemRole } from '~/server/permissions/policy';
+import { SYSTEM_ROLES } from '~/features/authz/schema';
+import type { SystemRole } from '~/features/authz/schema';
+import { getUserPermissions } from '~/server/permissions';
+import type { PermissionUser } from '~/server/permissions';
 
 export function SystemRoleSelect({
   actor,
   value,
   onChange,
 }: {
-  actor: AuthorityUser;
+  actor: PermissionUser;
   value: string;
   onChange: (role: SystemRole) => void;
 }) {
-  const disabled =
-    !hasAuthority(actor, 'roles') ||
-    (value === 'Developer' && actor.role !== 'Developer');
+  const permissions = getUserPermissions(actor);
+  const disabled = !permissions.can(
+    'assign',
+    subject('SystemRole', { currentRole: value }),
+  );
   return (
     <Combobox
       disabled={disabled}
       value={value}
       items={SYSTEM_ROLES.filter(
         (role) =>
-          actor.role === 'Developer' ||
-          role !== 'Developer' ||
-          value === 'Developer',
+          role === value ||
+          permissions.can(
+            'assign',
+            subject('SystemRole', { currentRole: value, nextRole: role }),
+          ),
       )}
       onValueChange={(role) => {
         if (role && !disabled) onChange(role as SystemRole);

@@ -76,7 +76,7 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
-        {permissions.can('manage', 'System') ? (
+        {permissions.can('list', 'User') ? (
           <SidebarGroup>
             <SidebarGroupLabel>Admin Tools</SidebarGroupLabel>
             <SidebarMenu>

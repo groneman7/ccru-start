@@ -1,14 +1,14 @@
 import { createServerFn } from '@tanstack/react-start';
 import { authorizationService as authz } from '~/features/authz/services';
-import { requireAuthority } from '~/server/authority';
+import { requirePermission } from '~/server/permissions/require-permission';
 
 const getAllSystemRolesServerFn = createServerFn().handler(async () => {
-  await requireAuthority('authenticated');
+  await requirePermission('read', 'SystemRole');
   return await authz.getAllSystemRoles();
 });
 
 const getAllUserTypesServerFn = createServerFn().handler(async () => {
-  await requireAuthority('authenticated');
+  await requirePermission('read', 'UserType');
   return await authz.getAllUserTypes();
 });
 

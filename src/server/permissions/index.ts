@@ -1,40 +1,101 @@
-import type { MongoAbility } from '@casl/ability';
 import { AbilityBuilder, createMongoAbility } from '@casl/ability';
-import type { CurrentUser } from '~/server/auth';
-import { hasAuthority } from './policy';
+import type { ForcedSubject, MongoAbility } from '@casl/ability';
+import { SYSTEM_ROLES } from '~/features/authz/schema';
+import type { SystemRole } from '~/features/authz/schema';
 
-type CalendarEventSubject = 'CalendarEvent';
-type CalendarEventPermission = [
-  'create' | 'update' | 'delete',
-  CalendarEventSubject,
-];
+export type PermissionUser = {
+  id: string;
+  role?: string | null;
+  status?: string | null;
+  canManageScheduling?: boolean;
+  canManageUsers?: boolean;
+};
 
-type ShiftSubject = 'Shift';
-type ShiftPermission = ['modify', ShiftSubject];
+type UserSubject = 'User' | (ForcedSubject<'User'> & { id: string });
+type RoleSubject =
+  | 'SystemRole'
+  | (ForcedSubject<'SystemRole'> & {
+      currentRole?: string;
+      nextRole?: string;
+    });
+export type Permission =
+  | ['create' | 'read' | 'update' | 'delete' | 'restore', 'CalendarEvent']
+  | ['create' | 'read' | 'update' | 'restore', 'Position']
+  | ['create' | 'modify' | 'delete' | 'restore', 'Shift']
+  | ['create' | 'read' | 'update' | 'delete' | 'restore', 'Slot']
+  | ['read' | 'update' | 'restore', 'Template']
+  | ['read' | 'create' | 'update' | 'restore', 'Certification']
+  | ['read' | 'list' | 'update' | 'update-status' | 'update-type', UserSubject]
+  | ['read' | 'assign', RoleSubject]
+  | ['update', 'OfficerCapabilities']
+  | ['read', 'UserType']
+  | ['create' | 'read' | 'update' | 'delete' | 'restore', 'SavedLocation']
+  | ['dev-tools' | 'impersonate' | 'manage-sessions', 'System'];
+export type UserPermissions = MongoAbility<Permission>;
 
-type SystemSubject = 'System';
-type SystemPermission = ['dev-tools' | 'impersonate' | 'manage', SystemSubject];
+export function getUserPermissions(user?: PermissionUser | null) {
+  const { build, can: allow } = new AbilityBuilder<UserPermissions>(
+    createMongoAbility,
+  );
+  if (!user || !SYSTEM_ROLES.includes(user.role as SystemRole)) return build();
+  if (user.status !== 'active' && user.status !== 'invited') return build();
 
-type Permissions = CalendarEventPermission | ShiftPermission | SystemPermission;
+  allow('read', 'User', { id: user.id });
+  allow('update', 'User', { id: user.id });
+  if (user.status !== 'active') return build();
 
-export function getUserPermissions(user?: CurrentUser) {
-  const {
-    build,
-    can: allow,
-    cannot: forbid,
-  } = new AbilityBuilder<MongoAbility<Permissions>>(createMongoAbility);
+  allow('read', [
+    'CalendarEvent',
+    'Position',
+    'Slot',
+    'Template',
+    'Certification',
+    'SystemRole',
+    'UserType',
+  ]);
 
-  if (hasAuthority(user, 'restore')) {
-    allow('impersonate', 'System');
-    allow('dev-tools', 'System');
-  } else forbid('impersonate', 'System');
-  if (hasAuthority(user, 'scheduling')) {
-    allow('create', 'CalendarEvent');
-    allow('update', 'CalendarEvent');
-    allow('delete', 'CalendarEvent');
-    allow('modify', 'Shift');
+  const administrator =
+    user.role === 'Administrator' || user.role === 'Developer';
+  if (administrator || user.role === 'Officer') {
+    allow(['read', 'list'], 'User');
+    allow(['create', 'read', 'update', 'delete'], 'SavedLocation');
   }
-  if (hasAuthority(user, 'profiles')) allow('manage', 'System');
-
+  if (
+    administrator ||
+    (user.role === 'Officer' && user.canManageScheduling === true)
+  ) {
+    allow(['create', 'update', 'delete'], 'CalendarEvent');
+    allow(['create', 'update'], 'Position');
+    allow(['create', 'modify', 'delete'], 'Shift');
+    allow(['create', 'update', 'delete'], 'Slot');
+    allow('update', 'Template');
+  }
+  if (
+    administrator ||
+    (user.role === 'Officer' && user.canManageUsers === true)
+  ) {
+    allow(['update', 'update-status', 'update-type'], 'User');
+    allow(['create', 'update'], 'Certification');
+  }
+  if (administrator) {
+    allow('update', 'OfficerCapabilities');
+    allow('assign', 'SystemRole', {
+      currentRole: { $ne: 'Developer' },
+      nextRole: { $ne: 'Developer' },
+    });
+  }
+  if (user.role === 'Developer') {
+    allow('assign', 'SystemRole');
+    allow(['dev-tools', 'impersonate', 'manage-sessions'], 'System');
+    allow('restore', [
+      'CalendarEvent',
+      'Position',
+      'Shift',
+      'Slot',
+      'Template',
+      'Certification',
+      'SavedLocation',
+    ]);
+  }
   return build();
 }

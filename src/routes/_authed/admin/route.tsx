@@ -7,7 +7,7 @@ export const Route = createFileRoute('/_authed/admin')({
     const permissions = getUserPermissions(currentUser);
     return {
       authorized:
-        permissions.can('manage', 'System') ||
+        permissions.can('list', 'User') ||
         location.pathname === `/admin/users/${currentUser.id}` ||
         location.pathname.startsWith(`/admin/users/${currentUser.id}/`),
     };

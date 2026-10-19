@@ -42,7 +42,6 @@ import { allUsersQuery, userByIdQuery } from '~/features/users/queries';
 import { SystemRoleSelect } from '~/features/users/system-role-select';
 import { authClient } from '~/lib/auth-client';
 import { getUserPermissions } from '~/server/permissions';
-import { hasAuthority } from '~/server/permissions/policy';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { infer as Infer } from 'zod';
@@ -329,7 +328,7 @@ function RouteComponent() {
                 </div>
                 <OfficerCapabilities
                   user={user}
-                  canEdit={hasAuthority(currentUser, 'roles')}
+                  canEdit={permissions.can('update', 'OfficerCapabilities')}
                   pending={capabilitiesPending}
                   onChange={(change) =>
                     updateCapabilities({ userId: user.id, ...change })
@@ -348,7 +347,7 @@ function RouteComponent() {
                     itemToStringValue={(
                       userType: Infer<typeof userTypeSchema>,
                     ) => userType.id}
-                    disabled={!hasAuthority(currentUser, 'users')}
+                    disabled={!permissions.can('update-type', 'User')}
                     value={selectedUserType}
                     onValueChange={(value) => {
                       if (!value) return;
@@ -416,7 +415,7 @@ function RouteComponent() {
                         isActive ? 'inactive' : 'active'
                       }`}
                       disabled={
-                        !hasAuthority(currentUser, 'users') ||
+                        !permissions.can('update-status', 'User') ||
                         user.id in pendingStatuses
                       }
                       pressed={isActive}

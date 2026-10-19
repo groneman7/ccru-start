@@ -6,7 +6,7 @@ import {
   userInBetterAuth,
   verificationInBetterAuth,
 } from '~/server/db/schema';
-import { hasAuthority } from '~/server/permissions/policy';
+import { getUserPermissions } from '~/server/permissions';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
@@ -49,6 +49,7 @@ export const auth = betterAuth({
         query: { disableCookieCache: true },
       });
       if (!session) throw new APIError('UNAUTHORIZED');
+      const permissions = getUserPermissions(session.user);
       if (
         path === '/admin/stop-impersonating' &&
         session.session.impersonatedBy
@@ -56,17 +57,21 @@ export const auth = betterAuth({
         return;
       if (
         ['/admin/list-users', '/admin/get-user'].includes(path) &&
-        hasAuthority(session.user, 'profiles')
+        permissions.can('list', 'User')
+      )
+        return;
+      if (
+        path === '/admin/impersonate-user' &&
+        permissions.can('impersonate', 'System')
       )
         return;
       if (
         [
-          '/admin/impersonate-user',
           '/admin/list-user-sessions',
           '/admin/revoke-user-session',
           '/admin/revoke-user-sessions',
         ].includes(path) &&
-        hasAuthority(session.user, 'restore')
+        permissions.can('manage-sessions', 'System')
       )
         return;
       throw new APIError('FORBIDDEN', {
