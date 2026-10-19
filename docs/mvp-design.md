@@ -446,10 +446,10 @@ This concerns updating records already present when the application schema chang
 | Delete event despite assigned volunteers, cascading immediately        | Active-capacity slots block deletion; cancel/remove first, then soft-delete descendants                                 |
 | Broad Officer scheduling/user powers                                   | Separate global capability grants; full profile viewing and saved-location management remain available to every Officer |
 | Approval-based registration                                            | Deferred; open/invitation-only modes only                                                                               |
-| Reject restoration for suppressible scheduling conflicts                | Suppress monthly/eligibility/duplicate-event conflicts; preserve original data, timestamps, and slot states              |
+| Reject restoration for suppressible scheduling conflicts               | Suppress monthly/eligibility/duplicate-event conflicts; preserve original data, timestamps, and slot states             |
 | Notify volunteers about upcoming restored assignments                  | Quiet restoration; no action-triggered notifications, assignment rechecks, or automatic confirmations                   |
 | Optional event/template end time                                       | Both start and end times required, on the same calendar date                                                            |
-| User-entered display name or optional first/last names                  | First/last required; middle optional; display name generated from name components                                       |
+| User-entered display name or optional first/last names                 | First/last required; middle optional; display name generated from name components                                       |
 
 ## 16. Remaining decisions and boundaries
 
@@ -458,3 +458,11 @@ The product owner confirmed shared understanding and approved this design on Oct
 ### Conditional schema-migration prerequisite
 
 There is no assignment-import feature. If a future schema migration must retain existing records with missing assignment timestamps or other incomplete required fields, establish an explicit repair/backfill policy before enabling the affected behavior. Inspect the actual retained data first; no fallback ordering or timestamp has been approved. Existing user/status preservation and active/deleted slot mapping are agreed in section 14. This conditional prerequisite does not block unrelated implementation.
+
+### October 18, 2026 approved assignment-time follow-up
+
+For the MVP, the product owner approved backfilling missing retained slot assignment timestamps from each slot's UUIDv7 creation time. The retained data is real historical data with no currently actionable conflicts. This explicitly accepts slot creation as an approximation of the current owner's historical assignment priority, including replacements whose actual assignment time cannot be recovered. This decision resolves the timestamp-policy prerequisite above and in section 14; it does not change the dated audit's observations or settle other missing-data policies.
+
+New assignments and replacements must record the actual operation time. Replacement never inherits the incumbent's priority. Same-owner movement between positions in one event preserves assignment time; movement to a different event starts a new assignment time. Backfill fills only missing values, preserves deleted records and all existing states, and performs no rechecks, conflict flagging, reviews, confirmations, notifications, or historical workflow replay. Historical participation remains subject to normal monthly counting and future explicit rechecks; the owner's current-conflict assessment creates no permanent exemption.
+
+Issue [#37](https://github.com/groneman7/ccru-start/issues/37) implements this policy through a nullable expansion, protected authoritative writes, validated UUID backfill, and required final timestamps. See the [assignment-time migration and write contract](assignment-times.md). Target execution and deployment require their own authorized operation.

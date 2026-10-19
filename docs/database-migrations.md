@@ -70,3 +70,7 @@ Coverage includes empty initialization, exact adoption, unchanged values across 
 If rehearsal fails, keep the error, review the schema/ledger metadata, and fix the proposed forward migration or obtain the needed data policy. Rerun from an untouched fixture/copy. A rolled-back failure should leave both business records and the ledger unchanged. Do not delete ledger rows, reset retained schemas, rewrite old migration hashes, or use a schema push to silence a mismatch. Unknown layouts and pre-existing historical ledgers need a separately reviewed transition, not this automatic adoption path.
 
 After a committed migration, recovery is a reviewed compensating forward migration or restoration of the verified backup according to the target's operational procedure. It is not a blind rerun of archived SQL. A successful rehearsal or implementation of this ticket does not authorize production execution or deployment.
+
+## Assignment-time follow-up
+
+Issue #37 appends the compatible expansion, approved UUID legacy backfill, and final assignment-time constraint after the #4 authority prerequisite. See [assignment-time migration and write contract](assignment-times.md) for decoder preconditions, concurrent-write protection, staged rollout and isolated rehearsal. The original baseline and prior applied SQL remain unchanged.

@@ -60,6 +60,11 @@ export async function startPostgres() {
       await client.query(`CREATE FUNCTION public.uuid_generate_v7() RETURNS uuid LANGUAGE SQL VOLATILE AS $$
         SELECT (lpad(to_hex((extract(epoch from clock_timestamp()) * 1000)::bigint),12,'0') || '7' || substr(replace(gen_random_uuid()::text,'-',''),14,3) || '8' || substr(replace(gen_random_uuid()::text,'-',''),18,15))::uuid
       $$`);
+      // Extension boundary: the retained target provides pg_uuidv7's decoder.
+      // Migration tests verify this substitute against published literal vectors.
+      await client.query(`CREATE FUNCTION public.uuid_v7_to_timestamptz(id uuid) RETURNS timestamptz LANGUAGE SQL IMMUTABLE STRICT AS $$
+        SELECT to_timestamp((('x' || substr(replace(id::text,'-',''),1,12))::bit(48)::bigint)::double precision / 1000)
+      $$`);
       return { url, client };
     },
     stop() {

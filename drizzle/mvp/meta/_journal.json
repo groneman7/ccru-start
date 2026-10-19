@@ -15,6 +15,27 @@
       "when": 1792388469282,
       "tag": "0001_officer_authority",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792389561852,
+      "tag": "0002_assignment_time_expand",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1792389562091,
+      "tag": "0003_assignment_time_backfill",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1792389577875,
+      "tag": "0004_assignment_time_required",
+      "breakpoints": true
     }
   ]
 }

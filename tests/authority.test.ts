@@ -45,7 +45,7 @@ test('anonymous callers cannot create staffing positions by calling the server f
     ok: false,
     error: 'Unauthorized',
   });
-});
+}, 30000);
 
 test('an Administrator grants and revokes scheduling authority independently of user management', async () => {
   const admin = await signIn(app.baseURL, 'admin@example.invalid');

@@ -1,0 +1,2 @@
+ALTER TABLE "calendar"."junction_slots" ALTER COLUMN "assigned_at" SET DEFAULT clock_timestamp();--> statement-breakpoint
+ALTER TABLE "calendar"."junction_slots" ALTER COLUMN "assigned_at" SET NOT NULL;

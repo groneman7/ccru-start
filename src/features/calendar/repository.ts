@@ -246,7 +246,7 @@ export const slotRepository = {
     const [row] = await db
       .insert(slots)
       .values({ shiftId, userId })
-      .returning({ id: slots.id });
+      .returning({ id: slots.id, assignedAt: slots.assignedAt });
 
     return row;
   },
@@ -265,7 +265,7 @@ export const slotRepository = {
       .update(slots)
       .set({ userId })
       .where(eq(slots.id, slotId))
-      .returning({ id: slots.id });
+      .returning({ id: slots.id, assignedAt: slots.assignedAt });
 
     return row;
   },

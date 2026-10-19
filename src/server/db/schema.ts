@@ -302,6 +302,9 @@ export const junctionSlotsInCalendar = calendar.table(
     shiftId: uuid('shift_id').notNull(),
     userId: uuid('user_id').notNull(),
     status: slotStatus().default('active'),
+    assignedAt: timestamp('assigned_at', { withTimezone: true, mode: 'string' })
+      .default(sql`clock_timestamp()`)
+      .notNull(),
   },
   (table) => [
     foreignKey({
