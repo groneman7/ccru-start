@@ -170,6 +170,10 @@ test.each([
   ['enum state', "ALTER TYPE public.slot_status ADD VALUE 'unknown'"],
   ['unexpected data shape', 'CREATE TABLE authz.user_certifications (id uuid)'],
   ['row visibility', 'ALTER TABLE calendar.events ENABLE ROW LEVEL SECURITY'],
+  [
+    'foreign-key enforcement',
+    'ALTER TABLE calendar.junction_slots DISABLE TRIGGER ALL',
+  ],
 ])(
   'rejects %s drift without repairing or deleting retained records',
   async (_name, change) => {

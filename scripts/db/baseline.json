@@ -1208,196 +1208,554 @@
         "table": "certifications",
         "schema": "authz",
         "validated": true,
-        "definition": "UNIQUE (name)"
+        "definition": "UNIQUE (name)",
+        "enforcement_triggers": null
       },
       {
         "name": "certifications_pkey",
         "table": "certifications",
         "schema": "authz",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "parent_id",
         "table": "certifications",
         "schema": "authz",
         "validated": true,
-        "definition": "FOREIGN KEY (parent) REFERENCES authz.certifications(id)"
+        "definition": "FOREIGN KEY (parent) REFERENCES authz.certifications(id)",
+        "enforcement_triggers": [
+          {
+            "type": 5,
+            "table": "authz.certifications",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "authz.certifications",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 9,
+            "table": "authz.certifications",
+            "enabled": "O",
+            "function": "\"RI_FKey_noaction_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "authz.certifications",
+            "enabled": "O",
+            "function": "\"RI_FKey_noaction_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "user_types_name_key",
         "table": "user_types",
         "schema": "authz",
         "validated": true,
-        "definition": "UNIQUE (name)"
+        "definition": "UNIQUE (name)",
+        "enforcement_triggers": null
       },
       {
         "name": "user_types_pkey",
         "table": "user_types",
         "schema": "authz",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "account_pkey",
         "table": "account",
         "schema": "better-auth",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "session_pkey",
         "table": "session",
         "schema": "better-auth",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "session_token_unique",
         "table": "session",
         "schema": "better-auth",
         "validated": true,
-        "definition": "UNIQUE (token)"
+        "definition": "UNIQUE (token)",
+        "enforcement_triggers": null
       },
       {
         "name": "session_user_id_user_id_fk",
         "table": "session",
         "schema": "better-auth",
         "validated": true,
-        "definition": "FOREIGN KEY (user_id) REFERENCES \"better-auth\".\"user\"(id) ON DELETE CASCADE"
+        "definition": "FOREIGN KEY (user_id) REFERENCES \"better-auth\".\"user\"(id) ON DELETE CASCADE",
+        "enforcement_triggers": [
+          {
+            "type": 9,
+            "table": "\"better-auth\".\"user\"",
+            "enabled": "O",
+            "function": "\"RI_FKey_cascade_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "\"better-auth\".\"user\"",
+            "enabled": "O",
+            "function": "\"RI_FKey_noaction_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 5,
+            "table": "\"better-auth\".session",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "\"better-auth\".session",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "user_email_unique",
         "table": "user",
         "schema": "better-auth",
         "validated": true,
-        "definition": "UNIQUE (email)"
+        "definition": "UNIQUE (email)",
+        "enforcement_triggers": null
       },
       {
         "name": "user_pkey",
         "table": "user",
         "schema": "better-auth",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "user_type_fkey",
         "table": "user",
         "schema": "better-auth",
         "validated": true,
-        "definition": "FOREIGN KEY (user_type_id) REFERENCES authz.user_types(id) ON DELETE RESTRICT"
+        "definition": "FOREIGN KEY (user_type_id) REFERENCES authz.user_types(id) ON DELETE RESTRICT",
+        "enforcement_triggers": [
+          {
+            "type": 5,
+            "table": "\"better-auth\".\"user\"",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "\"better-auth\".\"user\"",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "authz.user_types",
+            "enabled": "O",
+            "function": "\"RI_FKey_noaction_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 9,
+            "table": "authz.user_types",
+            "enabled": "O",
+            "function": "\"RI_FKey_restrict_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "verification_pkey",
         "table": "verification",
         "schema": "better-auth",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "created_by",
         "table": "events",
         "schema": "calendar",
         "validated": true,
-        "definition": "FOREIGN KEY (created_by) REFERENCES \"better-auth\".\"user\"(id) ON UPDATE CASCADE"
+        "definition": "FOREIGN KEY (created_by) REFERENCES \"better-auth\".\"user\"(id) ON UPDATE CASCADE",
+        "enforcement_triggers": [
+          {
+            "type": 17,
+            "table": "\"better-auth\".\"user\"",
+            "enabled": "O",
+            "function": "\"RI_FKey_cascade_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 9,
+            "table": "\"better-auth\".\"user\"",
+            "enabled": "O",
+            "function": "\"RI_FKey_noaction_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 5,
+            "table": "calendar.events",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.events",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "events_pkey",
         "table": "events",
         "schema": "calendar",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "event_id",
         "table": "junction_shifts",
         "schema": "calendar",
         "validated": true,
-        "definition": "FOREIGN KEY (event_id) REFERENCES calendar.events(id) ON UPDATE CASCADE ON DELETE CASCADE"
+        "definition": "FOREIGN KEY (event_id) REFERENCES calendar.events(id) ON UPDATE CASCADE ON DELETE CASCADE",
+        "enforcement_triggers": [
+          {
+            "type": 9,
+            "table": "calendar.events",
+            "enabled": "O",
+            "function": "\"RI_FKey_cascade_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.events",
+            "enabled": "O",
+            "function": "\"RI_FKey_cascade_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 5,
+            "table": "calendar.junction_shifts",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.junction_shifts",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "junction_shifts_pkey",
         "table": "junction_shifts",
         "schema": "calendar",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "position_id",
         "table": "junction_shifts",
         "schema": "calendar",
         "validated": true,
-        "definition": "FOREIGN KEY (position_id) REFERENCES calendar.positions(id) ON UPDATE CASCADE ON DELETE CASCADE"
+        "definition": "FOREIGN KEY (position_id) REFERENCES calendar.positions(id) ON UPDATE CASCADE ON DELETE CASCADE",
+        "enforcement_triggers": [
+          {
+            "type": 5,
+            "table": "calendar.junction_shifts",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.junction_shifts",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 9,
+            "table": "calendar.positions",
+            "enabled": "O",
+            "function": "\"RI_FKey_cascade_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.positions",
+            "enabled": "O",
+            "function": "\"RI_FKey_cascade_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "junction_slots_pkey",
         "table": "junction_slots",
         "schema": "calendar",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "shift_id",
         "table": "junction_slots",
         "schema": "calendar",
         "validated": true,
-        "definition": "FOREIGN KEY (shift_id) REFERENCES calendar.junction_shifts(id) ON UPDATE CASCADE ON DELETE CASCADE"
+        "definition": "FOREIGN KEY (shift_id) REFERENCES calendar.junction_shifts(id) ON UPDATE CASCADE ON DELETE CASCADE",
+        "enforcement_triggers": [
+          {
+            "type": 9,
+            "table": "calendar.junction_shifts",
+            "enabled": "O",
+            "function": "\"RI_FKey_cascade_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.junction_shifts",
+            "enabled": "O",
+            "function": "\"RI_FKey_cascade_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 5,
+            "table": "calendar.junction_slots",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.junction_slots",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "user_id",
         "table": "junction_slots",
         "schema": "calendar",
         "validated": true,
-        "definition": "FOREIGN KEY (user_id) REFERENCES \"better-auth\".\"user\"(id) ON UPDATE CASCADE ON DELETE SET NULL"
+        "definition": "FOREIGN KEY (user_id) REFERENCES \"better-auth\".\"user\"(id) ON UPDATE CASCADE ON DELETE SET NULL",
+        "enforcement_triggers": [
+          {
+            "type": 17,
+            "table": "\"better-auth\".\"user\"",
+            "enabled": "O",
+            "function": "\"RI_FKey_cascade_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 9,
+            "table": "\"better-auth\".\"user\"",
+            "enabled": "O",
+            "function": "\"RI_FKey_setnull_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 5,
+            "table": "calendar.junction_slots",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.junction_slots",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "junction_template_positions_pkey",
         "table": "junction_template_positions",
         "schema": "calendar",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "position_id_fkey",
         "table": "junction_template_positions",
         "schema": "calendar",
         "validated": true,
-        "definition": "FOREIGN KEY (position_id) REFERENCES calendar.positions(id)"
+        "definition": "FOREIGN KEY (position_id) REFERENCES calendar.positions(id)",
+        "enforcement_triggers": [
+          {
+            "type": 5,
+            "table": "calendar.junction_template_positions",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.junction_template_positions",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 9,
+            "table": "calendar.positions",
+            "enabled": "O",
+            "function": "\"RI_FKey_noaction_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.positions",
+            "enabled": "O",
+            "function": "\"RI_FKey_noaction_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "template_id_fkey",
         "table": "junction_template_positions",
         "schema": "calendar",
         "validated": true,
-        "definition": "FOREIGN KEY (template_id) REFERENCES calendar.templates(id)"
+        "definition": "FOREIGN KEY (template_id) REFERENCES calendar.templates(id)",
+        "enforcement_triggers": [
+          {
+            "type": 5,
+            "table": "calendar.junction_template_positions",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_ins\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.junction_template_positions",
+            "enabled": "O",
+            "function": "\"RI_FKey_check_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 9,
+            "table": "calendar.templates",
+            "enabled": "O",
+            "function": "\"RI_FKey_noaction_del\"",
+            "deferrable": false,
+            "initially_deferred": false
+          },
+          {
+            "type": 17,
+            "table": "calendar.templates",
+            "enabled": "O",
+            "function": "\"RI_FKey_noaction_upd\"",
+            "deferrable": false,
+            "initially_deferred": false
+          }
+        ]
       },
       {
         "name": "positions_name_key",
         "table": "positions",
         "schema": "calendar",
         "validated": true,
-        "definition": "UNIQUE (name)"
+        "definition": "UNIQUE (name)",
+        "enforcement_triggers": null
       },
       {
         "name": "positions_pkey",
         "table": "positions",
         "schema": "calendar",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       },
       {
         "name": "templates_name_key",
         "table": "templates",
         "schema": "calendar",
         "validated": true,
-        "definition": "UNIQUE (name)"
+        "definition": "UNIQUE (name)",
+        "enforcement_triggers": null
       },
       {
         "name": "templates_pkey",
         "table": "templates",
         "schema": "calendar",
         "validated": true,
-        "definition": "PRIMARY KEY (id)"
+        "definition": "PRIMARY KEY (id)",
+        "enforcement_triggers": null
       }
     ]
   }

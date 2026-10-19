@@ -10,7 +10,7 @@ The original `drizzle/0000_spooky_wendigo.sql` and `0001_legal_magik.sql` descri
 
 The active sequence is `drizzle/mvp/`, generated from `src/server/db/schema.ts`. Its first migration creates the current schema. `scripts/db/baseline.json` holds that migration's SHA-256 and structural catalog, captured from a fresh PostgreSQL 17 fixture. It contains metadata only, not retained records. This immutable contract is for adopting this particular baseline; later feature migrations must not regenerate it.
 
-The new ledger, `_drizzle._mvp_migrations`, records only this new sequence. On an already-current database, adopting the baseline means verifying that its effects are already present and recording its own hash. It makes no assertion that the incompatible historical migrations ran.
+The new ledger, `_drizzle._mvp_migrations`, records only this new sequence. On an already-current database, adopting the baseline means verifying that its effects are already present and recording its own hash. If the plan also lists later migrations, those migrations execute in the same transaction; `adopt` does not mean every pending tag is metadata-only. It makes no assertion that the incompatible historical migrations ran.
 
 ## Plan and apply
 
@@ -22,12 +22,12 @@ pnpm db:migrate --check
 
 The default `pnpm db:migrate` is also read-only. Plans report an action and pending migration tags:
 
-| Action    | Meaning                                                                                                                   |
-| --------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `create`  | Application schemas are empty; the baseline will create them.                                                             |
-| `adopt`   | The existing schema exactly matches the baseline, without recorded new history. Only the baseline ledger entry is needed. |
-| `migrate` | The new ledger is valid and later migrations are pending.                                                                 |
-| `none`    | The checked-in sequence is already recorded.                                                                              |
+| Action    | Meaning                                                                                                                                                                  |
+| --------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `create`  | Application schemas are empty; the baseline will create them.                                                                                                            |
+| `adopt`   | The existing schema exactly matches the baseline, without recorded new history. The baseline itself needs only a ledger entry; any later pending tags still execute SQL. |
+| `migrate` | The new ledger is valid and later migrations are pending.                                                                                                                |
+| `none`    | The checked-in sequence is already recorded.                                                                                                                             |
 
 Check mode runs in a PostgreSQL read-only transaction and creates no ledger. The October 19 retained-target check returned `adopt`, `applied: false`, with only `0000_current_baseline` pending. **No retained-target adoption or migration was executed.** This is an inspection of the configured database, not every deployment or database branch.
 
@@ -40,7 +40,7 @@ pnpm db:migrate --apply
 
 Application and ledger updates share one transaction. A failed statement rolls back both, and a retry rereads the ledger. Lock and statement timeouts bound waiting. UUID generation must already be provisioned as `public.uuid_generate_v7()` and return UUIDv7; this command does not install extensions or replace the generator. Empty database means empty application schemas, with that prerequisite available.
 
-Before adoption, or when the recorded sequence contains only the baseline, the command compares relations, column types/nullability/defaults/identity/collation, enum values, validated constraints, indexes, triggers, row-security flags, and policies. Physical column order and owners are not part of that comparison. Extra application objects, the incompatible original layout, or another migration ledger cause rejection. No role, location, timestamp, or required-value conversion is guessed. An existing canonical ledger must have the expected columns and an exact ordered hash/time prefix of the checked-in journal. Unknown or edited history is rejected.
+Before adoption, or when the recorded sequence contains only the baseline, the command compares relations, column types/nullability/defaults/identity/collation, enum values, validated constraints and their internal trigger enforcement modes, indexes, user triggers, row-security flags, and policies. Physical column order and owners are not part of that comparison. Extra application objects, the incompatible original layout, or another migration ledger cause rejection. No role, location, timestamp, or required-value conversion is guessed. An existing canonical ledger must have the expected columns and an exact ordered hash/time prefix of the checked-in journal. Unknown or edited history is rejected.
 
 After later migrations have been recorded, the runner verifies ledger integrity rather than comparing the evolved schema to the old baseline. Review actual target metadata and data prerequisites before each later migration; this command is not a universal schema-drift repair tool. Future migrations must include any feature-specific preconditions and validation they need. The baseline does not validate future business requirements, repair audit findings, or make current physical-delete paths safe.
 
