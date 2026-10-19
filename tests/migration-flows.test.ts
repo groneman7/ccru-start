@@ -29,6 +29,13 @@ test.each(['create', 'adopt'])(
           readFileSync('drizzle/mvp/0000_current_baseline.sql', 'utf8'),
         );
       await client.query(readFileSync('tests/support/retained.sql', 'utf8'));
+      // Apply the compatible schema expansion before starting the newer app;
+      // data preservation across adoption is checked by migration fixtures.
+      await execute(
+        process.execPath,
+        ['--import', 'tsx', 'scripts/db/migrate.ts', '--apply'],
+        { env: { ...process.env, MIGRATION_DATABASE_URL: url } },
+      );
       app = await startApplication(url);
       const { baseURL } = app;
       expect((await fetch(`${baseURL}/sign-in`)).status, app.output()).toBe(

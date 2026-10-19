@@ -30,13 +30,17 @@ import {
 import type { userTypeSchema } from '~/features/authz/schema';
 import { SYSTEM_ROLES } from '~/features/authz/schema';
 import {
+  updateCapabilitiesMutation,
   updateSystemRoleMutation,
   updateUserStatusMutation,
   updateUserTypeMutation,
 } from '~/features/users/mutations';
+import { OfficerCapabilities } from '~/features/users/officer-capabilities';
 import { allUsersQuery, userByIdQuery } from '~/features/users/queries';
 import { authClient } from '~/lib/auth-client';
 import { getUserPermissions } from '~/server/permissions';
+import { hasAuthority } from '~/server/permissions/policy';
+import type { SystemRole } from '~/server/permissions/policy';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import type { infer as Infer } from 'zod';
@@ -50,6 +54,12 @@ function RouteComponent() {
   const queryClient = useQueryClient();
   const { currentUser } = Route.useRouteContext();
   const permissions = getUserPermissions(currentUser);
+  const { mutate: updateCapabilities, isPending: capabilitiesPending } =
+    useMutation({
+      ...updateCapabilitiesMutation(),
+      onSuccess: () =>
+        queryClient.invalidateQueries({ queryKey: allUsersQuery().queryKey }),
+    });
 
   const [filters, setFilters] = useState({
     role: null as string | null,
@@ -293,14 +303,31 @@ function RouteComponent() {
                 </div>
                 <div className="w-1/6 text-sm">
                   <Combobox
+                    disabled={
+                      !hasAuthority(currentUser, 'roles') ||
+                      (user.role === 'Developer' &&
+                        currentUser.role !== 'Developer') ||
+                      user.role === 'Developer'
+                    }
                     value={user.role}
-                    items={systemRoles ?? []}
+                    items={(systemRoles ?? []).filter(
+                      (role) =>
+                        currentUser.role === 'Developer' ||
+                        role !== 'Developer' ||
+                        user.role === 'Developer',
+                    )}
                     onValueChange={(value) => {
-                      if (!value) return;
+                      if (
+                        !value ||
+                        !hasAuthority(currentUser, 'roles') ||
+                        (user.role === 'Developer' &&
+                          currentUser.role !== 'Developer')
+                      )
+                        return;
                       updateSystemRole(
                         {
                           userId: user.id,
-                          role: value,
+                          role: value as SystemRole,
                         },
                         {
                           onSuccess: () => {
@@ -343,6 +370,14 @@ function RouteComponent() {
                     </ComboboxContent>
                   </Combobox>
                 </div>
+                <OfficerCapabilities
+                  user={user}
+                  canEdit={hasAuthority(currentUser, 'roles')}
+                  pending={capabilitiesPending}
+                  onChange={(change) =>
+                    updateCapabilities({ userId: user.id, ...change })
+                  }
+                />
                 <div className="w-1/5 text-sm">
                   <Combobox
                     items={
@@ -356,6 +391,7 @@ function RouteComponent() {
                     itemToStringValue={(
                       userType: Infer<typeof userTypeSchema>,
                     ) => userType.id}
+                    disabled={!hasAuthority(currentUser, 'users')}
                     value={selectedUserType}
                     onValueChange={(value) => {
                       if (!value) return;
@@ -422,7 +458,10 @@ function RouteComponent() {
                       aria-label={`Set ${user.display} to ${
                         isActive ? 'inactive' : 'active'
                       }`}
-                      disabled={user.id in pendingStatuses}
+                      disabled={
+                        !hasAuthority(currentUser, 'users') ||
+                        user.id in pendingStatuses
+                      }
                       pressed={isActive}
                       onPressedChange={(pressed) => {
                         const nextStatus = pressed ? 'active' : 'inactive';

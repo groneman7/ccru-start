@@ -28,9 +28,6 @@ export const userService = {
   }) => {
     return await user.updateOnboardingProfile(input);
   },
-  updateSystemRole: async (input: { userId: string; role: string }) => {
-    return await user.updateSystemRole(input);
-  },
   updateStatus: async (input: {
     userId: string;
     status: 'active' | 'inactive';

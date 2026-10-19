@@ -2,6 +2,7 @@ import type { Location } from '~/features/calendar/schema';
 import { sql } from 'drizzle-orm';
 import {
   boolean,
+  check,
   foreignKey,
   integer,
   jsonb,
@@ -137,7 +138,11 @@ export const userInBetterAuth = betterAuth.table(
     banned: boolean().default(false),
     banReason: text('ban_reason'),
     banExpires: timestamp('ban_expires', { mode: 'string' }),
-    role: text(),
+    role: text().default('User').notNull(),
+    canManageScheduling: boolean('can_manage_scheduling')
+      .default(false)
+      .notNull(),
+    canManageUsers: boolean('can_manage_users').default(false).notNull(),
   },
   (table) => [
     foreignKey({
@@ -146,6 +151,14 @@ export const userInBetterAuth = betterAuth.table(
       name: 'user_type_fkey',
     }).onDelete('restrict'),
     unique('user_email_unique').on(table.email),
+    check(
+      'user_single_role',
+      sql`${table.role} IN ('User', 'Officer', 'Administrator', 'Developer')`,
+    ),
+    check(
+      'officer_capabilities_only',
+      sql`${table.role} = 'Officer' OR (NOT ${table.canManageScheduling} AND NOT ${table.canManageUsers})`,
+    ),
   ],
 );
 

@@ -1,6 +1,7 @@
 import type { MongoAbility } from '@casl/ability';
 import { AbilityBuilder, createMongoAbility } from '@casl/ability';
 import type { CurrentUser } from '~/server/auth';
+import { hasAuthority } from './policy';
 
 type CalendarEventSubject = 'CalendarEvent';
 type CalendarEventPermission = [
@@ -23,23 +24,17 @@ export function getUserPermissions(user?: CurrentUser) {
     cannot: forbid,
   } = new AbilityBuilder<MongoAbility<Permissions>>(createMongoAbility);
 
-  if (user && user.role) {
-    if (user.role === 'Developer') {
-      allow('impersonate', 'System');
-      allow('dev-tools', 'System');
-    } else {
-      forbid('impersonate', 'System');
-    }
-
-    if (user.role !== 'User') {
-      allow('update', 'CalendarEvent');
-    }
-
-    if (['Administrator', 'Developer'].includes(user.role)) {
-      allow('modify', 'Shift');
-      allow('manage', 'System');
-    }
+  if (hasAuthority(user, 'restore')) {
+    allow('impersonate', 'System');
+    allow('dev-tools', 'System');
+  } else forbid('impersonate', 'System');
+  if (hasAuthority(user, 'scheduling')) {
+    allow('create', 'CalendarEvent');
+    allow('update', 'CalendarEvent');
+    allow('delete', 'CalendarEvent');
+    allow('modify', 'Shift');
   }
+  if (hasAuthority(user, 'profiles')) allow('manage', 'System');
 
   return build();
 }

@@ -7,6 +7,7 @@ import type {
   createCertificationSchema,
   updateCertificationSchema,
 } from '~/features/users/schema';
+import type { SystemRole } from '~/server/permissions/policy';
 import type { infer as Infer } from 'zod';
 
 export function createCertificationMutation() {
@@ -47,17 +48,15 @@ export function updateOnboardingProfileMutation() {
 
 export function updateSystemRoleMutation() {
   return mutationOptions({
-    mutationFn: (input: { userId: string; role: string }) =>
+    mutationFn: (input: { userId: string; role: SystemRole }) =>
       user.updateSystemRole({ data: input }),
   });
 }
 
 export function updateUserStatusMutation() {
   return mutationOptions({
-    mutationFn: (input: {
-      userId: string;
-      status: 'active' | 'inactive';
-    }) => user.updateStatus({ data: input }),
+    mutationFn: (input: { userId: string; status: 'active' | 'inactive' }) =>
+      user.updateStatus({ data: input }),
   });
 }
 
@@ -65,5 +64,15 @@ export function updateUserTypeMutation() {
   return mutationOptions({
     mutationFn: (input: { userId: string; userTypeId: string }) =>
       user.updateUserType({ data: input }),
+  });
+}
+
+export function updateCapabilitiesMutation() {
+  return mutationOptions({
+    mutationFn: (input: {
+      userId: string;
+      canManageScheduling?: boolean;
+      canManageUsers?: boolean;
+    }) => user.updateCapabilities({ data: input }),
   });
 }

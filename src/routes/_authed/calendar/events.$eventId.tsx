@@ -106,11 +106,16 @@ export const Route = createFileRoute('/_authed/calendar/events/$eventId')({
   head: () => ({
     meta: [{ title: 'CCRU | Event' }],
   }),
-  loader: async ({ context: { queryClient }, params: { eventId } }) => {
+  loader: async ({
+    context: { queryClient, currentUser },
+    params: { eventId },
+  }) => {
     await Promise.all([
       queryClient.ensureQueryData(getEventDetailsQuery(eventId)),
       queryClient.ensureQueryData(getSlotsByEventQuery(eventId)),
-      queryClient.ensureQueryData(allUsersForComboboxQuery()),
+      ...(getUserPermissions(currentUser).can('modify', 'Shift')
+        ? [queryClient.ensureQueryData(allUsersForComboboxQuery())]
+        : []),
     ]);
   },
 });

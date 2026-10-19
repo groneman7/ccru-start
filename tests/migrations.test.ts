@@ -15,13 +15,23 @@ import { startPostgres } from './support/postgres';
 
 const execute = promisify(execFile);
 let cluster: Awaited<ReturnType<typeof startPostgres>>;
+let baselineFolder: string;
 
 beforeAll(async () => {
   cluster = await startPostgres();
+  baselineFolder = mkdtempSync(join(tmpdir(), 'ccru-baseline-'));
+  cpSync('drizzle/mvp', baselineFolder, { recursive: true });
+  const journalPath = join(baselineFolder, 'meta/_journal.json');
+  const journal = JSON.parse(readFileSync(journalPath, 'utf8'));
+  journal.entries = journal.entries.slice(0, 1);
+  writeFileSync(journalPath, JSON.stringify(journal));
 }, 30_000);
-afterAll(() => cluster?.stop());
+afterAll(() => {
+  cluster?.stop();
+  if (baselineFolder) rmSync(baselineFolder, { recursive: true, force: true });
+});
 
-async function migrate(url: string, apply = false, folder?: string) {
+async function migrate(url: string, apply = false, folder = baselineFolder) {
   const { stdout } = await execute(
     process.execPath,
     [
@@ -204,7 +214,7 @@ test.each([
 
 function futureSequence(sql: string) {
   const folder = mkdtempSync(join(tmpdir(), 'ccru-sequence-'));
-  cpSync('drizzle/mvp', folder, { recursive: true });
+  cpSync(baselineFolder, folder, { recursive: true });
   const path = join(folder, 'meta/_journal.json');
   const journal = JSON.parse(readFileSync(path, 'utf8'));
   journal.entries.push({

@@ -82,17 +82,10 @@ export const userRepository = {
 
     return row;
   },
-  updateSystemRole: async (input: { userId: string; role: string }) => {
-    const { userId, role } = input;
-    const [row] = await db
-      .update(users)
-      .set({ role })
-      .where(eq(users.id, userId))
-      .returning({ id: users.id });
-
-    return row;
-  },
-  updateStatus: async (input: { userId: string; status: 'active' | 'inactive' }) => {
+  updateStatus: async (input: {
+    userId: string;
+    status: 'active' | 'inactive';
+  }) => {
     const { userId, status } = input;
     const [row] = await db
       .update(users)

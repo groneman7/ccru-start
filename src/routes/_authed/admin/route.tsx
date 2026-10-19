@@ -3,10 +3,13 @@ import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { getUserPermissions } from '~/server/permissions';
 
 export const Route = createFileRoute('/_authed/admin')({
-  loader: ({ context: { currentUser } }) => {
+  loader: ({ context: { currentUser }, location }) => {
     const permissions = getUserPermissions(currentUser);
     return {
-      authorized: permissions.can('manage', 'System'),
+      authorized:
+        permissions.can('manage', 'System') ||
+        location.pathname === `/admin/users/${currentUser.id}` ||
+        location.pathname.startsWith(`/admin/users/${currentUser.id}/`),
     };
   },
   component: RouteComponent,

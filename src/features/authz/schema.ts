@@ -1,6 +1,6 @@
 import { object, string, uuidv7 } from 'zod';
 
-export const SYSTEM_ROLES = ['User', 'Officer', 'Administrator', 'Developer'];
+export { SYSTEM_ROLES } from '~/server/permissions/policy';
 
 export const userTypeSchema = object({
   id: uuidv7(),
