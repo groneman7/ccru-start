@@ -18,6 +18,8 @@ export const authClient = createAuthClient({
       },
     }),
     sentinelClient(),
-    dash(),
+    dash({
+      apiUrl: 'https://ccruoutreach.com/api/auth',
+    }),
   ],
 });
