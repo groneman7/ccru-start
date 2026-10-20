@@ -14,15 +14,22 @@ const fields = [
   ['image', 'Photo URL'],
 ] as const;
 
-export function ProfileEditor({
-  profile,
-  canEdit,
-  onSave,
-}: {
-  profile: EditableProfile;
+type ProfileEditorProps = {
+  profile: EditableProfile & { id: string; timestampUpdatedAt: string };
   canEdit: boolean;
   onSave: (data: ProfileFields) => Promise<unknown>;
-}) {
+};
+
+export function ProfileEditor(props: ProfileEditorProps) {
+  return (
+    <ProfileEditorForm
+      key={`${props.profile.id}:${props.profile.timestampUpdatedAt}`}
+      {...props}
+    />
+  );
+}
+
+function ProfileEditorForm({ profile, canEdit, onSave }: ProfileEditorProps) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(
     () =>

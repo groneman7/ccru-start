@@ -115,7 +115,6 @@ function ProfilePage() {
       )}
       {typeError && <p role="alert">{typeError.message}</p>}
       <ProfileEditor
-        key={user.timestampUpdatedAt}
         profile={user}
         canEdit={getUserPermissions(currentUser).can(
           'update',

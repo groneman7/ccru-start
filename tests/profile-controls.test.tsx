@@ -11,13 +11,18 @@ import { UserTypeManagement } from '../src/features/authz/user-type-management';
 import { ProfileEditor } from '../src/features/users/profile-editor';
 
 afterEach(cleanup);
-const profile = {
+const profileFields = {
   nameFirst: 'Fixture',
   nameMiddle: null,
   nameLast: 'User',
   phoneNumber: null,
   image: null,
   postNominals: null,
+};
+const profile = {
+  ...profileFields,
+  id: 'profile-1',
+  timestampUpdatedAt: '2026-01-01T00:00:00Z',
 };
 test('a permitted profile form submits only normalized basic fields', async () => {
   const saved: unknown[] = [];
@@ -40,7 +45,7 @@ test('a permitted profile form submits only normalized basic fields', async () =
   fireEvent.click(screen.getByRole('button', { name: 'Save profile' }));
   await waitFor(() =>
     expect(saved).toEqual([
-      { ...profile, nameFirst: 'Alice', phoneNumber: '+15550100200' },
+      { ...profileFields, nameFirst: 'Alice', phoneNumber: '+15550100200' },
     ]),
   );
 });
@@ -123,4 +128,35 @@ test('viewing labels grants no mutation controls', () => {
   );
   expect(screen.getByText('Volunteer')).toBeTruthy();
   expect(screen.queryByRole('button')).toBeNull();
+});
+
+test('switching profiles with equal timestamps discards the previous draft', async () => {
+  const saved: unknown[] = [];
+  const onSave = async (data: unknown) => {
+    saved.push(data);
+  };
+  const { rerender } = render(
+    <ProfileEditor profile={profile} canEdit onSave={onSave} />,
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Edit profile' }));
+  fireEvent.change(screen.getByLabelText('First name'), {
+    target: { value: 'Previous person draft' },
+  });
+  const nextProfile = {
+    ...profile,
+    id: 'profile-2',
+    nameFirst: 'Next',
+    nameLast: 'Person',
+  };
+  rerender(<ProfileEditor profile={nextProfile} canEdit onSave={onSave} />);
+  fireEvent.click(screen.getByRole('button', { name: 'Edit profile' }));
+  expect((screen.getByLabelText('First name') as HTMLInputElement).value).toBe(
+    'Next',
+  );
+  fireEvent.click(screen.getByRole('button', { name: 'Save profile' }));
+  await waitFor(() =>
+    expect(saved).toEqual([
+      { ...profileFields, nameFirst: 'Next', nameLast: 'Person' },
+    ]),
+  );
 });
