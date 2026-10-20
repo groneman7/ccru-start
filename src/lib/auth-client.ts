@@ -1,3 +1,5 @@
+import { dash } from '@better-auth/infra';
+import { sentinelClient } from '@better-auth/infra/client';
 import { adminClient, inferAdditionalFields } from 'better-auth/client/plugins';
 import { createAuthClient } from 'better-auth/react';
 
@@ -15,5 +17,7 @@ export const authClient = createAuthClient({
         nameLast: { type: 'string', input: true },
       },
     }),
+    sentinelClient(),
+    dash(),
   ],
 });
