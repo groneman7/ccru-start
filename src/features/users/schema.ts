@@ -1,18 +1,53 @@
 import {
   boolean,
   email,
-  enum as zodEnum,
   nullable,
   object,
   string,
   url,
   uuidv7,
+  enum as zodEnum,
 } from 'zod';
 
 export const USER_STATUS_VALUES = ['active', 'inactive', 'invited'] as const;
+
+export const profileFieldsSchema = object({
+  nameFirst: string().trim().min(1).max(100),
+  nameMiddle: string()
+    .trim()
+    .max(100)
+    .nullable()
+    .transform((value) => value || null),
+  nameLast: string().trim().min(1).max(100),
+  phoneNumber: string()
+    .nullable()
+    .transform((value) => value?.replace(/[\s().-]/g, '') || null)
+    .refine(
+      (value) => value === null || /^\+[1-9]\d{6,14}$/.test(value),
+      'Include a country code, for example +1 555 010 0200',
+    ),
+  postNominals: string()
+    .trim()
+    .max(100)
+    .nullable()
+    .transform((value) => value || null),
+  image: url()
+    .refine(
+      (value) => /^https?:\/\//.test(value),
+      'Use an http or https photo URL',
+    )
+    .nullable(),
+}).strict();
+
+export const updateProfileSchema = object({
+  userId: uuidv7(),
+  data: profileFieldsSchema,
+}).strict();
 export const USER_TOGGLEABLE_STATUS_VALUES = ['active', 'inactive'] as const;
 export const userStatusSchema = zodEnum(USER_STATUS_VALUES);
-export const userToggleableStatusSchema = zodEnum(USER_TOGGLEABLE_STATUS_VALUES);
+export const userToggleableStatusSchema = zodEnum(
+  USER_TOGGLEABLE_STATUS_VALUES,
+);
 
 export const userSchema = object({
   id: uuidv7(),

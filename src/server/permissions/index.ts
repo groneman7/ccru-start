@@ -6,6 +6,7 @@ import type { SystemRole } from '~/features/authz/schema';
 export type PermissionUser = {
   id: string;
   role?: string | null;
+  deletedAt?: string | Date | null;
   status?: string | null;
   canManageScheduling?: boolean;
   canManageUsers?: boolean;
@@ -28,7 +29,7 @@ export type Permission =
   | ['read' | 'list' | 'update' | 'update-status' | 'update-type', UserSubject]
   | ['read' | 'assign', RoleSubject]
   | ['update', 'OfficerCapabilities']
-  | ['read', 'UserType']
+  | ['read' | 'create' | 'update' | 'delete', 'UserType']
   | ['create' | 'read' | 'update' | 'delete' | 'restore', 'SavedLocation']
   | ['dev-tools' | 'impersonate' | 'manage-sessions', 'System'];
 export type UserPermissions = MongoAbility<Permission>;
@@ -37,7 +38,12 @@ export function getUserPermissions(user?: PermissionUser | null) {
   const { build, can: allow } = new AbilityBuilder<UserPermissions>(
     createMongoAbility,
   );
-  if (!user || !SYSTEM_ROLES.includes(user.role as SystemRole)) return build();
+  if (
+    !user ||
+    user.deletedAt ||
+    !SYSTEM_ROLES.includes(user.role as SystemRole)
+  )
+    return build();
   if (user.status !== 'active' && user.status !== 'invited') return build();
 
   allow('read', 'User', { id: user.id });
@@ -76,6 +82,7 @@ export function getUserPermissions(user?: PermissionUser | null) {
   ) {
     allow(['update', 'update-status', 'update-type'], 'User');
     allow(['create', 'update'], 'Certification');
+    allow(['create', 'update', 'delete'], 'UserType');
   }
   if (administrator) {
     allow('update', 'OfficerCapabilities');

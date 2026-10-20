@@ -100,6 +100,15 @@ export function AppSidebar() {
               </SidebarMenuItem>
               <SidebarMenuItem>
                 <SidebarMenuButton
+                  tooltip="User types"
+                  render={<Link to="/admin/user-types" />}
+                >
+                  <IconUserCircle />
+                  User types
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
                   tooltip="Users"
                   render={<Link to="/admin/users" />}
                 >

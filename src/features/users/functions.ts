@@ -4,6 +4,7 @@ import { SYSTEM_ROLES } from '~/features/authz/schema';
 import {
   createCertificationSchema,
   updateCertificationSchema,
+  updateProfileSchema,
   userToggleableStatusSchema,
 } from '~/features/users/schema';
 import {
@@ -16,7 +17,7 @@ import {
   denyPermission,
   requirePermission,
 } from '~/server/permissions/require-permission';
-import { and, eq, ne, sql } from 'drizzle-orm';
+import { and, eq, isNull, ne, sql } from 'drizzle-orm';
 import {
   boolean,
   nullable,
@@ -56,6 +57,13 @@ export const updateCertificationServerFn = createServerFn({ method: 'POST' })
   });
 
 // Users ----------------------------------------------------------------------
+
+const updateProfileServerFn = createServerFn({ method: 'POST' })
+  .validator(updateProfileSchema)
+  .handler(async ({ data }) => {
+    await requirePermission('update', subject('User', { id: data.userId }));
+    return user.updateProfile(data);
+  });
 
 export const allUsersServerFn = createServerFn().handler(async () => {
   await requirePermission('list', 'User');
@@ -133,6 +141,7 @@ export const updateSystemRoleServerFn = createServerFn({ method: 'POST' })
       .where(
         and(
           eq(users.id, data.userId),
+          isNull(users.deletedAt),
           permissions.can(
             'assign',
             subject('SystemRole', {
@@ -157,7 +166,7 @@ export const updateUserStatusServerFn = createServerFn({ method: 'POST' })
   });
 
 export const updateUserTypeServerFn = createServerFn({ method: 'POST' })
-  .validator(object({ userId: string(), userTypeId: string() }))
+  .validator(object({ userId: uuidv7(), userTypeId: uuidv7().nullable() }))
   .handler(async ({ data }) => {
     await requirePermission('update-type', 'User');
     return await user.updateUserType(data);
@@ -189,7 +198,13 @@ export const updateCapabilitiesServerFn = createServerFn({ method: 'POST' })
         canManageScheduling: data.canManageScheduling,
         canManageUsers: data.canManageUsers,
       })
-      .where(and(eq(users.id, data.userId), eq(users.role, 'Officer')))
+      .where(
+        and(
+          eq(users.id, data.userId),
+          isNull(users.deletedAt),
+          eq(users.role, 'Officer'),
+        ),
+      )
       .returning({
         id: users.id,
         canManageScheduling: users.canManageScheduling,
@@ -201,6 +216,7 @@ export const updateCapabilitiesServerFn = createServerFn({ method: 'POST' })
   });
 
 export const userServerFns = {
+  updateProfile: updateProfileServerFn,
   updateCapabilities: updateCapabilitiesServerFn,
   all: allUsersServerFn,
   allForCombobox: allUsersForComboboxServerFn,

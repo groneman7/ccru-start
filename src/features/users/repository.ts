@@ -1,14 +1,16 @@
+import { throwUserTypeError } from '~/features/authz/user-type-errors';
 import { db } from '~/server/db';
 import {
   certificationsInAuthz as certifications,
   userInBetterAuth as users,
   userTypesInAuthz,
 } from '~/server/db/schema';
-import { eq, sql } from 'drizzle-orm';
+import { and, eq, isNull, sql } from 'drizzle-orm';
 import type { infer as Infer } from 'zod';
 import type {
   createCertificationSchema,
   updateCertificationSchema,
+  updateProfileSchema,
   userSchemaForCombobox,
 } from './schema';
 
@@ -24,8 +26,26 @@ type UpdateOnboardingProfileInput = {
 };
 
 export const userRepository = {
+  updateProfile: async ({
+    userId,
+    data,
+  }: Infer<typeof updateProfileSchema>) => {
+    const [row] = await db
+      .update(users)
+      .set({
+        ...data,
+        display: [data.nameFirst, data.nameMiddle, data.nameLast]
+          .filter(Boolean)
+          .join(' '),
+        timestampUpdatedAt: sql`CURRENT_TIMESTAMP`,
+      })
+      .where(and(eq(users.id, userId), isNull(users.deletedAt)))
+      .returning({ id: users.id });
+    if (!row) throw new Error('Profile not found');
+    return row;
+  },
   all: async () => {
-    const rows = await db.select().from(users);
+    const rows = await db.select().from(users).where(isNull(users.deletedAt));
 
     return rows;
   },
@@ -39,22 +59,33 @@ export const userRepository = {
         role: users.role,
         userTypeId: users.userTypeId,
       })
-      .from(users);
+      .from(users)
+      .where(isNull(users.deletedAt));
 
     return rows;
   },
   byId: async (input: { userId: string }) => {
     const { userId } = input;
-    const [userRow] = await db.select().from(users).where(eq(users.id, userId));
+    const [userRow] = await db
+      .select()
+      .from(users)
+      .where(and(eq(users.id, userId), isNull(users.deletedAt)));
+
+    if (!userRow) throw new Error('Profile not found');
 
     let userTypeDisplay: string | null = null;
     if (userRow.userTypeId) {
       const [userTypeRow] = await db
         .select({ userTypeDisplay: userTypesInAuthz.display })
         .from(userTypesInAuthz)
-        .where(eq(userTypesInAuthz.id, userRow.userTypeId));
+        .where(
+          and(
+            eq(userTypesInAuthz.id, userRow.userTypeId),
+            isNull(userTypesInAuthz.deletedAt),
+          ),
+        );
 
-      userTypeDisplay = userTypeRow.userTypeDisplay;
+      userTypeDisplay = userTypeRow?.userTypeDisplay ?? null;
     }
 
     return { ...userRow, userTypeDisplay };
@@ -64,7 +95,7 @@ export const userRepository = {
     const [row] = await db
       .update(users)
       .set({ timestampOnboardingCompleted: sql`CURRENT_TIMESTAMP` })
-      .where(eq(users.id, userId))
+      .where(and(eq(users.id, userId), isNull(users.deletedAt)))
       .returning({ id: users.id });
 
     return row;
@@ -77,7 +108,7 @@ export const userRepository = {
         ...changes,
         timestampUpdatedAt: sql`CURRENT_TIMESTAMP`,
       })
-      .where(eq(users.id, userId))
+      .where(and(eq(users.id, userId), isNull(users.deletedAt)))
       .returning({ id: users.id });
 
     return row;
@@ -90,18 +121,23 @@ export const userRepository = {
     const [row] = await db
       .update(users)
       .set({ status, timestampUpdatedAt: sql`CURRENT_TIMESTAMP` })
-      .where(eq(users.id, userId))
+      .where(and(eq(users.id, userId), isNull(users.deletedAt)))
       .returning({ id: users.id });
 
     return row;
   },
-  updateUserType: async (input: { userId: string; userTypeId: string }) => {
+  updateUserType: async (input: {
+    userId: string;
+    userTypeId: string | null;
+  }) => {
     const { userId, userTypeId } = input;
     const [row] = await db
       .update(users)
       .set({ userTypeId })
-      .where(eq(users.id, userId))
-      .returning({ id: users.id });
+      .where(and(eq(users.id, userId), isNull(users.deletedAt)))
+      .returning({ id: users.id })
+      .catch(throwUserTypeError);
+    if (!row) throw new Error('Profile not found');
 
     return row;
   },

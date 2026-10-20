@@ -1,4 +1,7 @@
-import { authorizationRepository as authz } from '~/features/authz/repository';
+import {
+  authorizationRepository as authz,
+  userTypeRepository as types,
+} from '~/features/authz/repository';
 
 export const authorizationService = {
   getAllSystemRoles: async () => {
@@ -7,4 +10,11 @@ export const authorizationService = {
   getAllUserTypes: async () => {
     return await authz.getAllUserTypes();
   },
+};
+
+export const userTypeService = {
+  remove: (input: { userTypeId: string }) => types.remove(input),
+  create: (input: { display: string }) => types.create(input),
+  rename: (input: { userTypeId: string; display: string }) =>
+    types.rename(input),
 };

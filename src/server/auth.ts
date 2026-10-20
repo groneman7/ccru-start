@@ -25,6 +25,7 @@ export const auth = betterAuth({
       if (path === '/update-user' || path === '/sign-up/email') {
         const protectedFields = [
           'role',
+          'deletedAt',
           'status',
           'canManageScheduling',
           'canManageUsers',
@@ -55,11 +56,8 @@ export const auth = betterAuth({
         session.session.impersonatedBy
       )
         return;
-      if (
-        ['/admin/list-users', '/admin/get-user'].includes(path) &&
-        permissions.can('list', 'User')
-      )
-        return;
+      // Profile reads use the domain operations, which exclude deleted records.
+      // The plugin's generic list/get operations do not apply those filters.
       if (
         path === '/admin/impersonate-user' &&
         permissions.can('impersonate', 'System')
@@ -110,13 +108,13 @@ export const auth = betterAuth({
       defaultRole: 'User',
       roles: {
         User: userAc,
-        Officer: defaultAc.newRole({ user: ['list', 'get'], session: [] }),
+        Officer: defaultAc.newRole({ user: [], session: [] }),
         Administrator: defaultAc.newRole({
-          user: ['list', 'get'],
+          user: [],
           session: [],
         }),
         Developer: defaultAc.newRole({
-          user: ['list', 'get', 'impersonate', 'impersonate-admins'],
+          user: ['impersonate', 'impersonate-admins'],
           session: ['list', 'revoke'],
         }),
       },
@@ -143,6 +141,7 @@ export const auth = betterAuth({
       updatedAt: 'timestampUpdatedAt',
     },
     additionalFields: {
+      deletedAt: { type: 'date', input: false, required: false },
       canManageScheduling: {
         type: 'boolean',
         input: false,

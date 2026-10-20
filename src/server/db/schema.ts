@@ -135,6 +135,7 @@ export const userInBetterAuth = betterAuth.table(
       .defaultNow()
       .notNull(),
     userTypeId: uuid('user_type_id'),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' }),
     banned: boolean().default(false),
     banReason: text('ban_reason'),
     banExpires: timestamp('ban_expires', { mode: 'string' }),
@@ -185,6 +186,7 @@ export const userTypesInAuthz = authz.table(
       .notNull(),
     name: text().notNull(),
     display: text().notNull(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' }),
   },
   (table) => [unique('user_types_name_key').on(table.name)],
 );

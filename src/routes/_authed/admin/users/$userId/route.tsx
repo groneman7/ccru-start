@@ -1,75 +1,51 @@
 import { useQuery } from '@tanstack/react-query';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Outlet } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
 import { userByIdQuery } from '~/features/users/queries';
 
 export const Route = createFileRoute('/_authed/admin/users/$userId')({
   loader: async ({ context: { queryClient }, params: { userId } }) => {
-    await Promise.all([queryClient.ensureQueryData(userByIdQuery(userId))]);
+    await queryClient.ensureQueryData(userByIdQuery(userId));
   },
-  component: UserIdRouteLayout,
+  component: UserProfileLayout,
 });
 
-function UserIdRouteLayout() {
+function UserProfileLayout() {
+  const { data: user } = useQuery(userByIdQuery(Route.useParams().userId));
+  if (!user) return null;
+  const initials =
+    [user.nameFirst, user.nameLast]
+      .map((name) => name?.trim().slice(0, 1) ?? '')
+      .join('') || '?';
   return (
     <>
-      <WorkspaceHeader>User</WorkspaceHeader>
+      <WorkspaceHeader>Profile</WorkspaceHeader>
       <WorkspaceContent orientation="horizontal">
-        <UserSummary />
-        <div>outlet</div>
+        <aside className="flex w-full flex-col gap-3 lg:w-64">
+          {user.image ? (
+            <img
+              src={user.image}
+              alt={`${user.display}'s profile`}
+              className="size-32 rounded-full object-cover"
+            />
+          ) : (
+            <div
+              aria-hidden="true"
+              className="flex size-32 items-center justify-center rounded-full bg-muted text-4xl"
+            >
+              {initials}
+            </div>
+          )}
+          <h1 className="text-2xl font-semibold">{user.display}</h1>
+          <p>
+            {user.role} · {user.status}
+          </p>
+          <p>{user.userTypeDisplay ?? 'No user type'}</p>
+        </aside>
+        <main className="min-w-0 flex-1">
+          <Outlet />
+        </main>
       </WorkspaceContent>
     </>
-  );
-}
-
-function UserSummary() {
-  // Queries
-  const { data: user } = useQuery(userByIdQuery(Route.useParams().userId));
-
-  if (!user) return null;
-
-  return (
-    <div className="flex w-xs flex-col items-center gap-4 border-2 border-red-500">
-      <UserPhoto
-        monogram={`${user.nameFirst![0]}${user.nameLast![0]}`}
-        url={user.image ?? null}
-      />
-      <UserName />
-      <div>Contact information</div>
-    </div>
-  );
-}
-
-function UserName() {
-  // Queries
-  const { data: user } = useQuery(userByIdQuery(Route.useParams().userId));
-
-  if (!user) return null;
-  return (
-    <div className="flex flex-col gap-1">
-      <span className="text-3xl font-semibold">{user.display}</span>
-      <div className="flex flex-wrap gap-2 [&_span]:rounded-sm [&_span]:bg-slate-100 [&_span]:px-1 [&_span]:py-0.5">
-        <span>{user.role}</span>
-        <span>{user.userTypeDisplay ?? 'NO USER TYPE DEFINED'}</span>
-      </div>
-    </div>
-  );
-}
-
-function UserPhoto({
-  monogram,
-  url,
-}: {
-  monogram: string;
-  url: string | null;
-}) {
-  return (
-    <div className="flex size-36 items-center justify-center overflow-hidden rounded-full border-6 border-blue-500 bg-blue-100 shadow-xl">
-      {url ? (
-        <img src={url} className="" />
-      ) : (
-        <span className="text-5xl font-bold text-blue-800">{monogram}</span>
-      )}
-    </div>
   );
 }

@@ -36,6 +36,13 @@
       "when": 1792389577875,
       "tag": "0004_assignment_time_required",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1792475855823,
+      "tag": "0005_retained_user_types",
+      "breakpoints": true
     }
   ]
 }

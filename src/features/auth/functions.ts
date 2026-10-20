@@ -1,9 +1,9 @@
 import { createServerFn } from '@tanstack/react-start';
-import { eq } from 'drizzle-orm';
-import { db } from '~/server/db';
-import { userTypesInAuthz } from '~/server/db/schema';
 import { auth } from '~/server/auth';
 import type { AuthSessionWithUserType } from '~/server/auth';
+import { db } from '~/server/db';
+import { userTypesInAuthz } from '~/server/db/schema';
+import { and, eq, isNull } from 'drizzle-orm';
 
 export const getSessionServerFn = createServerFn({ method: 'GET' }).handler(
   async (): Promise<AuthSessionWithUserType | null> => {
@@ -13,11 +13,14 @@ export const getSessionServerFn = createServerFn({ method: 'GET' }).handler(
       headers: getRequestHeaders(),
     });
 
-    if (!session) return null;
+    if (!session || session.user.deletedAt) return null;
 
     const userType = session.user.userTypeId
       ? await db.query.userTypesInAuthz.findFirst({
-          where: eq(userTypesInAuthz.id, session.user.userTypeId),
+          where: and(
+            eq(userTypesInAuthz.id, session.user.userTypeId),
+            isNull(userTypesInAuthz.deletedAt),
+          ),
         })
       : null;
 

@@ -2,8 +2,12 @@ import {
   certificationRepository as certification,
   userRepository as user,
 } from '~/features/users/repository';
+import type { updateProfileSchema } from '~/features/users/schema';
+import type { infer as Infer } from 'zod';
 
 export const userService = {
+  updateProfile: async (input: Infer<typeof updateProfileSchema>) =>
+    user.updateProfile(input),
   all: async () => {
     return await user.all();
   },
@@ -34,7 +38,10 @@ export const userService = {
   }) => {
     return await user.updateStatus(input);
   },
-  updateUserType: async (input: { userId: string; userTypeId: string }) => {
+  updateUserType: async (input: {
+    userId: string;
+    userTypeId: string | null;
+  }) => {
     return await user.updateUserType(input);
   },
 };

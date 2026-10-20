@@ -62,7 +62,7 @@ export function updateUserStatusMutation() {
 
 export function updateUserTypeMutation() {
   return mutationOptions({
-    mutationFn: (input: { userId: string; userTypeId: string }) =>
+    mutationFn: (input: { userId: string; userTypeId: string | null }) =>
       user.updateUserType({ data: input }),
   });
 }

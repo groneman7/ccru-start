@@ -261,3 +261,5 @@ For TanStack Start specific documentation, visit [TanStack Start](https://tansta
 The [MVP ticket map](docs/mvp-tickets.md) preserves the published breakdown and user-story traceability. GitHub Issues hold current ticket status and acceptance criteria; `.scratch/` contains ignored local working files.
 
 Use the [retained-data migration procedure](docs/database-migrations.md) before changing database schemas. `db:migrate` plans changes read-only by default and requires an explicit `MIGRATION_DATABASE_URL`; application is a separate `--apply` operation.
+
+[Profile and user-type management](docs/profile-management.md) requires migration `0005_retained_user_types` before starting this application version against an existing database. Feature implementation does not automatically apply it to that database.

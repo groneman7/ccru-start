@@ -172,7 +172,7 @@ async function retainedRows(client: Client) {
   for (const { table_schema, table_name } of tables) {
     rows[`${table_schema}.${table_name}`] = (
       await client.query(`SELECT
-      to_jsonb(t) - 'assigned_at' - 'can_manage_scheduling' - 'can_manage_users' AS data
+      to_jsonb(t) - 'assigned_at' - 'can_manage_scheduling' - 'can_manage_users' - 'deleted_at' AS data
       FROM "${table_schema}"."${table_name}" t ORDER BY id`)
     ).rows;
   }
@@ -343,38 +343,27 @@ test.each(['writer first', 'migration first'])(
   async (order) => {
     const { url, client } = await cluster.database();
     const observer = new Client({ connectionString: url });
-    let app: Awaited<ReturnType<typeof startApplication>> | undefined;
+    const writer = new Client({ connectionString: url });
     let migration: ReturnType<typeof apply> | undefined;
-    let replacing:
-      | ReturnType<typeof operation<{ id: string; assignedAt: string }>>
-      | undefined;
+    let replacing: Promise<{ id: string; assignedAt: Date }> | undefined;
     try {
       await observer.connect();
+      await writer.connect();
       await client.query(
         readFileSync('drizzle/mvp/0000_current_baseline.sql', 'utf8'),
       );
       await client.query(readFileSync('tests/support/retained.sql', 'utf8'));
       await apply(url, expansion);
-      await client.query(`INSERT INTO "better-auth".account (account_id,provider_id,user_id,password,updated_at)
-        SELECT u.id::text,'credential',u.id::text,a.password,now() FROM "better-auth"."user" u CROSS JOIN "better-auth".account a
-        WHERE a.provider_id='credential' AND u.role='Developer'`);
-      app = await startApplication(url);
-      const cookie = await signIn(app.baseURL, 'developer@example.invalid');
-      const input = {
-        slotId: '01930000-0000-7000-8000-000000000501',
-        userId: '01930000-0000-7000-8000-000000000004',
-      };
-      // Compile the real handler before holding any lock; this denied request
-      // cannot alter the legacy row or its missing timestamp.
-      expect(
-        await operation(
-          app.baseURL,
-          'calendar',
-          'slotServerFns',
-          'reassignUser',
-          input,
-        ),
-      ).toMatchObject({ ok: false, error: 'Unauthorized' });
+      // Model the legacy writer at the database compatibility seam. The
+      // current application's HTTP commands are tested separately against the
+      // complete schema, including migrations added after this cutover.
+      const replace = async () =>
+        (
+          await writer.query<{ id: string; assignedAt: Date }>(
+            `UPDATE calendar.junction_slots SET user_id='01930000-0000-7000-8000-000000000004'
+         WHERE id='01930000-0000-7000-8000-000000000501' RETURNING id,assigned_at AS "assignedAt"`,
+          )
+        ).rows[0];
       await client.query(
         'BEGIN; LOCK TABLE calendar.junction_slots IN SHARE MODE',
       );
@@ -399,14 +388,7 @@ test.each(['writer first', 'migration first'])(
         );
       };
       const queueWriter = async () => {
-        replacing = operation<{ id: string; assignedAt: string }>(
-          app!.baseURL,
-          'calendar',
-          'slotServerFns',
-          'reassignUser',
-          input,
-          cookie,
-        );
+        replacing = replace();
         replacing.catch(() => {});
         await waitFor('%update%junction_slots%');
       };
@@ -420,25 +402,9 @@ test.each(['writer first', 'migration first'])(
       const releasedAt = Date.now();
       await client.query('COMMIT');
       const [changed] = await Promise.all([replacing!, migration!]);
-      expect(changed, JSON.stringify(changed)).toMatchObject({
-        ok: true,
-        value: { assignedAt: expect.any(String) },
-      });
-      expect(Date.parse(changed.value!.assignedAt)).toBeGreaterThanOrEqual(
-        releasedAt,
-      );
-      // Read through the same idempotent command after both operations finish.
-      // The backfill must not replace a newly recorded owner timestamp.
-      expect(
-        await operation(
-          app.baseURL,
-          'calendar',
-          'slotServerFns',
-          'reassignUser',
-          input,
-          cookie,
-        ),
-      ).toEqual(changed);
+      expect(changed.assignedAt).toBeInstanceOf(Date);
+      expect(changed.assignedAt.getTime()).toBeGreaterThanOrEqual(releasedAt);
+      expect(await replace()).toEqual(changed);
       expect(
         (
           await client.query(
@@ -449,7 +415,7 @@ test.each(['writer first', 'migration first'])(
     } finally {
       await client.query('ROLLBACK');
       await Promise.allSettled([migration, replacing].filter(Boolean));
-      await app?.stop();
+      await writer.end();
       await observer.end();
       await client.end();
     }

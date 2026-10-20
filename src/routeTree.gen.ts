@@ -20,6 +20,7 @@ import { Route as AuthedDevToolsRouteRouteImport } from './routes/_authed/dev-to
 import { Route as AuthedAdminIndexRouteImport } from './routes/_authed/admin/index'
 import { Route as AuthedAdminCertificationsRouteRouteImport } from './routes/_authed/admin/certifications/route'
 import { Route as AuthedAdminPositionsRouteRouteImport } from './routes/_authed/admin/positions/route'
+import { Route as AuthedAdminUserTypesRouteImport } from './routes/_authed/admin/user-types'
 import { Route as AuthedCalendarIndexRouteImport } from './routes/_authed/calendar/index'
 import { Route as AuthedCalendarTemplatesRouteRouteImport } from './routes/_authed/calendar/templates/route'
 import { Route as AuthedDevToolsIndexRouteImport } from './routes/_authed/dev-tools/index'
@@ -98,6 +99,11 @@ const AuthedAdminPositionsRouteRoute =
     path: '/positions',
     getParentRoute: () => AuthedAdminRouteRoute,
   } as any)
+const AuthedAdminUserTypesRoute = AuthedAdminUserTypesRouteImport.update({
+  id: '/user-types',
+  path: '/user-types',
+  getParentRoute: () => AuthedAdminRouteRoute,
+} as any)
 const AuthedCalendarIndexRoute = AuthedCalendarIndexRouteImport.update({
   id: '/calendar/',
   path: '/calendar/',
@@ -234,6 +240,7 @@ export interface FileRoutesByFullPath {
   '/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
   '/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
   '/dev-tools/ui': typeof AuthedDevToolsUiRouteRoute
+  '/admin/user-types': typeof AuthedAdminUserTypesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/': typeof AuthedAdminIndexRoute
   '/calendar/': typeof AuthedCalendarIndexRoute
@@ -262,6 +269,7 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
   '/dev-tools/ui': typeof AuthedDevToolsUiRouteRoute
+  '/admin/user-types': typeof AuthedAdminUserTypesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin': typeof AuthedAdminIndexRoute
   '/calendar': typeof AuthedCalendarIndexRoute
@@ -297,6 +305,7 @@ export interface FileRoutesById {
   '/_authed/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
   '/_authed/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
   '/_authed/dev-tools/ui': typeof AuthedDevToolsUiRouteRoute
+  '/_authed/admin/user-types': typeof AuthedAdminUserTypesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authed/admin/': typeof AuthedAdminIndexRoute
   '/_authed/calendar/': typeof AuthedCalendarIndexRoute
@@ -332,6 +341,7 @@ export interface FileRouteTypes {
     | '/admin/positions'
     | '/calendar/templates'
     | '/dev-tools/ui'
+    | '/admin/user-types'
     | '/api/auth/$'
     | '/admin/'
     | '/calendar/'
@@ -360,6 +370,7 @@ export interface FileRouteTypes {
     | '/register'
     | '/sign-in'
     | '/dev-tools/ui'
+    | '/admin/user-types'
     | '/api/auth/$'
     | '/admin'
     | '/calendar'
@@ -394,6 +405,7 @@ export interface FileRouteTypes {
     | '/_authed/admin/positions'
     | '/_authed/calendar/templates'
     | '/_authed/dev-tools/ui'
+    | '/_authed/admin/user-types'
     | '/api/auth/$'
     | '/_authed/admin/'
     | '/_authed/calendar/'
@@ -501,6 +513,13 @@ declare module '@tanstack/react-router' {
       path: '/positions'
       fullPath: '/admin/positions'
       preLoaderRoute: typeof AuthedAdminPositionsRouteRouteImport
+      parentRoute: typeof AuthedAdminRouteRoute
+    }
+    '/_authed/admin/user-types': {
+      id: '/_authed/admin/user-types'
+      path: '/user-types'
+      fullPath: '/admin/user-types'
+      preLoaderRoute: typeof AuthedAdminUserTypesRouteImport
       parentRoute: typeof AuthedAdminRouteRoute
     }
     '/_authed/calendar/': {
@@ -732,6 +751,7 @@ const AuthedAdminUsersUserIdRouteRouteWithChildren =
 interface AuthedAdminRouteRouteChildren {
   AuthedAdminCertificationsRouteRoute: typeof AuthedAdminCertificationsRouteRouteWithChildren
   AuthedAdminPositionsRouteRoute: typeof AuthedAdminPositionsRouteRouteWithChildren
+  AuthedAdminUserTypesRoute: typeof AuthedAdminUserTypesRoute
   AuthedAdminIndexRoute: typeof AuthedAdminIndexRoute
   AuthedAdminUsersUserIdRouteRoute: typeof AuthedAdminUsersUserIdRouteRouteWithChildren
   AuthedAdminUsersIndexRoute: typeof AuthedAdminUsersIndexRoute
@@ -741,6 +761,7 @@ const AuthedAdminRouteRouteChildren: AuthedAdminRouteRouteChildren = {
   AuthedAdminCertificationsRouteRoute:
     AuthedAdminCertificationsRouteRouteWithChildren,
   AuthedAdminPositionsRouteRoute: AuthedAdminPositionsRouteRouteWithChildren,
+  AuthedAdminUserTypesRoute: AuthedAdminUserTypesRoute,
   AuthedAdminIndexRoute: AuthedAdminIndexRoute,
   AuthedAdminUsersUserIdRouteRoute:
     AuthedAdminUsersUserIdRouteRouteWithChildren,

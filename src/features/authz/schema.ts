@@ -13,3 +13,10 @@ export const userTypeSchema = object({
   name: string(),
   display: string(),
 });
+
+export const createUserTypeSchema = object({
+  display: string().trim().min(1).max(100),
+}).strict();
+export const renameUserTypeSchema = createUserTypeSchema
+  .extend({ userTypeId: uuidv7() })
+  .strict();
