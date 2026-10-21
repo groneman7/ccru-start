@@ -1,3 +1,4 @@
+import { eligibilityExpressionSchema } from '~/features/eligibility/schema';
 import { userSchema } from '~/features/users/schema';
 import { array, number, object, string, uuidv7 } from 'zod';
 import type { infer as Infer } from 'zod';
@@ -58,6 +59,7 @@ export const positionSchema = object({
   name: string().min(1),
   display: string().min(1),
   description: string().nullable(),
+  eligibilityExpression: eligibilityExpressionSchema.nullable().optional(),
 });
 
 export const createPositionSchema = positionSchema.omit({

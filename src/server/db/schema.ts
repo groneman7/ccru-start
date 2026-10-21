@@ -1,4 +1,5 @@
 import type { Location } from '~/features/calendar/schema';
+import type { EligibilityExpression } from '~/features/eligibility/schema';
 import { sql } from 'drizzle-orm';
 import {
   boolean,
@@ -175,6 +176,10 @@ export const positionsInCalendar = calendar.table(
     name: text().notNull(),
     display: text().notNull(),
     description: text(),
+    eligibilityExpression: jsonb(
+      'eligibility_expression',
+    ).$type<EligibilityExpression>(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' }),
   },
   (table) => [unique('positions_name_key').on(table.name)],
 );

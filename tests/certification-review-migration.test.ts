@@ -73,7 +73,7 @@ test('review migration preserves all thirteen prior tables and creates no inferr
         result.push(
           (
             await client.query(
-              `SELECT to_jsonb(t) AS data FROM "${table.table_schema}"."${table.table_name}" t ORDER BY id`,
+              `SELECT (to_jsonb(t)-'eligibility_expression'-'is_dev_account' ${table.table_schema === 'calendar' && table.table_name === 'positions' ? "-'deleted_at'" : ''}) AS data FROM "${table.table_schema}"."${table.table_name}" t ORDER BY id`,
             )
           ).rows,
         );

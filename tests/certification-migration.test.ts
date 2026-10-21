@@ -54,7 +54,7 @@ async function records(client: Client) {
   for (const t of tables)
     output[`${t.table_schema}.${t.table_name}`] = (
       await client.query(
-        `SELECT ${t.table_schema === 'authz' && t.table_name === 'certifications' ? "to_jsonb(t)-'deleted_at'" : 'to_jsonb(t)'} AS data FROM "${t.table_schema}"."${t.table_name}" t ORDER BY id`,
+        `SELECT (to_jsonb(t)-'eligibility_expression'-'is_dev_account' ${t.table_schema === 'calendar' && t.table_name === 'positions' ? "-'deleted_at'" : ''}) ${t.table_schema === 'authz' && t.table_name === 'certifications' ? "-'deleted_at'" : ''} AS data FROM "${t.table_schema}"."${t.table_name}" t ORDER BY id`,
       )
     ).rows;
   return output;

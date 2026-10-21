@@ -175,7 +175,7 @@ async function retainedRows(client: Client) {
   for (const { table_schema, table_name } of tables) {
     rows[`${table_schema}.${table_name}`] = (
       await client.query(`SELECT
-      to_jsonb(t) - 'assigned_at' - 'can_manage_scheduling' - 'can_manage_users' - 'deleted_at' AS data
+      to_jsonb(t)-'eligibility_expression'-'is_dev_account' - 'assigned_at' - 'can_manage_scheduling' - 'can_manage_users' - 'deleted_at' AS data
       FROM "${table_schema}"."${table_name}" t ORDER BY id`)
     ).rows;
   }

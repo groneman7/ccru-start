@@ -8,6 +8,7 @@ export function throwCertificationError(error: unknown): never {
   for (const expected of [
     'Certification has non-deleted children',
     'Certification has non-deleted user records',
+    'Certification has non-deleted position requirements',
     'Parent certification is deleted or does not exist',
     'Certification hierarchy cannot contain a cycle',
   ]) {

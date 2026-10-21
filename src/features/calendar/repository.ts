@@ -10,6 +10,7 @@ import type {
   updatePositionDetailsSchema,
   updateTemplateSchema,
 } from '~/features/calendar/schema';
+import { throwPositionError } from '~/features/eligibility/errors';
 import { db } from '~/server/db';
 import {
   eventsInCalendar as events,
@@ -22,7 +23,7 @@ import {
 } from '~/server/db/schema';
 import dayjs from 'dayjs';
 // import dayjs from 'dayjs';
-import { and, count, eq, gte, lt } from 'drizzle-orm';
+import { and, count, eq, gte, isNull, lt } from 'drizzle-orm';
 import type { infer as Infer } from 'zod';
 
 // Events ---------------------------------------------------------------------
@@ -117,7 +118,10 @@ export const eventRepository = {
 
 export const positionRepository = {
   all: async () => {
-    const rows = await db.select().from(positions);
+    const rows = await db
+      .select()
+      .from(positions)
+      .where(isNull(positions.deletedAt));
 
     return rows;
   },
@@ -126,16 +130,19 @@ export const positionRepository = {
     const [row] = await db
       .select()
       .from(positions)
-      .where(eq(positions.id, positionId));
+      .where(and(eq(positions.id, positionId), isNull(positions.deletedAt)));
 
+    if (!row) throw new Error('Position not found');
     return row;
   },
   create: async (input: Infer<typeof createPositionSchema>) => {
     const [row] = await db
       .insert(positions)
       .values(input)
-      .returning({ id: positions.id });
+      .returning({ id: positions.id })
+      .catch(throwPositionError);
 
+    if (!row) throw new Error('Position not found');
     return row;
   },
   update: async (input: Infer<typeof updatePositionDetailsSchema>) => {
@@ -143,9 +150,11 @@ export const positionRepository = {
     const [row] = await db
       .update(positions)
       .set(data)
-      .where(eq(positions.id, positionId))
-      .returning({ id: positions.id });
+      .where(and(eq(positions.id, positionId), isNull(positions.deletedAt)))
+      .returning({ id: positions.id })
+      .catch(throwPositionError);
 
+    if (!row) throw new Error('Position not found');
     return row;
   },
 };

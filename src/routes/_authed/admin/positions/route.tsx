@@ -10,12 +10,14 @@ import { WorkspaceContent, WorkspaceHeader } from '~/components';
 import { Button } from '~/components/ui';
 import { allPositionsQuery } from '~/features/calendar/queries';
 import { cn } from '~/lib/utils';
+import { getUserPermissions } from '~/server/permissions';
 
 export const Route = createFileRoute('/_authed/admin/positions')({
   component: PositionsRouteLayout,
 });
 
 function PositionsRouteLayout() {
+  const { currentUser } = Route.useRouteContext();
   const selectedId = useParams({
     from: '/_authed/admin/positions/$positionId',
     shouldThrow: false,
@@ -29,12 +31,14 @@ function PositionsRouteLayout() {
       <WorkspaceHeader>Positions</WorkspaceHeader>
       <WorkspaceContent orientation="horizontal">
         <div className="flex w-xs flex-col overflow-clip rounded border">
-          <Link className="flex" to="/admin/positions/new">
-            <Button className="m-1 flex-1" variant="ghost">
-              <IconPlus />
-              Add position
-            </Button>
-          </Link>
+          {getUserPermissions(currentUser).can('create', 'Position') && (
+            <Link className="flex" to="/admin/positions/new">
+              <Button className="m-1 flex-1" variant="ghost">
+                <IconPlus />
+                Add position
+              </Button>
+            </Link>
+          )}
           {allPositions
             ?.sort((a, b) => a.name.localeCompare(b.name))
             .map((position) => (

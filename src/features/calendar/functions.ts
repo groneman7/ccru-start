@@ -16,7 +16,11 @@ import {
   slotService as slot,
   templateService as template,
 } from '~/features/calendar/services';
-import { requirePermission } from '~/server/permissions/require-permission';
+import { evaluatePositionEligibility } from '~/features/eligibility/server';
+import {
+  denyPermission,
+  requirePermission,
+} from '~/server/permissions/require-permission';
 import { iso, number, object, uuidv7 } from 'zod';
 
 // Events ---------------------------------------------------------------------
@@ -98,7 +102,17 @@ const updatePositionServerFn = createServerFn({ method: 'POST' })
     return await position.update(data);
   });
 
+const positionEligibilityServerFn = createServerFn()
+  .validator(object({ positionId: uuidv7(), userId: uuidv7() }).strict())
+  .handler(async ({ data }) => {
+    const { actor, permissions } = await requirePermission('read', 'Position');
+    const scheduler = permissions.can('update', 'Position');
+    if (data.userId !== actor.id && !scheduler) denyPermission();
+    return evaluatePositionEligibility({ ...data, allowInvited: scheduler });
+  });
+
 export const positionServerFns = {
+  eligibility: positionEligibilityServerFn,
   all: allPositionsServerFn,
   byId: getPositionByIdServerFn,
   create: createPositionServerFn,

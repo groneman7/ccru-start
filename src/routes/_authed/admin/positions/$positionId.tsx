@@ -14,15 +14,26 @@ import {
   allPositionsQuery,
   getPositionByIdQuery,
 } from '~/features/calendar/queries';
+import { positionEligibilityQuery } from '~/features/eligibility/queries';
+import { PositionRequirements } from '~/features/eligibility/section';
+import { allCertificationsQuery } from '~/features/users/queries';
+import { getUserPermissions } from '~/server/permissions';
 import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { object, string } from 'zod';
 
 export const Route = createFileRoute('/_authed/admin/positions/$positionId')({
-  loader: async ({ context: { queryClient }, params: { positionId } }) => {
+  loader: async ({
+    context: { queryClient, currentUser },
+    params: { positionId },
+  }) => {
     await Promise.all([
       queryClient.ensureQueryData(getPositionByIdQuery(positionId)),
       queryClient.ensureQueryData(allPositionsQuery()),
+      queryClient.ensureQueryData(allCertificationsQuery()),
+      queryClient.ensureQueryData(
+        positionEligibilityQuery(positionId, currentUser.id),
+      ),
     ]);
   },
   component: PositionPage,
@@ -34,6 +45,7 @@ export const Route = createFileRoute('/_authed/admin/positions/$positionId')({
 
 function PositionPage() {
   const { positionId } = Route.useParams();
+  const { currentUser } = Route.useRouteContext();
 
   const queryClient = useQueryClient();
   const [isEditing, setIsEditing] = useState(false);
@@ -108,12 +120,13 @@ function PositionPage() {
     <div className="flex flex-1 flex-col gap-2 lg:max-w-md">
       <div className="flex items-center justify-between gap-2">
         <span className="text-xl font-semibold">Details</span>
-        {!isEditing && (
-          <Button size="sm" onClick={() => setIsEditing(true)} type="button">
-            <IconPencil />
-            Edit
-          </Button>
-        )}
+        {!isEditing &&
+          getUserPermissions(currentUser).can('update', 'Position') && (
+            <Button size="sm" onClick={() => setIsEditing(true)} type="button">
+              <IconPencil />
+              Edit
+            </Button>
+          )}
       </div>
       {isEditing ? (
         <form
@@ -211,6 +224,12 @@ function PositionPage() {
           )}
         </div>
       )}
+      <PositionRequirements
+        key={position.id}
+        positionId={position.id}
+        expression={position.eligibilityExpression}
+        currentUser={currentUser}
+      />
     </div>
   );
 }

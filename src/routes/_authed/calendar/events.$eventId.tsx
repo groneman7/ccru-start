@@ -466,6 +466,13 @@ function EventTeams({
                 <Card key={shift.id}>
                   <CardHeader>
                     <CardTitle>{shift.position.display}</CardTitle>
+                    <Link
+                      to="/admin/positions/$positionId"
+                      params={{ positionId: shift.positionId }}
+                      className="text-sm underline"
+                    >
+                      View requirements
+                    </Link>
                     <CardDescription>
                       {permissions.can('modify', 'Shift') ? (
                         <PopoverModifySlotQuantity shift={shift} />
@@ -937,9 +944,12 @@ function PopoverAddShifts({
   const form = useAppForm({
     defaultValues: {
       positionSearch: '',
-      selectedPosition: null as Infer<typeof positionSchema> | null,
+      selectedPosition: null as Omit<
+        Infer<typeof positionSchema>,
+        'eligibilityExpression'
+      > | null,
       shiftsToCreate: [] as {
-        position: Infer<typeof positionSchema>;
+        position: Omit<Infer<typeof positionSchema>, 'eligibilityExpression'>;
         quantity: number;
       }[],
     },
@@ -1037,7 +1047,10 @@ function PopoverAddShifts({
                     )}
                     value={form.state.values.selectedPosition}
                     itemToStringLabel={(
-                      position: Infer<typeof positionSchema>,
+                      position: Omit<
+                        Infer<typeof positionSchema>,
+                        'eligibilityExpression'
+                      >,
                     ) => position.display}
                     onValueChange={(v) => {
                       if (!v) return;
@@ -1052,7 +1065,12 @@ function PopoverAddShifts({
                     <ComboboxContent>
                       <ComboboxEmpty>No positions found.</ComboboxEmpty>
                       <ComboboxList>
-                        {(position: Infer<typeof positionSchema>) => (
+                        {(
+                          position: Omit<
+                            Infer<typeof positionSchema>,
+                            'eligibilityExpression'
+                          >,
+                        ) => (
                           <ComboboxItem key={position.id} value={position}>
                             <div className="flex flex-1 items-center justify-between">
                               <span>{position.display}</span>

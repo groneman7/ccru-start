@@ -630,7 +630,7 @@ function DialogAddTemplatePosition({
   const form = useAppForm({
     defaultValues: {
       templatePositionsToCreate: [] as {
-        position: Infer<typeof positionSchema>;
+        position: Omit<Infer<typeof positionSchema>, 'eligibilityExpression'>;
         quantity: number;
       }[],
     },
