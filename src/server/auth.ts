@@ -12,6 +12,10 @@ import {
   userInBetterAuth,
   verificationInBetterAuth,
 } from '~/server/db/schema';
+import {
+  shouldBypassOnboarding,
+  withOnboardingBypass,
+} from '~/server/dev-onboarding';
 import { getUserPermissions } from '~/server/permissions';
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
@@ -90,6 +94,7 @@ export const auth = betterAuth({
           'canManageScheduling',
           'canManageUsers',
           'emailVerified',
+          'onboardingBypassed',
           'phoneNumberVerified',
           'timestampOnboardingCompleted',
           'timestampFirstLogin',
@@ -110,7 +115,9 @@ export const auth = betterAuth({
         query: { disableCookieCache: true },
       });
       if (!session) throw new APIError('UNAUTHORIZED');
-      const permissions = getUserPermissions(session.user);
+      const permissions = getUserPermissions(
+        withOnboardingBypass(session.user),
+      );
       if (
         path === '/admin/stop-impersonating' &&
         session.session.impersonatedBy
@@ -225,6 +232,7 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     sendOnSignIn: true,
     sendVerificationEmail: async ({ user, url }) => {
+      if (shouldBypassOnboarding(user)) return;
       await sendAuthEmail({
         to: user.email,
         subject: 'Verify your email address',
@@ -320,10 +328,12 @@ export type AuthSession = typeof auth.$Infer.Session;
 export type AuthUser = AuthSession['user'];
 export type CurrentUserType = Infer<typeof userTypeSchema>;
 export type AuthSessionWithUserType = AuthSession & {
+  user: AuthUser & { onboardingBypassed: boolean };
   userType: CurrentUserType | null;
 };
 export type CurrentUser = Omit<AuthUser, 'name'> & {
   display: AuthUser['name'];
   impersonatedBy?: string;
+  onboardingBypassed?: boolean;
   userType: CurrentUserType | null;
 };

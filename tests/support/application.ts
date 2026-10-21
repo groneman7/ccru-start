@@ -4,7 +4,10 @@ import { resolve } from 'node:path';
 import { stripVTControlCharacters } from 'node:util';
 import { Pool } from 'pg';
 
-export async function startApplication(databaseURL: string) {
+export async function startApplication(
+  databaseURL: string,
+  environment: NodeJS.ProcessEnv = {},
+) {
   const emails: { to: string | string[]; subject: string; html: string }[] = [];
   const pool = new Pool({ connectionString: databaseURL });
   const proxy = createServer(async (request, response) => {
@@ -16,16 +19,14 @@ export async function startApplication(databaseURL: string) {
       )!;
       const claims = JSON.parse(Buffer.from(code, 'base64url').toString());
       const idToken = `${Buffer.from(JSON.stringify({ alg: 'none' })).toString('base64url')}.${Buffer.from(JSON.stringify(claims)).toString('base64url')}.fixture`;
-      response
-        .writeHead(200, { 'content-type': 'application/json' })
-        .end(
-          JSON.stringify({
-            access_token: 'fixture-google-access',
-            token_type: 'Bearer',
-            expires_in: 3600,
-            id_token: idToken,
-          }),
-        );
+      response.writeHead(200, { 'content-type': 'application/json' }).end(
+        JSON.stringify({
+          access_token: 'fixture-google-access',
+          token_type: 'Bearer',
+          expires_in: 3600,
+          id_token: idToken,
+        }),
+      );
       return;
     }
     if (request.url === '/emails') {
@@ -101,6 +102,7 @@ export async function startApplication(databaseURL: string) {
     {
       env: {
         ...process.env,
+        DEV_ONBOARDING_BYPASS_EMAILS: '',
         DATABASE_URL: databaseURL,
         CCRU_TEST_SQL_URL: `http://127.0.0.1:${address.port}/sql`,
         CCRU_TEST_GOOGLE_URL: `http://127.0.0.1:${address.port}/google-token`,
@@ -113,6 +115,7 @@ export async function startApplication(databaseURL: string) {
         VITE_SENTRY_DSN: '',
         SENTRY_AUTH_TOKEN: '',
         VITE_PUBLIC_POSTHOG_KEY: '',
+        ...environment,
       },
       stdio: ['ignore', 'pipe', 'pipe'],
     },

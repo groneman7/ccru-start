@@ -2,7 +2,7 @@ import { AbilityBuilder, createMongoAbility } from '@casl/ability';
 import type { ForcedSubject, MongoAbility } from '@casl/ability';
 import { SYSTEM_ROLES } from '~/features/authz/schema';
 import type { SystemRole } from '~/features/authz/schema';
-import { hasCompletedOnboarding } from '~/features/users/onboarding';
+import { canAccessWorkspace } from '~/features/users/onboarding';
 import type { OnboardingIdentity } from '~/features/users/onboarding';
 
 export type PermissionUser = OnboardingIdentity & {
@@ -67,7 +67,7 @@ export function getUserPermissions(user?: PermissionUser | null) {
   allow('read', 'User', { id: user.id });
   allow('update', 'User', { id: user.id });
   allow('complete-onboarding', 'User', { id: user.id });
-  if (user.status !== 'active' || !hasCompletedOnboarding(user)) return build();
+  if (!canAccessWorkspace(user)) return build();
 
   allow('read', 'Inbox');
   allow(['read', 'submit'], 'UserCertification', { userId: user.id });

@@ -3,6 +3,7 @@ import { auth } from '~/server/auth';
 import type { AuthSessionWithUserType } from '~/server/auth';
 import { db } from '~/server/db';
 import { userTypesInAuthz } from '~/server/db/schema';
+import { withOnboardingBypass } from '~/server/dev-onboarding';
 import { and, eq, isNull } from 'drizzle-orm';
 
 export const getSessionServerFn = createServerFn({ method: 'GET' }).handler(
@@ -31,6 +32,7 @@ export const getSessionServerFn = createServerFn({ method: 'GET' }).handler(
 
     return {
       ...session,
+      user: withOnboardingBypass(session.user),
       userType: userType ?? null,
     };
   },

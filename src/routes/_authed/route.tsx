@@ -2,7 +2,7 @@ import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { AppSidebar, Workspace } from '~/components';
 import { SidebarProvider } from '~/components/ui';
 import { authSessionQuery } from '~/features/auth/queries';
-import { hasCompletedOnboarding } from '~/features/users/onboarding';
+import { canAccessWorkspace } from '~/features/users/onboarding';
 import type { CurrentUser } from '~/server/auth';
 
 export const Route = createFileRoute('/_authed')({
@@ -15,10 +15,7 @@ export const Route = createFileRoute('/_authed')({
       });
     }
 
-    if (
-      session.user.status !== 'active' ||
-      !hasCompletedOnboarding(session.user)
-    )
+    if (!canAccessWorkspace(session.user))
       throw redirect({ to: '/onboarding' });
 
     const { name, ...user } = session.user;

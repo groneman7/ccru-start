@@ -3,6 +3,7 @@ import {
   setResponseStatus,
 } from '@tanstack/react-start/server';
 import { auth } from '~/server/auth';
+import { withOnboardingBypass } from '~/server/dev-onboarding';
 import { getUserPermissions } from '~/server/permissions';
 import type { Permission } from '~/server/permissions';
 
@@ -17,7 +18,7 @@ export async function requirePermission(...permission: Permission) {
     query: { disableCookieCache: true },
   });
   if (!session) return denyPermission('Unauthorized', 401);
-  const permissions = getUserPermissions(session.user);
+  const permissions = getUserPermissions(withOnboardingBypass(session.user));
   if (!permissions.can(...permission)) return denyPermission();
   return { actor: session.user, permissions };
 }
