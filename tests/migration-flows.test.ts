@@ -36,6 +36,7 @@ test.each(['create', 'adopt'])(
         ['--import', 'tsx', 'scripts/db/migrate.ts', '--apply'],
         { env: { ...process.env, MIGRATION_DATABASE_URL: url } },
       );
+      await client.query(readFileSync('tests/support/ready-identities.sql', 'utf8'));
       app = await startApplication(url);
       const { baseURL } = app;
       expect((await fetch(`${baseURL}/sign-in`)).status, app.output()).toBe(

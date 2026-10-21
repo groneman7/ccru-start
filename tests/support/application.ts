@@ -8,6 +8,26 @@ export async function startApplication(databaseURL: string) {
   const emails: { to: string | string[]; subject: string; html: string }[] = [];
   const pool = new Pool({ connectionString: databaseURL });
   const proxy = createServer(async (request, response) => {
+    if (request.url === '/google-token') {
+      const chunks: Buffer[] = [];
+      for await (const chunk of request) chunks.push(Buffer.from(chunk));
+      const code = new URLSearchParams(Buffer.concat(chunks).toString()).get(
+        'code',
+      )!;
+      const claims = JSON.parse(Buffer.from(code, 'base64url').toString());
+      const idToken = `${Buffer.from(JSON.stringify({ alg: 'none' })).toString('base64url')}.${Buffer.from(JSON.stringify(claims)).toString('base64url')}.fixture`;
+      response
+        .writeHead(200, { 'content-type': 'application/json' })
+        .end(
+          JSON.stringify({
+            access_token: 'fixture-google-access',
+            token_type: 'Bearer',
+            expires_in: 3600,
+            id_token: idToken,
+          }),
+        );
+      return;
+    }
     if (request.url === '/emails') {
       const chunks: Buffer[] = [];
       for await (const chunk of request) chunks.push(Buffer.from(chunk));
@@ -83,6 +103,7 @@ export async function startApplication(databaseURL: string) {
         ...process.env,
         DATABASE_URL: databaseURL,
         CCRU_TEST_SQL_URL: `http://127.0.0.1:${address.port}/sql`,
+        CCRU_TEST_GOOGLE_URL: `http://127.0.0.1:${address.port}/google-token`,
         CCRU_TEST_EMAIL_URL: `http://127.0.0.1:${address.port}/emails`,
         RESEND_API_KEY: 're_local_fixture',
         BETTER_AUTH_URL: 'http://localhost:3000',

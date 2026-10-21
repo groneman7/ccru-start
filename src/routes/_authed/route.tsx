@@ -1,8 +1,8 @@
 import { createFileRoute, Outlet, redirect } from '@tanstack/react-router';
 import { AppSidebar, Workspace } from '~/components';
-import { OnboardingDialog } from '~/components/onboarding-dialog';
 import { SidebarProvider } from '~/components/ui';
 import { authSessionQuery } from '~/features/auth/queries';
+import { hasCompletedOnboarding } from '~/features/users/onboarding';
 import type { CurrentUser } from '~/server/auth';
 
 export const Route = createFileRoute('/_authed')({
@@ -14,6 +14,12 @@ export const Route = createFileRoute('/_authed')({
         to: '/sign-in',
       });
     }
+
+    if (
+      session.user.status !== 'active' ||
+      !hasCompletedOnboarding(session.user)
+    )
+      throw redirect({ to: '/onboarding' });
 
     const { name, ...user } = session.user;
     const currentUser: CurrentUser = {
@@ -33,13 +39,9 @@ export const Route = createFileRoute('/_authed')({
 });
 
 function AuthedRouteLayout() {
-  const { currentUser } = Route.useRouteContext();
-
   return (
     <div className="bg-blue-50">
       <SidebarProvider>
-        {currentUser.timestampOnboardingCompleted === null &&
-          !currentUser.impersonatedBy && <OnboardingDialog />}
         <AppSidebar />
         <div className="b my-2 mr-2 flex flex-1 flex-col rounded-lg border-2 border-blue-100 bg-white">
           <Workspace>

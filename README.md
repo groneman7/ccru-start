@@ -263,3 +263,5 @@ The [MVP ticket map](docs/mvp-tickets.md) preserves the published breakdown and 
 Use the [retained-data migration procedure](docs/database-migrations.md) before changing database schemas. `db:migrate` plans changes read-only by default and requires an explicit `MIGRATION_DATABASE_URL`; application is a separate `--apply` operation.
 
 [Profile and user-type management](docs/profile-management.md) requires migration `0005_retained_user_types` before starting this application version against an existing database. Feature implementation does not automatically apply it to that database.
+
+Registration/onboarding: see [registration policy and rollout](docs/registration.md). Apply pending migration `0006_registration_mode` before starting this application version; target execution requires separate approval.

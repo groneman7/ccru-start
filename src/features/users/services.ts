@@ -17,21 +17,7 @@ export const userService = {
   byId: async (input: { userId: string }) => {
     return await user.byId(input);
   },
-  completeOnboarding: async (input: { userId: string }) => {
-    return await user.completeOnboarding(input);
-  },
-  updateOnboardingProfile: async (input: {
-    userId: string;
-    display?: string;
-    email?: string;
-    nameFirst?: string;
-    nameMiddle?: string | null;
-    nameLast?: string;
-    phoneNumber?: string | null;
-    postNominals?: string | null;
-  }) => {
-    return await user.updateOnboardingProfile(input);
-  },
+  completeOnboarding: user.completeOnboarding,
   updateStatus: async (input: {
     userId: string;
     status: 'active' | 'inactive';

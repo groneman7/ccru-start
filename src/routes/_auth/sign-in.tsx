@@ -22,14 +22,14 @@ import {
   FieldGroup,
   FieldLabel,
 } from '~/components/ui';
-import {
-  authSessionQuery,
-  authSessionQueryKey,
-} from '~/features/auth/queries';
+import { authSessionQuery, authSessionQueryKey } from '~/features/auth/queries';
 import { authClient } from '~/lib/auth-client';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/_auth/sign-in')({
+  validateSearch: (search: Record<string, unknown>): { error?: string } => ({
+    error: typeof search.error === 'string' ? search.error : undefined,
+  }),
   beforeLoad: async ({ context: { queryClient } }) => {
     const session = await queryClient.fetchQuery(authSessionQuery());
 
@@ -43,6 +43,8 @@ export const Route = createFileRoute('/_auth/sign-in')({
 });
 
 function SignInPage() {
+  const search = Route.useSearch();
+  const [error, setError] = useState(search.error?.replaceAll('_', ' ') ?? '');
   const nav = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -74,8 +76,7 @@ function SignInPage() {
           },
           onError: (ctx) => {
             setOtpLoading(false);
-            console.log(ctx.error);
-            alert(ctx.error.message);
+            setError(ctx.error.message);
           },
         },
       );
@@ -89,6 +90,7 @@ function SignInPage() {
       {
         provider: 'google',
         callbackURL: '/',
+        errorCallbackURL: '/sign-in',
       },
       {
         onRequest: () => {
@@ -100,8 +102,7 @@ function SignInPage() {
         },
         onError: (ctx) => {
           setOtpLoading(false);
-          console.log(ctx.error);
-          alert(ctx.error.message);
+          setError(ctx.error.message);
         },
       },
     );
@@ -121,6 +122,7 @@ function SignInPage() {
         </CardAction>
       </CardHeader>
       <CardContent>
+        {error && <p role="alert">{error}</p>}
         {/* <div className="mb-2 flex items-center gap-2">
           <div className="h-px flex-1 bg-border"></div>
           <CardDescription>Enter your email and password</CardDescription>
@@ -129,6 +131,7 @@ function SignInPage() {
         <form
           onSubmit={(e) => {
             e.preventDefault();
+            form.handleSubmit();
           }}
           className="grid gap-4"
         >
@@ -149,6 +152,10 @@ function SignInPage() {
                   <Checkbox
                     id={staySignedInField.name}
                     name={staySignedInField.name}
+                    checked={staySignedInField.state.value}
+                    onCheckedChange={(checked) =>
+                      staySignedInField.handleChange(checked === true)
+                    }
                   />
                   <FieldLabel
                     className="font-light"
@@ -159,7 +166,7 @@ function SignInPage() {
                 </Field>
               )}
             </form.AppField>
-            <Button size="xs" variant="ghost">
+            <Button type="button" size="xs" variant="ghost">
               Forgot password
             </Button>
           </FieldGroup>

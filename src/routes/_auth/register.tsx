@@ -18,14 +18,19 @@ import {
   FieldGroup,
 } from '~/components/ui';
 import { authSessionQueryKey } from '~/features/auth/queries';
+import { registrationModeQuery } from '~/features/registration/queries';
 import { authClient } from '~/lib/auth-client';
 import { useState } from 'react';
 
 export const Route = createFileRoute('/_auth/register')({
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(registrationModeQuery()),
   component: RegisterPage,
 });
 
 function RegisterPage() {
+  const mode = Route.useLoaderData();
+  const [error, setError] = useState('');
   const nav = useNavigate();
   const router = useRouter();
   const queryClient = useQueryClient();
@@ -49,7 +54,7 @@ function RegisterPage() {
           nameLast: normalizedLast,
           email,
           password,
-          callbackURL: '/',
+          callbackURL: '/onboarding',
         },
         {
           onRequest: () => {
@@ -63,8 +68,7 @@ function RegisterPage() {
           },
           onError: (ctx) => {
             setOtpLoading(false);
-            console.log(ctx.error);
-            alert(ctx.error.message);
+            setError(ctx.error.message);
           },
         },
       );
@@ -77,7 +81,8 @@ function RegisterPage() {
     await authClient.signIn.social(
       {
         provider: 'google',
-        callbackURL: '/',
+        callbackURL: '/onboarding',
+        errorCallbackURL: '/sign-in',
       },
       {
         onRequest: () => {
@@ -91,12 +96,24 @@ function RegisterPage() {
         },
         onError: (ctx) => {
           setOtpLoading(false);
-          console.log(ctx.error);
-          alert(ctx.error.message);
+          setError(ctx.error.message);
         },
       },
     );
   };
+
+  if (mode !== 'open')
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Registration is invitation-only</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <p>Contact the organization to request an invitation.</p>
+          <Link to="/sign-in">Sign in to an existing account</Link>
+        </CardContent>
+      </Card>
+    );
 
   return (
     <Card className="w-full shadow-xl">
@@ -112,6 +129,7 @@ function RegisterPage() {
         </CardAction>
       </CardHeader>
       <CardContent>
+        {error && <p role="alert">{error}</p>}
         {/* <div className="mb-2 flex items-center gap-2">
               <div className="h-px flex-1 bg-border"></div>
               <CardDescription>Enter your email and password</CardDescription>
@@ -127,23 +145,27 @@ function RegisterPage() {
           <FieldGroup orientation="horizontal">
             <form.AppField name="nameFirst">
               {(nameFirstField) => (
-                <nameFirstField.InputField label="First name" />
+                <nameFirstField.InputField label="First name" required />
               )}
             </form.AppField>
             <form.AppField name="nameLast">
               {(nameLastField) => (
-                <nameLastField.InputField label="Last name" />
+                <nameLastField.InputField label="Last name" required />
               )}
             </form.AppField>
           </FieldGroup>
           <form.AppField name="email">
             {(emailField) => (
-              <emailField.InputField label="Email" type="email" />
+              <emailField.InputField label="Email" type="email" required />
             )}
           </form.AppField>
           <form.AppField name="password">
             {(passwordField) => (
-              <passwordField.InputField label="Password" type="password" />
+              <passwordField.InputField
+                label="Password"
+                type="password"
+                required
+              />
             )}
           </form.AppField>
           <Button

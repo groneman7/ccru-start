@@ -14,17 +14,6 @@ import type {
   userSchemaForCombobox,
 } from './schema';
 
-type UpdateOnboardingProfileInput = {
-  userId: string;
-  display?: string;
-  email?: string;
-  nameFirst?: string;
-  nameMiddle?: string | null;
-  nameLast?: string;
-  phoneNumber?: string | null;
-  postNominals?: string | null;
-};
-
 export const userRepository = {
   updateProfile: async ({
     userId,
@@ -90,30 +79,36 @@ export const userRepository = {
 
     return { ...userRow, userTypeDisplay };
   },
-  completeOnboarding: async (input: { userId: string }) => {
-    const { userId } = input;
+  completeOnboarding: async ({
+    userId,
+    data,
+    expectedUpdatedAt,
+  }: Infer<typeof updateProfileSchema> & { expectedUpdatedAt: string }) => {
     const [row] = await db
       .update(users)
       .set({
-        timestampOnboardingCompleted: sql`CURRENT_TIMESTAMP`,
+        ...data,
+        display: [data.nameFirst, data.nameMiddle, data.nameLast]
+          .filter(Boolean)
+          .join(' '),
+        timestampOnboardingCompleted: sql`COALESCE(${users.timestampOnboardingCompleted}, CURRENT_TIMESTAMP)`,
+        timestampUpdatedAt: sql`CURRENT_TIMESTAMP`,
         status: sql`CASE WHEN ${users.status} = 'invited' THEN 'active'::account_status ELSE ${users.status} END`,
       })
-      .where(and(eq(users.id, userId), isNull(users.deletedAt)))
+      .where(
+        and(
+          eq(users.id, userId),
+          isNull(users.deletedAt),
+          eq(users.emailVerified, true),
+          eq(users.timestampUpdatedAt, expectedUpdatedAt),
+          sql`(${users.status} = 'active' OR (${users.status} = 'invited' AND EXISTS (SELECT 1 FROM authz.organization_settings WHERE id=1 AND registration_mode='open')))`,
+        ),
+      )
       .returning({ id: users.id });
-
-    return row;
-  },
-  updateOnboardingProfile: async (input: UpdateOnboardingProfileInput) => {
-    const { userId, ...changes } = input;
-    const [row] = await db
-      .update(users)
-      .set({
-        ...changes,
-        timestampUpdatedAt: sql`CURRENT_TIMESTAMP`,
-      })
-      .where(and(eq(users.id, userId), isNull(users.deletedAt)))
-      .returning({ id: users.id });
-
+    if (!row)
+      throw new Error(
+        'Onboarding could not complete. Refresh your profile or contact the organization.',
+      );
     return row;
   },
   updateStatus: async (input: {

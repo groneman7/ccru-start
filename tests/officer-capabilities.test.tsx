@@ -70,7 +70,16 @@ test.each([
   (actorRole, targetRole, disabled) => {
     render(
       <SystemRoleSelect
-        actor={{ id: 'fixture', role: actorRole, status: 'active' }}
+        actor={{
+          id: 'fixture',
+          role: actorRole,
+          status: 'active',
+          emailVerified: true,
+          nameFirst: 'Fixture',
+          nameLast: 'Actor',
+          phoneNumber: '+15550100100',
+          timestampOnboardingCompleted: '2026-01-03',
+        }}
         value={targetRole}
         onChange={() => {}}
       />,

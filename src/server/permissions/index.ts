@@ -2,8 +2,10 @@ import { AbilityBuilder, createMongoAbility } from '@casl/ability';
 import type { ForcedSubject, MongoAbility } from '@casl/ability';
 import { SYSTEM_ROLES } from '~/features/authz/schema';
 import type { SystemRole } from '~/features/authz/schema';
+import { hasCompletedOnboarding } from '~/features/users/onboarding';
+import type { OnboardingIdentity } from '~/features/users/onboarding';
 
-export type PermissionUser = {
+export type PermissionUser = OnboardingIdentity & {
   id: string;
   role?: string | null;
   deletedAt?: string | Date | null;
@@ -26,9 +28,20 @@ export type Permission =
   | ['create' | 'read' | 'update' | 'delete' | 'restore', 'Slot']
   | ['read' | 'update' | 'restore', 'Template']
   | ['read' | 'create' | 'update' | 'restore', 'Certification']
-  | ['read' | 'list' | 'update' | 'update-status' | 'update-type', UserSubject]
+  | [
+      (
+        | 'read'
+        | 'list'
+        | 'update'
+        | 'update-status'
+        | 'update-type'
+        | 'complete-onboarding'
+      ),
+      UserSubject,
+    ]
   | ['read' | 'assign', RoleSubject]
   | ['update', 'OfficerCapabilities']
+  | ['update', 'RegistrationMode']
   | ['read' | 'create' | 'update' | 'delete', 'UserType']
   | ['create' | 'read' | 'update' | 'delete' | 'restore', 'SavedLocation']
   | ['dev-tools' | 'impersonate' | 'manage-sessions', 'System'];
@@ -48,7 +61,8 @@ export function getUserPermissions(user?: PermissionUser | null) {
 
   allow('read', 'User', { id: user.id });
   allow('update', 'User', { id: user.id });
-  if (user.status !== 'active') return build();
+  allow('complete-onboarding', 'User', { id: user.id });
+  if (user.status !== 'active' || !hasCompletedOnboarding(user)) return build();
 
   allow('read', [
     'CalendarEvent',
@@ -86,6 +100,7 @@ export function getUserPermissions(user?: PermissionUser | null) {
   }
   if (administrator) {
     allow('update', 'OfficerCapabilities');
+    allow('update', 'RegistrationMode');
     allow('assign', 'SystemRole', {
       currentRole: { $ne: 'Developer' },
       nextRole: { $ne: 'Developer' },

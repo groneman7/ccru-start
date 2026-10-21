@@ -1,8 +1,10 @@
 import { subject } from '@casl/ability';
 import { createServerFn } from '@tanstack/react-start';
 import { SYSTEM_ROLES } from '~/features/authz/schema';
+import { onboardingFieldsSchema } from '~/features/users/onboarding';
 import {
   createCertificationSchema,
+  profileFieldsSchema,
   updateCertificationSchema,
   updateProfileSchema,
   userToggleableStatusSchema,
@@ -20,7 +22,6 @@ import {
 import { and, eq, isNull, ne, sql } from 'drizzle-orm';
 import {
   boolean,
-  nullable,
   object,
   optional,
   string,
@@ -87,16 +88,27 @@ export const getUserByIdServerFn = createServerFn()
 export const completeOnboardingServerFn = createServerFn({ method: 'POST' })
   .validator(object({ userId: string() }))
   .handler(async ({ data }) => {
-    await requirePermission('update', subject('User', { id: data.userId }));
+    const { actor } = await requirePermission(
+      'complete-onboarding',
+      subject('User', { id: data.userId }),
+    );
+    if (actor.id !== data.userId) denyPermission();
     const profile = await user.byId(data);
-    if (
-      !profile.emailVerified ||
-      !profile.nameFirst?.trim() ||
-      !profile.nameLast?.trim() ||
-      !profile.phoneNumber?.trim()
-    )
+    const fields = onboardingFieldsSchema.safeParse({
+      nameFirst: profile.nameFirst,
+      nameMiddle: profile.nameMiddle,
+      nameLast: profile.nameLast,
+      phoneNumber: profile.phoneNumber,
+      image: profile.image,
+      postNominals: profile.postNominals,
+    });
+    if (!profile.emailVerified || !fields.success)
       denyPermission('Complete verified profile requirements first', 400);
-    return await user.completeOnboarding(data);
+    return user.completeOnboarding({
+      userId: data.userId,
+      data: fields.data,
+      expectedUpdatedAt: profile.timestampUpdatedAt,
+    });
   });
 
 export const updateOnboardingProfileServerFn = createServerFn({
@@ -105,23 +117,26 @@ export const updateOnboardingProfileServerFn = createServerFn({
   .validator(
     object({
       userId: string(),
-      display: optional(string()),
-      email: optional(string()),
-      nameFirst: optional(string()),
-      nameMiddle: optional(nullable(string())),
-      nameLast: optional(string()),
-      phoneNumber: optional(nullable(string())),
-      postNominals: optional(nullable(string())),
-    }),
+      ...profileFieldsSchema.partial().shape,
+    }).strict(),
   )
-  .handler(async ({ data }) => {
-    await requirePermission('update', subject('User', { id: data.userId }));
-    if (
-      data.email &&
-      data.email !== (await user.byId({ userId: data.userId })).email
-    )
-      denyPermission('Use the verified email-change workflow', 400);
-    return await user.updateOnboardingProfile(data);
+  .handler(async ({ data: { userId, ...changes } }) => {
+    const { actor } = await requirePermission(
+      'update',
+      subject('User', { id: userId }),
+    );
+    if (actor.id !== userId) denyPermission();
+    const profile = await user.byId({ userId });
+    const data = profileFieldsSchema.parse({
+      nameFirst: profile.nameFirst,
+      nameMiddle: profile.nameMiddle,
+      nameLast: profile.nameLast,
+      phoneNumber: profile.phoneNumber,
+      image: profile.image,
+      postNominals: profile.postNominals,
+      ...changes,
+    });
+    return user.updateProfile({ userId, data });
   });
 
 export const updateSystemRoleServerFn = createServerFn({ method: 'POST' })

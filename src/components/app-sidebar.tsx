@@ -80,6 +80,17 @@ export function AppSidebar() {
           <SidebarGroup>
             <SidebarGroupLabel>Admin Tools</SidebarGroupLabel>
             <SidebarMenu>
+              {permissions.can('update', 'RegistrationMode') && (
+                <SidebarMenuItem>
+                  <SidebarMenuButton
+                    tooltip="Organization settings"
+                    render={<Link to="/admin/settings" />}
+                  >
+                    <IconBriefcase />
+                    Organization settings
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              )}
               <SidebarMenuItem>
                 <SidebarMenuButton
                   tooltip="Certifications"

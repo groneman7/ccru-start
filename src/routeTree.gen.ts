@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
+import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PendingRouteImport } from './routes/pending'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
 import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
@@ -20,6 +21,7 @@ import { Route as AuthedDevToolsRouteRouteImport } from './routes/_authed/dev-to
 import { Route as AuthedAdminIndexRouteImport } from './routes/_authed/admin/index'
 import { Route as AuthedAdminCertificationsRouteRouteImport } from './routes/_authed/admin/certifications/route'
 import { Route as AuthedAdminPositionsRouteRouteImport } from './routes/_authed/admin/positions/route'
+import { Route as AuthedAdminSettingsRouteImport } from './routes/_authed/admin/settings'
 import { Route as AuthedAdminUserTypesRouteImport } from './routes/_authed/admin/user-types'
 import { Route as AuthedCalendarIndexRouteImport } from './routes/_authed/calendar/index'
 import { Route as AuthedCalendarTemplatesRouteRouteImport } from './routes/_authed/calendar/templates/route'
@@ -50,6 +52,11 @@ const AuthRouteRoute = AuthRouteRouteImport.update({
 } as any)
 const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OnboardingRoute = OnboardingRouteImport.update({
+  id: '/onboarding',
+  path: '/onboarding',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PendingRoute = PendingRouteImport.update({
@@ -99,6 +106,11 @@ const AuthedAdminPositionsRouteRoute =
     path: '/positions',
     getParentRoute: () => AuthedAdminRouteRoute,
   } as any)
+const AuthedAdminSettingsRoute = AuthedAdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AuthedAdminRouteRoute,
+} as any)
 const AuthedAdminUserTypesRoute = AuthedAdminUserTypesRouteImport.update({
   id: '/user-types',
   path: '/user-types',
@@ -231,6 +243,7 @@ const AuthedAdminUsersUserIdProfileRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
+  '/onboarding': typeof OnboardingRoute
   '/pending': typeof PendingRoute
   '/admin': typeof AuthedAdminRouteRouteWithChildren
   '/dev-tools': typeof AuthedDevToolsRouteRouteWithChildren
@@ -240,6 +253,7 @@ export interface FileRoutesByFullPath {
   '/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
   '/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
   '/dev-tools/ui': typeof AuthedDevToolsUiRouteRoute
+  '/admin/settings': typeof AuthedAdminSettingsRoute
   '/admin/user-types': typeof AuthedAdminUserTypesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin/': typeof AuthedAdminIndexRoute
@@ -265,10 +279,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof AuthedIndexRoute
+  '/onboarding': typeof OnboardingRoute
   '/pending': typeof PendingRoute
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
   '/dev-tools/ui': typeof AuthedDevToolsUiRouteRoute
+  '/admin/settings': typeof AuthedAdminSettingsRoute
   '/admin/user-types': typeof AuthedAdminUserTypesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/admin': typeof AuthedAdminIndexRoute
@@ -295,6 +311,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_authed': typeof AuthedRouteRouteWithChildren
+  '/onboarding': typeof OnboardingRoute
   '/pending': typeof PendingRoute
   '/_authed/admin': typeof AuthedAdminRouteRouteWithChildren
   '/_authed/dev-tools': typeof AuthedDevToolsRouteRouteWithChildren
@@ -305,6 +322,7 @@ export interface FileRoutesById {
   '/_authed/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
   '/_authed/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
   '/_authed/dev-tools/ui': typeof AuthedDevToolsUiRouteRoute
+  '/_authed/admin/settings': typeof AuthedAdminSettingsRoute
   '/_authed/admin/user-types': typeof AuthedAdminUserTypesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_authed/admin/': typeof AuthedAdminIndexRoute
@@ -332,6 +350,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/onboarding'
     | '/pending'
     | '/admin'
     | '/dev-tools'
@@ -341,6 +360,7 @@ export interface FileRouteTypes {
     | '/admin/positions'
     | '/calendar/templates'
     | '/dev-tools/ui'
+    | '/admin/settings'
     | '/admin/user-types'
     | '/api/auth/$'
     | '/admin/'
@@ -366,10 +386,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/onboarding'
     | '/pending'
     | '/register'
     | '/sign-in'
     | '/dev-tools/ui'
+    | '/admin/settings'
     | '/admin/user-types'
     | '/api/auth/$'
     | '/admin'
@@ -395,6 +417,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_auth'
     | '/_authed'
+    | '/onboarding'
     | '/pending'
     | '/_authed/admin'
     | '/_authed/dev-tools'
@@ -405,6 +428,7 @@ export interface FileRouteTypes {
     | '/_authed/admin/positions'
     | '/_authed/calendar/templates'
     | '/_authed/dev-tools/ui'
+    | '/_authed/admin/settings'
     | '/_authed/admin/user-types'
     | '/api/auth/$'
     | '/_authed/admin/'
@@ -432,6 +456,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
+  OnboardingRoute: typeof OnboardingRoute
   PendingRoute: typeof PendingRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
@@ -450,6 +475,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/onboarding': {
+      id: '/onboarding'
+      path: '/onboarding'
+      fullPath: '/onboarding'
+      preLoaderRoute: typeof OnboardingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/pending': {
@@ -513,6 +545,13 @@ declare module '@tanstack/react-router' {
       path: '/positions'
       fullPath: '/admin/positions'
       preLoaderRoute: typeof AuthedAdminPositionsRouteRouteImport
+      parentRoute: typeof AuthedAdminRouteRoute
+    }
+    '/_authed/admin/settings': {
+      id: '/_authed/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AuthedAdminSettingsRouteImport
       parentRoute: typeof AuthedAdminRouteRoute
     }
     '/_authed/admin/user-types': {
@@ -751,6 +790,7 @@ const AuthedAdminUsersUserIdRouteRouteWithChildren =
 interface AuthedAdminRouteRouteChildren {
   AuthedAdminCertificationsRouteRoute: typeof AuthedAdminCertificationsRouteRouteWithChildren
   AuthedAdminPositionsRouteRoute: typeof AuthedAdminPositionsRouteRouteWithChildren
+  AuthedAdminSettingsRoute: typeof AuthedAdminSettingsRoute
   AuthedAdminUserTypesRoute: typeof AuthedAdminUserTypesRoute
   AuthedAdminIndexRoute: typeof AuthedAdminIndexRoute
   AuthedAdminUsersUserIdRouteRoute: typeof AuthedAdminUsersUserIdRouteRouteWithChildren
@@ -761,6 +801,7 @@ const AuthedAdminRouteRouteChildren: AuthedAdminRouteRouteChildren = {
   AuthedAdminCertificationsRouteRoute:
     AuthedAdminCertificationsRouteRouteWithChildren,
   AuthedAdminPositionsRouteRoute: AuthedAdminPositionsRouteRouteWithChildren,
+  AuthedAdminSettingsRoute: AuthedAdminSettingsRoute,
   AuthedAdminUserTypesRoute: AuthedAdminUserTypesRoute,
   AuthedAdminIndexRoute: AuthedAdminIndexRoute,
   AuthedAdminUsersUserIdRouteRoute:
@@ -833,6 +874,7 @@ const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
+  OnboardingRoute: OnboardingRoute,
   PendingRoute: PendingRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }

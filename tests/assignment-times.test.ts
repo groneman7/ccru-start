@@ -79,6 +79,9 @@ test('the staffing UI server operations return authoritative fresh and replaceme
     await client.query(`INSERT INTO "better-auth".account (account_id,provider_id,user_id,password,updated_at)
       SELECT u.id::text,'credential',u.id::text,a.password,now() FROM "better-auth"."user" u CROSS JOIN "better-auth".account a
       WHERE a.provider_id='credential' AND u.role='Developer'`);
+    await client.query(
+      readFileSync('tests/support/ready-identities.sql', 'utf8'),
+    );
     app = await startApplication(url);
     const cookie = await signIn(app.baseURL, 'developer@example.invalid');
     const command = <T>(action: string, data: unknown, actor = cookie) =>
@@ -166,7 +169,7 @@ async function apply(url: string, folder?: string) {
 async function retainedRows(client: Client) {
   const tables = (
     await client.query(`SELECT table_schema,table_name FROM information_schema.tables
-    WHERE table_schema IN ('authz','better-auth','calendar') AND table_type='BASE TABLE' ORDER BY 1,2`)
+    WHERE table_schema IN ('authz','better-auth','calendar') AND table_type='BASE TABLE' AND table_name <> 'organization_settings' ORDER BY 1,2`)
   ).rows;
   const rows: Record<string, unknown> = {};
   for (const { table_schema, table_name } of tables) {

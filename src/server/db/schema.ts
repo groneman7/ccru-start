@@ -325,3 +325,21 @@ export const junctionSlotsInCalendar = calendar.table(
       .onDelete('set null'),
   ],
 );
+
+// One organization's registration policy; unrelated settings stay in their slices.
+export const organizationSettings = authz.table(
+  'organization_settings',
+  {
+    id: integer().primaryKey().default(1),
+    registrationMode: text('registration_mode')
+      .notNull()
+      .default('invitation-only'),
+  },
+  (table) => [
+    check('organization_settings_singleton', sql`${table.id} = 1`),
+    check(
+      'registration_mode_values',
+      sql`${table.registrationMode} IN ('invitation-only', 'open')`,
+    ),
+  ],
+);

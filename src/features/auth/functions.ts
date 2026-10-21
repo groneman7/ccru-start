@@ -13,7 +13,12 @@ export const getSessionServerFn = createServerFn({ method: 'GET' }).handler(
       headers: getRequestHeaders(),
     });
 
-    if (!session || session.user.deletedAt) return null;
+    if (
+      !session ||
+      session.user.deletedAt ||
+      session.user.status === 'inactive'
+    )
+      return null;
 
     const userType = session.user.userTypeId
       ? await db.query.userTypesInAuthz.findFirst({

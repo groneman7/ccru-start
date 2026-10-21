@@ -2,7 +2,6 @@ export * from './app-sidebar';
 export * from './calendar';
 export * from './coming-soon-tooltip';
 export * from './not-found';
-export * from './onboarding-dialog';
 export * from './pending';
 export * from './signed-out';
 export * from './spinner';

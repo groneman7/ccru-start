@@ -28,6 +28,7 @@ beforeAll(async () => {
     INSERT INTO "better-auth".account (account_id,provider_id,user_id,password,updated_at)
     SELECT u.id::text,'credential',u.id::text,a.password,now() FROM "better-auth"."user" u CROSS JOIN "better-auth".account a
     WHERE a.provider_id='credential' AND u.id::text<>a.user_id`);
+  await fixture.client.query(readFileSync('tests/support/ready-identities.sql', 'utf8'));
   app = await startApplication(fixture.url);
 }, 30000);
 

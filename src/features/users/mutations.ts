@@ -33,16 +33,9 @@ export function completeOnboardingMutation() {
 
 export function updateOnboardingProfileMutation() {
   return mutationOptions({
-    mutationFn: (input: {
-      userId: string;
-      display?: string;
-      email?: string;
-      nameFirst?: string;
-      nameMiddle?: string | null;
-      nameLast?: string;
-      phoneNumber?: string | null;
-      postNominals?: string | null;
-    }) => user.updateOnboardingProfile({ data: input }),
+    mutationFn: (
+      input: Parameters<typeof user.updateOnboardingProfile>[0]['data'],
+    ) => user.updateOnboardingProfile({ data: input }),
   });
 }
 

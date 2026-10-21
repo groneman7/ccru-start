@@ -12,6 +12,9 @@ neonConfig.fetchEndpoint = endpoint.href;
 const originalFetch = globalThis.fetch;
 globalThis.fetch = (input, init) => {
   const url = input instanceof Request ? input.url : String(input);
+  if (url === 'https://oauth2.googleapis.com/token') {
+    return originalFetch(process.env.CCRU_TEST_GOOGLE_URL, init);
+  }
   if (url.startsWith('https://api.resend.com/')) {
     return originalFetch(process.env.CCRU_TEST_EMAIL_URL, init);
   }
