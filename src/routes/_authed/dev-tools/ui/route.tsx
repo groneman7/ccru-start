@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
 
 export const Route = createFileRoute('/_authed/dev-tools/ui')({

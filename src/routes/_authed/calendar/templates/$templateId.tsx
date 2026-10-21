@@ -764,9 +764,9 @@ function DialogAddTemplatePosition({
                           (entry) => entry.position.id === position.id,
                         ),
                     )}
-                    itemToStringLabel={(position: (typeof positions)[number]) =>
-                      position.display
-                    }
+                    itemToStringLabel={(
+                      position: NonNullable<typeof positions>[number],
+                    ) => position.display}
                     onValueChange={(value) =>
                       value &&
                       templatePositionsField.pushValue({
@@ -779,7 +779,7 @@ function DialogAddTemplatePosition({
                     <ComboboxContent>
                       <ComboboxEmpty>No positions found.</ComboboxEmpty>
                       <ComboboxList>
-                        {(position: (typeof positions)[number]) => (
+                        {(position: NonNullable<typeof positions>[number]) => (
                           <ComboboxItem key={position.id} value={position}>
                             <div className="flex flex-1 items-center justify-between">
                               <span>{position.display}</span>
