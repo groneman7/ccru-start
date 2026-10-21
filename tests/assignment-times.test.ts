@@ -34,8 +34,8 @@ test('the shared write contract preserves same-event priority and resets priorit
   try {
     await apply(url);
     await client.query(readFileSync('tests/support/retained.sql', 'utf8'));
-    await client.query(`INSERT INTO calendar.events (id,name,time_begin,created_by)
-      SELECT '01930000-0000-7000-8000-000000000302', 'Other event', time_begin, created_by FROM calendar.events;
+    await client.query(`INSERT INTO calendar.events (id,name,time_begin,time_end,created_by)
+      SELECT '01930000-0000-7000-8000-000000000302', 'Other event', time_begin,time_end, created_by FROM calendar.events;
       INSERT INTO calendar.junction_shifts (id,event_id,position_id,quantity)
       SELECT '01930000-0000-7000-8000-000000000403',event_id,position_id,2 FROM calendar.junction_shifts LIMIT 1;
       INSERT INTO calendar.junction_shifts (id,event_id,position_id,quantity)
@@ -175,7 +175,7 @@ async function retainedRows(client: Client) {
   for (const { table_schema, table_name } of tables) {
     rows[`${table_schema}.${table_name}`] = (
       await client.query(`SELECT
-      to_jsonb(t)-'eligibility_expression'-'is_dev_account' - 'assigned_at' - 'can_manage_scheduling' - 'can_manage_users' - 'deleted_at' AS data
+      to_jsonb(t)-'cancelled_at'-'eligibility_expression'-'is_dev_account' - 'assigned_at' - 'can_manage_scheduling' - 'can_manage_users' - 'deleted_at' AS data
       FROM "${table_schema}"."${table_name}" t ORDER BY id`)
     ).rows;
   }

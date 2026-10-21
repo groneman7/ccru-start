@@ -68,6 +68,15 @@ import {
   TooltipTrigger,
 } from '~/components/ui';
 import {
+  eventLocalFields,
+  eventLocalToInstant,
+  eventTimeOccurrence,
+  formatEventDate,
+  formatEventTime,
+} from '~/features/calendar/event-time';
+import { EventTimeChoices } from '~/features/calendar/event-time-choices';
+import type { TimeOccurrence } from '~/features/calendar/event-time-choices';
+import {
   createEmptyLocation,
   formatLocationInline,
   formatLocationLines,
@@ -96,7 +105,6 @@ import { allUsersForComboboxQuery } from '~/features/users/queries';
 import type { userSchemaForCombobox } from '~/features/users/schema';
 import { cn } from '~/lib/utils';
 import { getUserPermissions } from '~/server/permissions';
-import dayjs from 'dayjs';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import type { infer as Infer } from 'zod';
@@ -196,6 +204,13 @@ function EventDetails({
     getEventDetailsQuery(eventId),
   );
 
+  const [beginOccurrence, setBeginOccurrence] = useState<TimeOccurrence>(
+    eventDetails ? eventTimeOccurrence(eventDetails.timeBegin) : 'earlier',
+  );
+  const [endOccurrence, setEndOccurrence] = useState<TimeOccurrence>(
+    eventDetails ? eventTimeOccurrence(eventDetails.timeEnd) : 'earlier',
+  );
+  const [timeError, setTimeError] = useState('');
   // Mutations
   const { mutateAsync: updateEventDetails } = useMutation({
     ...updateEventDetailsMutation(),
@@ -216,16 +231,16 @@ function EventDetails({
       description: eventDetails?.description || '',
       location: eventDetails?.location ?? createEmptyLocation(),
       date: eventDetails?.timeBegin
-        ? dayjs(eventDetails.timeBegin).format('YYYY-MM-DD')
-        : dayjs().format('YYYY-MM-DD'),
+        ? eventLocalFields(eventDetails.timeBegin).date
+        : eventLocalFields(Date.now()).date,
       timeBegin: eventDetails?.timeBegin
-        ? dayjs(eventDetails.timeBegin).format('h:mm A')
+        ? eventLocalFields(eventDetails.timeBegin).time
         : '',
       timeEnd: eventDetails?.timeEnd
-        ? dayjs(eventDetails.timeEnd).format('h:mm A')
+        ? eventLocalFields(eventDetails.timeEnd).time
         : '',
     },
-    onSubmit: ({ value }) => {
+    onSubmit: async ({ value }) => {
       const parsedLocation = parseLocationInput(value.location);
 
       if (parsedLocation.isPartial) {
@@ -233,24 +248,35 @@ function EventDetails({
         return;
       }
 
-      const eventData = {
-        description: value.description || undefined,
-        name: value.eventName,
-        timeBegin: dayjs(`${value.date} ${value.timeBegin}`).toISOString(),
-        timeEnd: value.timeEnd
-          ? dayjs(`${value.date} ${value.timeEnd}`).toISOString()
-          : undefined,
-        ...(parsedLocation.location
-          ? { location: parsedLocation.location }
-          : {}),
-      };
+      try {
+        setTimeError('');
+        const eventData = {
+          description: value.description || null,
+          name: value.eventName,
+          timeBegin: eventLocalToInstant(
+            value.date,
+            value.timeBegin,
+            beginOccurrence,
+          ),
+          timeEnd: eventLocalToInstant(
+            value.date,
+            value.timeEnd,
+            endOccurrence,
+          ),
+          location: parsedLocation.location,
+        };
 
-      updateEventDetails({
-        data: eventData,
-        eventId,
-      });
+        await updateEventDetails({
+          data: eventData,
+          eventId,
+        });
 
-      setEditing(false);
+        setEditing(false);
+      } catch (error) {
+        setTimeError(
+          error instanceof Error ? error.message : 'Unable to save event',
+        );
+      }
     },
   });
 
@@ -312,6 +338,26 @@ function EventDetails({
               timeEnd: 'timeEnd',
             }}
           />
+          <form.Subscribe
+            selector={(state) => [
+              state.values.date,
+              state.values.timeBegin,
+              state.values.timeEnd,
+            ]}
+          >
+            {([date, timeBegin, timeEnd]) => (
+              <EventTimeChoices
+                date={date ?? ''}
+                timeBegin={timeBegin ?? ''}
+                timeEnd={timeEnd ?? ''}
+                beginOccurrence={beginOccurrence}
+                endOccurrence={endOccurrence}
+                onBeginChange={setBeginOccurrence}
+                onEndChange={setEndOccurrence}
+              />
+            )}
+          </form.Subscribe>
+          {timeError && <p role="alert">{timeError}</p>}
           <AddressFieldGroup form={form} fields={{ location: 'location' }} />
           <DescriptionFieldGroup
             form={form}
@@ -327,11 +373,7 @@ function EventDetails({
               <IconX />
               Cancel
             </Button>
-            <Button
-              type="submit"
-              variant="solid"
-              onClick={() => form.handleSubmit()}
-            >
+            <Button type="submit" variant="solid">
               <IconCheck />
               Save
             </Button>
@@ -346,9 +388,9 @@ function EventDetails({
               <IconCalendar className="mt-1 size-4" />
               <div className="flex flex-1 flex-col">
                 <span className="flex-1">
-                  {dayjs(eventDetails.timeBegin).format('dddd, MMMM D, YYYY')}
+                  {formatEventDate(eventDetails.timeBegin)}
                 </span>
-                <span className="flex-1">{`${dayjs(eventDetails.timeBegin).format('h:mm A')}${eventDetails.timeEnd ? ` — ${dayjs(eventDetails.timeEnd).format('h:mm A')}` : null}`}</span>
+                <span className="flex-1">{`${formatEventTime(eventDetails.timeBegin)}${eventDetails.timeEnd ? ` — ${formatEventTime(eventDetails.timeEnd)}` : null}`}</span>
               </div>
             </div>
             <a>
@@ -635,14 +677,12 @@ function ButtonSignUp({ eventId, shiftId, slotsAvailable }: ButtonSignUpProps) {
               {formatLocationInline(eventDetails!.location) && (
                 <span>{formatLocationInline(eventDetails!.location)}</span>
               )}
+              <span>{formatEventDate(eventDetails!.timeBegin)}</span>
               <span>
-                {dayjs(eventDetails!.timeBegin).format('dddd, MMMM M, YYYY')}
-              </span>
-              <span>
-                {dayjs(eventDetails!.timeBegin).format('h:mm A')}
+                {formatEventTime(eventDetails!.timeBegin)}
                 {' – '}
                 {eventDetails!.timeEnd
-                  ? dayjs(eventDetails!.timeEnd).format('h:mm A')
+                  ? formatEventTime(eventDetails!.timeEnd)
                   : null}
               </span>
             </div>

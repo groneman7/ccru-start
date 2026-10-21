@@ -55,7 +55,7 @@ async function records(client: Client) {
   for (const { table_schema, table_name } of tables)
     result[`${table_schema}.${table_name}`] = (
       await client.query(
-        `SELECT to_jsonb(t)-'eligibility_expression'-'is_dev_account'-'deleted_at' AS data FROM "${table_schema}"."${table_name}" t ORDER BY id`,
+        `SELECT to_jsonb(t)-'cancelled_at'-'eligibility_expression'-'is_dev_account'-'deleted_at' AS data FROM "${table_schema}"."${table_name}" t ORDER BY id`,
       )
     ).rows;
   return result;

@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { neonConfig } from '@neondatabase/serverless';
 
 // Replace only Neon's external HTTP transport. The app keeps its production
@@ -20,3 +21,19 @@ globalThis.fetch = (input, init) => {
   }
   return originalFetch(input, init);
 };
+
+// The approved clock seam affects this fixture process only, never production.
+if (process.env.CCRU_TEST_NOW_FILE) {
+  const NativeDate = globalThis.Date;
+  const now = () =>
+    Number(readFileSync(process.env.CCRU_TEST_NOW_FILE, 'utf8'));
+  globalThis.Date = class extends NativeDate {
+    constructor(...args) {
+      if (args.length) super(...args);
+      else super(now());
+    }
+    static now() {
+      return now();
+    }
+  };
+}

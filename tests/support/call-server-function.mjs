@@ -33,7 +33,15 @@ try {
     }),
   );
   if (value?.error) throw value.error;
-  console.log(JSON.stringify({ ok: true, value: value?.result ?? value }));
+  console.log(
+    JSON.stringify({
+      ok: true,
+      value:
+        value && Object.prototype.hasOwnProperty.call(value, 'result')
+          ? value.result
+          : value,
+    }),
+  );
 } catch (error) {
   console.log(
     JSON.stringify({

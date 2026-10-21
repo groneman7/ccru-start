@@ -1,10 +1,10 @@
 import { IconChevronLeft, IconChevronRight } from '@tabler/icons-react';
 import { Link, useNavigate } from '@tanstack/react-router';
 import { Button } from '~/components/ui';
+import { eventLocalFields } from '~/features/calendar/event-time';
 import type { eventSchema } from '~/features/calendar/schema';
 import { cn } from '~/lib/utils';
 import type { Dayjs } from 'dayjs';
-import dayjs from 'dayjs';
 import type { infer as Infer } from 'zod';
 
 type CalendarProps = {
@@ -98,7 +98,9 @@ export function Calendar({ events, month }: CalendarProps) {
           {DATES.map((date, index) => {
             const eventsOnDate: Infer<typeof eventSchema>[] | undefined = events
               ? events.filter(
-                  (event) => dayjs(event.timeBegin).isSame(date, 'day'),
+                  (event) =>
+                    eventLocalFields(event.timeBegin).date ===
+                    date.format('YYYY-MM-DD'),
                   // || (event.timeEnd && date.isBetween(event.timeStart, event.timeEnd, "day", "[]"))
                 )
               : undefined;
@@ -119,7 +121,9 @@ export function Calendar({ events, month }: CalendarProps) {
                 <div
                   className={cn(
                     'mt-3 flex h-7 w-7 items-center justify-center self-center rounded-full p-1 text-sm font-semibold select-none',
-                    date.isSame(dayjs(), 'date') && 'bg-primary text-white',
+                    date.format('YYYY-MM-DD') ===
+                      eventLocalFields(Date.now()).date &&
+                      'bg-primary text-white',
                     !date.isSame(month, 'month') &&
                       'text-secondary-foreground/60',
                   )}

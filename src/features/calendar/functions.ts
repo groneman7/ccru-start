@@ -1,4 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
+import { setResponseHeader } from '@tanstack/react-start/server';
 import {
   createEventSchema,
   createPositionSchema,
@@ -22,6 +23,7 @@ import {
   requirePermission,
 } from '~/server/permissions/require-permission';
 import { iso, number, object, uuidv7 } from 'zod';
+import { readPublicEvents } from './repository';
 
 // Events ---------------------------------------------------------------------
 
@@ -252,4 +254,19 @@ export const templateServerFns = {
   deleteTemplatePosition: deleteTemplatePositionServerFn,
   updateDetails: updateTemplateDetailsServerFn,
   updatePositionQuantity: updateTemplatePositionQuantityServerFn,
+};
+
+const publicEventsServerFn = createServerFn().handler(async () => {
+  setResponseHeader('Cache-Control', 'no-store');
+  return readPublicEvents();
+});
+const publicEventByIdServerFn = createServerFn()
+  .validator(object({ eventId: uuidv7() }).strict())
+  .handler(async ({ data }) => {
+    setResponseHeader('Cache-Control', 'no-store');
+    return (await readPublicEvents(data.eventId))[0] ?? null;
+  });
+export const publicEventServerFns = {
+  list: publicEventsServerFn,
+  byId: publicEventByIdServerFn,
 };

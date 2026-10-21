@@ -21,30 +21,48 @@ import {
   templatesInCalendar as templates,
   userInBetterAuth as users,
 } from '~/server/db/schema';
-import dayjs from 'dayjs';
-// import dayjs from 'dayjs';
-import { and, count, eq, gte, isNull, lt } from 'drizzle-orm';
+//
+import { and, count, eq, gt, gte, isNull, lt } from 'drizzle-orm';
 import type { infer as Infer } from 'zod';
+import { throwEventError } from './event-errors';
+import {
+  eventLocalToInstant,
+  eventPhase,
+  validEventWindow,
+} from './event-time';
 
 // Events ---------------------------------------------------------------------
 
 export const eventRepository = {
   byId: async (input: { eventId: string }) => {
     const { eventId } = input;
-    const [row] = await db.select().from(events).where(eq(events.id, eventId));
-
-    return row;
+    const [row] = await db
+      .select()
+      .from(events)
+      .where(and(eq(events.id, eventId), isNull(events.deletedAt)));
+    if (!row) throw new Error('Event not found');
+    return { ...row, phase: eventPhase(row.timeBegin, row.timeEnd) };
   },
   byMonth: async (input: { month: number; year: number }) => {
     const { month, year } = input;
 
-    const start = new Date(year, month - 1, 1).toISOString();
-    const end = new Date(year, month, 1).toISOString();
+    const start = eventLocalToInstant(
+      `${year}-${String(month).padStart(2, '0')}-01`,
+      '00:00',
+    );
+    const next = new Date(Date.UTC(year, month, 1));
+    const end = eventLocalToInstant(next.toISOString().slice(0, 10), '00:00');
 
     const rows = await db
       .select()
       .from(events)
-      .where(and(gte(events.timeBegin, start), lt(events.timeBegin, end)));
+      .where(
+        and(
+          gte(events.timeBegin, start),
+          lt(events.timeBegin, end),
+          isNull(events.deletedAt),
+        ),
+      );
 
     return rows;
   },
@@ -52,7 +70,9 @@ export const eventRepository = {
     const [row] = await db
       .insert(events)
       .values(input)
-      .returning({ id: events.id });
+      .returning({ id: events.id })
+      .catch(throwEventError);
+    if (!row) throw new Error('Event not found');
 
     return row;
   },
@@ -68,16 +88,27 @@ export const eventRepository = {
       .from(templates)
       .where(eq(templates.id, templateId));
 
+    if (!templateRow?.timeEnd || templateRow.timeEnd <= templateRow.timeBegin)
+      throw new Error(
+        'Template needs valid start and end times before creating an event',
+      );
+    if (
+      !validEventWindow(
+        eventLocalToInstant(date, templateRow.timeBegin),
+        eventLocalToInstant(date, templateRow.timeEnd),
+      )
+    )
+      throw new Error(
+        'Event end must be later than start on the same America/New_York date',
+      );
     const [newEvent] = await db
       .insert(events)
       .values({
         name: templateRow.display,
         description: templateRow.description,
         location: templateRow.location,
-        timeBegin: dayjs(`${date} ${templateRow.timeBegin}`).toISOString(),
-        timeEnd: templateRow.timeEnd
-          ? dayjs(`${date} ${templateRow.timeEnd}`).toISOString()
-          : null,
+        timeBegin: eventLocalToInstant(date, templateRow.timeBegin),
+        timeEnd: eventLocalToInstant(date, templateRow.timeEnd!),
         createdBy,
       })
       .returning({ id: events.id });
@@ -107,8 +138,10 @@ export const eventRepository = {
     const [row] = await db
       .update(events)
       .set(data)
-      .where(eq(events.id, eventId))
-      .returning({ id: events.id });
+      .where(and(eq(events.id, eventId), isNull(events.deletedAt)))
+      .returning({ id: events.id })
+      .catch(throwEventError);
+    if (!row) throw new Error('Event not found');
 
     return row;
   },
@@ -383,3 +416,42 @@ export const templateRepository = {
     return row;
   },
 };
+
+// Public readers select an explicit audience projection before crossing RPC.
+const publicEventProjection = {
+  id: events.id,
+  name: events.name,
+  description: events.description,
+  location: events.location,
+  timeBegin: events.timeBegin,
+  timeEnd: events.timeEnd,
+};
+function publicLocation(row: typeof events.$inferSelect.location) {
+  if (!row) return null;
+  return {
+    name: typeof row.name === 'string' ? row.name : '',
+    line1: typeof row.line1 === 'string' ? row.line1 : '',
+    line2: typeof row.line2 === 'string' ? row.line2 : null,
+    city: typeof row.city === 'string' ? row.city : '',
+    state: typeof row.state === 'string' ? row.state : '',
+    zip: typeof row.zip === 'string' ? row.zip : '',
+  };
+}
+export async function readPublicEvents(eventId?: string) {
+  const rows = await db
+    .select(publicEventProjection)
+    .from(events)
+    .where(
+      and(
+        isNull(events.cancelledAt),
+        isNull(events.deletedAt),
+        gt(events.timeEnd, new Date().toISOString()),
+        eventId ? eq(events.id, eventId) : undefined,
+      ),
+    )
+    .orderBy(events.timeBegin, events.id);
+  return rows.map((row) => ({
+    ...row,
+    location: publicLocation(row.location),
+  }));
+}

@@ -1,7 +1,8 @@
 import { eligibilityExpressionSchema } from '~/features/eligibility/schema';
 import { userSchema } from '~/features/users/schema';
-import { array, number, object, string, uuidv7 } from 'zod';
+import { array, iso, number, object, string, uuidv7 } from 'zod';
 import type { infer as Infer } from 'zod';
+import { validEventWindow } from './event-time';
 
 export const locationSchema = object({
   name: string().min(1),
@@ -30,14 +31,18 @@ export const eventSchema = object({
   name: string().min(1),
   description: string().nullable(),
   location: locationSchema.nullable(),
-  timeBegin: string(),
-  timeEnd: string().nullable(),
+  timeBegin: iso.datetime({ offset: true }),
+  timeEnd: iso.datetime({ offset: true }),
   createdBy: uuidv7().nullable(),
 });
 
-export const createEventSchema = eventSchema.omit({
-  id: true,
-});
+export const createEventSchema = eventSchema
+  .omit({ id: true })
+  .refine((data) => validEventWindow(data.timeBegin, data.timeEnd), {
+    message:
+      'Event end must be later than start on the same America/New_York date',
+    path: ['timeEnd'],
+  });
 
 export const updateEventSchema = object({
   eventId: uuidv7(),

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthRouteRouteImport } from './routes/_auth/route'
 import { Route as AuthedRouteRouteImport } from './routes/_authed/route'
+import { Route as EventsRouteRouteImport } from './routes/events/route'
 import { Route as OnboardingRouteImport } from './routes/onboarding'
 import { Route as PendingRouteImport } from './routes/pending'
 import { Route as AuthRegisterRouteImport } from './routes/_auth/register'
@@ -19,6 +20,8 @@ import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
 import { Route as AuthedAdminRouteRouteImport } from './routes/_authed/admin/route'
 import { Route as AuthedDevToolsRouteRouteImport } from './routes/_authed/dev-tools/route'
 import { Route as AuthedInboxRouteImport } from './routes/_authed/inbox'
+import { Route as EventsIndexRouteImport } from './routes/events/index'
+import { Route as EventsEventIdRouteImport } from './routes/events/$eventId'
 import { Route as AuthedAdminIndexRouteImport } from './routes/_authed/admin/index'
 import { Route as AuthedAdminCertificationsRouteRouteImport } from './routes/_authed/admin/certifications/route'
 import { Route as AuthedAdminPositionsRouteRouteImport } from './routes/_authed/admin/positions/route'
@@ -53,6 +56,11 @@ const AuthRouteRoute = AuthRouteRouteImport.update({
 } as any)
 const AuthedRouteRoute = AuthedRouteRouteImport.update({
   id: '/_authed',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EventsRouteRoute = EventsRouteRouteImport.update({
+  id: '/events',
+  path: '/events',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OnboardingRoute = OnboardingRouteImport.update({
@@ -94,6 +102,16 @@ const AuthedInboxRoute = AuthedInboxRouteImport.update({
   id: '/inbox',
   path: '/inbox',
   getParentRoute: () => AuthedRouteRoute,
+} as any)
+const EventsIndexRoute = EventsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => EventsRouteRoute,
+} as any)
+const EventsEventIdRoute = EventsEventIdRouteImport.update({
+  id: '/$eventId',
+  path: '/$eventId',
+  getParentRoute: () => EventsRouteRoute,
 } as any)
 const AuthedAdminIndexRoute = AuthedAdminIndexRouteImport.update({
   id: '/',
@@ -249,6 +267,7 @@ const AuthedAdminUsersUserIdProfileRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthedIndexRoute
+  '/events': typeof EventsRouteRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/pending': typeof PendingRoute
   '/admin': typeof AuthedAdminRouteRouteWithChildren
@@ -256,6 +275,8 @@ export interface FileRoutesByFullPath {
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
   '/inbox': typeof AuthedInboxRoute
+  '/events/$eventId': typeof EventsEventIdRoute
+  '/events/': typeof EventsIndexRoute
   '/admin/certifications': typeof AuthedAdminCertificationsRouteRouteWithChildren
   '/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
   '/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
@@ -291,6 +312,8 @@ export interface FileRoutesByTo {
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
   '/inbox': typeof AuthedInboxRoute
+  '/events/$eventId': typeof EventsEventIdRoute
+  '/events': typeof EventsIndexRoute
   '/dev-tools/ui': typeof AuthedDevToolsUiRouteRoute
   '/admin/settings': typeof AuthedAdminSettingsRoute
   '/admin/user-types': typeof AuthedAdminUserTypesRoute
@@ -319,6 +342,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_auth': typeof AuthRouteRouteWithChildren
   '/_authed': typeof AuthedRouteRouteWithChildren
+  '/events': typeof EventsRouteRouteWithChildren
   '/onboarding': typeof OnboardingRoute
   '/pending': typeof PendingRoute
   '/_authed/admin': typeof AuthedAdminRouteRouteWithChildren
@@ -326,7 +350,9 @@ export interface FileRoutesById {
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/sign-in': typeof AuthSignInRoute
   '/_authed/inbox': typeof AuthedInboxRoute
+  '/events/$eventId': typeof EventsEventIdRoute
   '/_authed/': typeof AuthedIndexRoute
+  '/events/': typeof EventsIndexRoute
   '/_authed/admin/certifications': typeof AuthedAdminCertificationsRouteRouteWithChildren
   '/_authed/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
   '/_authed/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
@@ -359,6 +385,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/events'
     | '/onboarding'
     | '/pending'
     | '/admin'
@@ -366,6 +393,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/sign-in'
     | '/inbox'
+    | '/events/$eventId'
+    | '/events/'
     | '/admin/certifications'
     | '/admin/positions'
     | '/calendar/templates'
@@ -401,6 +430,8 @@ export interface FileRouteTypes {
     | '/register'
     | '/sign-in'
     | '/inbox'
+    | '/events/$eventId'
+    | '/events'
     | '/dev-tools/ui'
     | '/admin/settings'
     | '/admin/user-types'
@@ -428,6 +459,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/_auth'
     | '/_authed'
+    | '/events'
     | '/onboarding'
     | '/pending'
     | '/_authed/admin'
@@ -435,7 +467,9 @@ export interface FileRouteTypes {
     | '/_auth/register'
     | '/_auth/sign-in'
     | '/_authed/inbox'
+    | '/events/$eventId'
     | '/_authed/'
+    | '/events/'
     | '/_authed/admin/certifications'
     | '/_authed/admin/positions'
     | '/_authed/calendar/templates'
@@ -468,6 +502,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   AuthRouteRoute: typeof AuthRouteRouteWithChildren
   AuthedRouteRoute: typeof AuthedRouteRouteWithChildren
+  EventsRouteRoute: typeof EventsRouteRouteWithChildren
   OnboardingRoute: typeof OnboardingRoute
   PendingRoute: typeof PendingRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
@@ -487,6 +522,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/events': {
+      id: '/events'
+      path: '/events'
+      fullPath: '/events'
+      preLoaderRoute: typeof EventsRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/onboarding': {
@@ -544,6 +586,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/inbox'
       preLoaderRoute: typeof AuthedInboxRouteImport
       parentRoute: typeof AuthedRouteRoute
+    }
+    '/events/': {
+      id: '/events/'
+      path: '/'
+      fullPath: '/events/'
+      preLoaderRoute: typeof EventsIndexRouteImport
+      parentRoute: typeof EventsRouteRoute
+    }
+    '/events/$eventId': {
+      id: '/events/$eventId'
+      path: '/$eventId'
+      fullPath: '/events/$eventId'
+      preLoaderRoute: typeof EventsEventIdRouteImport
+      parentRoute: typeof EventsRouteRoute
     }
     '/_authed/admin/': {
       id: '/_authed/admin/'
@@ -892,9 +948,24 @@ const AuthedRouteRouteWithChildren = AuthedRouteRoute._addFileChildren(
   AuthedRouteRouteChildren,
 )
 
+interface EventsRouteRouteChildren {
+  EventsEventIdRoute: typeof EventsEventIdRoute
+  EventsIndexRoute: typeof EventsIndexRoute
+}
+
+const EventsRouteRouteChildren: EventsRouteRouteChildren = {
+  EventsEventIdRoute: EventsEventIdRoute,
+  EventsIndexRoute: EventsIndexRoute,
+}
+
+const EventsRouteRouteWithChildren = EventsRouteRoute._addFileChildren(
+  EventsRouteRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   AuthRouteRoute: AuthRouteRouteWithChildren,
   AuthedRouteRoute: AuthedRouteRouteWithChildren,
+  EventsRouteRoute: EventsRouteRouteWithChildren,
   OnboardingRoute: OnboardingRoute,
   PendingRoute: PendingRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,

@@ -107,6 +107,9 @@ function SignInPage() {
     <Card className="w-full shadow-xl">
       <CardHeader>
         <CardTitle className="text-2xl">Sign In</CardTitle>
+        <Link to="/events" className="text-sm underline">
+          View public events
+        </Link>
         <CardAction>
           <Link to="/register">
             <Button size="sm">

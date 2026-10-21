@@ -43,10 +43,22 @@ export const eventsInCalendar = calendar.table(
       withTimezone: true,
       mode: 'string',
     }).notNull(),
-    timeEnd: timestamp('time_end', { withTimezone: true, mode: 'string' }),
+    timeEnd: timestamp('time_end', {
+      withTimezone: true,
+      mode: 'string',
+    }).notNull(),
+    cancelledAt: timestamp('cancelled_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' }),
     createdBy: uuid('created_by'),
   },
   (table) => [
+    check(
+      'event_local_window',
+      sql`isfinite(${table.timeBegin}) AND isfinite(${table.timeEnd}) AND ${table.timeEnd}>${table.timeBegin} AND (${table.timeBegin} AT TIME ZONE 'America/New_York')::date=(${table.timeEnd} AT TIME ZONE 'America/New_York')::date`,
+    ),
     foreignKey({
       columns: [table.createdBy],
       foreignColumns: [userInBetterAuth.id],

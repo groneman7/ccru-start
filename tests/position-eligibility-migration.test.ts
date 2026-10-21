@@ -72,7 +72,7 @@ test('eligibility expansion preserves all seventeen business tables and defaults
         result.push(
           (
             await client.query(
-              `SELECT to_jsonb(t)-'eligibility_expression'-'deleted_at' AS row FROM "${t.table_schema}"."${t.table_name}" t ORDER BY id`,
+              `SELECT to_jsonb(t)-'cancelled_at'-'eligibility_expression'-'deleted_at' AS row FROM "${t.table_schema}"."${t.table_name}" t ORDER BY id`,
             )
           ).rows,
         );

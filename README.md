@@ -265,3 +265,5 @@ Certification catalog: see [hierarchy, retention and rollout](docs/certification
 Certification review and inbox: see [submission, shared review and rollout](docs/certification-review-inbox.md). Apply pending migration `0008_certification_review_inbox` before starting this version; target execution requires separate approval.
 
 Position requirement authoring and explanations require migration `0010_position_eligibility` before this revision runs. See [position eligibility and rollout](docs/position-eligibility.md).
+
+Public event pages and required event end times require migration `0011_published_events` before this revision runs. See [event publication and rollout](docs/event-publication.md).

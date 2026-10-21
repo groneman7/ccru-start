@@ -10,12 +10,18 @@ import {
 } from '~/components/form/field-groups';
 import { Button, Field, FieldLabel, Input } from '~/components/ui';
 import {
+  eventLocalFields,
+  eventLocalToInstant,
+} from '~/features/calendar/event-time';
+import { EventTimeChoices } from '~/features/calendar/event-time-choices';
+import type { TimeOccurrence } from '~/features/calendar/event-time-choices';
+import {
   createEmptyLocation,
   parseLocationInput,
 } from '~/features/calendar/location';
 import { createEventMutation } from '~/features/calendar/mutations';
 import { locationFormSchema } from '~/features/calendar/schema';
-import dayjs from 'dayjs';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { iso, object, string, union, null as zNull } from 'zod';
 
@@ -28,6 +34,10 @@ export const Route = createFileRoute('/_authed/calendar/events/new')({
 
 function NewEventPage() {
   const { currentUser } = Route.useRouteContext();
+  const [beginOccurrence, setBeginOccurrence] =
+    useState<TimeOccurrence>('earlier');
+  const [endOccurrence, setEndOccurrence] = useState<TimeOccurrence>('earlier');
+  const [timeError, setTimeError] = useState('');
   // Queries & Mutations
   const { mutateAsync: createEvent, isPending: isCreating } = useMutation({
     ...createEventMutation(),
@@ -45,9 +55,9 @@ function NewEventPage() {
       eventName: '',
       description: '' as string | null,
       location: createEmptyLocation(),
-      date: dayjs().format('YYYY-MM-DD'),
+      date: eventLocalFields(Date.now()).date,
       timeBegin: '',
-      timeEnd: '' as string | null,
+      timeEnd: '',
       // shifts: [] as Shift[],
     },
     validators: {
@@ -59,7 +69,7 @@ function NewEventPage() {
         location: locationFormSchema,
         date: iso.date(),
         timeBegin: string().min(1, 'Please enter a start time.'),
-        timeEnd: union([string(), zNull()]),
+        timeEnd: string().min(1, 'Please enter an end time.'),
       }),
     },
     onSubmit: async ({ value }) => {
@@ -70,21 +80,34 @@ function NewEventPage() {
         return;
       }
 
-      const newEventId = await createEvent({
-        createdBy: currentUser.id,
-        description: value.description,
-        name: value.eventName,
-        location: parsedLocation.location,
-        timeBegin: dayjs(`${value.date} ${value.timeBegin}`).toISOString(),
-        timeEnd: value.timeEnd
-          ? dayjs(`${value.date} ${value.timeEnd}`).toISOString()
-          : null,
-      });
+      try {
+        setTimeError('');
+        const newEventId = await createEvent({
+          createdBy: currentUser.id,
+          description: value.description,
+          name: value.eventName,
+          location: parsedLocation.location,
+          timeBegin: eventLocalToInstant(
+            value.date,
+            value.timeBegin,
+            beginOccurrence,
+          ),
+          timeEnd: eventLocalToInstant(
+            value.date,
+            value.timeEnd,
+            endOccurrence,
+          ),
+        });
 
-      nav({
-        to: '/calendar/events/$eventId',
-        params: { eventId: newEventId.toString() },
-      });
+        nav({
+          to: '/calendar/events/$eventId',
+          params: { eventId: newEventId.id },
+        });
+      } catch (error) {
+        setTimeError(
+          error instanceof Error ? error.message : 'Unable to create event',
+        );
+      }
     },
   });
 
@@ -129,6 +152,26 @@ function NewEventPage() {
                 timeEnd: 'timeEnd',
               }}
             />
+            <form.Subscribe
+              selector={(state) => [
+                state.values.date,
+                state.values.timeBegin,
+                state.values.timeEnd,
+              ]}
+            >
+              {([date, timeBegin, timeEnd]) => (
+                <EventTimeChoices
+                  date={date ?? ''}
+                  timeBegin={timeBegin ?? ''}
+                  timeEnd={timeEnd ?? ''}
+                  beginOccurrence={beginOccurrence}
+                  endOccurrence={endOccurrence}
+                  onBeginChange={setBeginOccurrence}
+                  onEndChange={setEndOccurrence}
+                />
+              )}
+            </form.Subscribe>
+            {timeError && <p role="alert">{timeError}</p>}
             <AddressFieldGroup form={form} fields={{ location: 'location' }} />
             <DescriptionFieldGroup
               form={form}
@@ -144,12 +187,7 @@ function NewEventPage() {
                 <IconX />
                 Cancel
               </Button>
-              <Button
-                disabled={isCreating}
-                type="submit"
-                variant="solid"
-                onClick={() => form.handleSubmit()}
-              >
+              <Button disabled={isCreating} type="submit" variant="solid">
                 <IconCheck />
                 Save
               </Button>
