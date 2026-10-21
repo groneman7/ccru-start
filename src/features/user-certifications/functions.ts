@@ -42,21 +42,32 @@ const createUserCertificationServerFn = createServerFn({ method: 'POST' })
         : 'submit',
     });
   });
+async function authorizeUserCertification(
+  id: string,
+  action: 'review' | 'edit' | 'remove',
+) {
+  const { actor, permissions } = await requirePermission('read', 'Inbox');
+  const record = await getUserCertification(id);
+  if (
+    !permissions.can(
+      action,
+      subject('UserCertification', {
+        userId: record.userId,
+        status: record.status,
+      }),
+    )
+  )
+    denyPermission();
+  return { actor, record };
+}
+
 const reviewUserCertificationServerFn = createServerFn({ method: 'POST' })
   .validator(reviewUserCertificationSchema)
   .handler(async ({ data }) => {
-    const { actor, permissions } = await requirePermission('read', 'Inbox');
-    const record = await getUserCertification(data.id);
-    if (
-      !permissions.can(
-        'review',
-        subject('UserCertification', {
-          userId: record.userId,
-          status: record.status,
-        }),
-      )
-    )
-      denyPermission();
+    const { actor, record } = await authorizeUserCertification(
+      data.id,
+      'review',
+    );
     return writeUserCertification({
       actorId: actor.id,
       userId: record.userId,
@@ -69,18 +80,7 @@ const reviewUserCertificationServerFn = createServerFn({ method: 'POST' })
 const editUserCertificationServerFn = createServerFn({ method: 'POST' })
   .validator(changeUserCertificationSchema)
   .handler(async ({ data }) => {
-    const { actor, permissions } = await requirePermission('read', 'Inbox');
-    const record = await getUserCertification(data.id);
-    if (
-      !permissions.can(
-        'edit',
-        subject('UserCertification', {
-          userId: record.userId,
-          status: record.status,
-        }),
-      )
-    )
-      denyPermission();
+    const { actor, record } = await authorizeUserCertification(data.id, 'edit');
     return writeUserCertification({
       actorId: actor.id,
       userId: record.userId,
@@ -93,18 +93,10 @@ const editUserCertificationServerFn = createServerFn({ method: 'POST' })
 const removeUserCertificationServerFn = createServerFn({ method: 'POST' })
   .validator(removeUserCertificationSchema)
   .handler(async ({ data }) => {
-    const { actor, permissions } = await requirePermission('read', 'Inbox');
-    const record = await getUserCertification(data.id);
-    if (
-      !permissions.can(
-        'remove',
-        subject('UserCertification', {
-          userId: record.userId,
-          status: record.status,
-        }),
-      )
-    )
-      denyPermission();
+    const { actor, record } = await authorizeUserCertification(
+      data.id,
+      'remove',
+    );
     return writeUserCertification({
       actorId: actor.id,
       userId: record.userId,
