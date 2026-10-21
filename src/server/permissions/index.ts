@@ -15,6 +15,9 @@ export type PermissionUser = OnboardingIdentity & {
 };
 
 type UserSubject = 'User' | (ForcedSubject<'User'> & { id: string });
+type UserCertificationSubject =
+  | 'UserCertification'
+  | (ForcedSubject<'UserCertification'> & { userId: string; status?: string });
 type RoleSubject =
   | 'SystemRole'
   | (ForcedSubject<'SystemRole'> & {
@@ -42,6 +45,8 @@ export type Permission =
   | ['read' | 'assign', RoleSubject]
   | ['update', 'OfficerCapabilities']
   | ['update', 'RegistrationMode']
+  | ['read', 'Inbox']
+  | ['read' | 'submit' | 'edit' | 'remove' | 'review', UserCertificationSubject]
   | ['read' | 'create' | 'update' | 'delete', 'UserType']
   | ['create' | 'read' | 'update' | 'delete' | 'restore', 'SavedLocation']
   | ['dev-tools' | 'impersonate' | 'manage-sessions', 'System'];
@@ -64,6 +69,13 @@ export function getUserPermissions(user?: PermissionUser | null) {
   allow('complete-onboarding', 'User', { id: user.id });
   if (user.status !== 'active' || !hasCompletedOnboarding(user)) return build();
 
+  allow('read', 'Inbox');
+  allow(['read', 'submit'], 'UserCertification', { userId: user.id });
+  allow('edit', 'UserCertification', {
+    userId: user.id,
+    status: { $in: ['pending', 'rejected'] },
+  });
+  allow('remove', 'UserCertification', { userId: user.id, status: 'pending' });
   allow('read', [
     'CalendarEvent',
     'Position',
@@ -78,6 +90,7 @@ export function getUserPermissions(user?: PermissionUser | null) {
     user.role === 'Administrator' || user.role === 'Developer';
   if (administrator || user.role === 'Officer') {
     allow(['read', 'list'], 'User');
+    allow('read', 'UserCertification');
     allow(['create', 'read', 'update', 'delete'], 'SavedLocation');
   }
   if (
@@ -96,6 +109,7 @@ export function getUserPermissions(user?: PermissionUser | null) {
   ) {
     allow(['update', 'update-status', 'update-type'], 'User');
     allow(['create', 'update', 'delete'], 'Certification');
+    allow(['read', 'submit', 'edit', 'remove', 'review'], 'UserCertification');
     allow(['create', 'update', 'delete'], 'UserType');
   }
   if (administrator) {

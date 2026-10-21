@@ -267,3 +267,5 @@ Use the [retained-data migration procedure](docs/database-migrations.md) before 
 Registration/onboarding: see [registration policy and rollout](docs/registration.md). Apply pending migration `0006_registration_mode` before starting this application version; target execution requires separate approval.
 
 Certification catalog: see [hierarchy, retention and rollout](docs/certification-catalog.md). Apply pending migration `0007_retained_certification_catalog` before starting this version; target execution requires separate approval.
+
+Certification review and inbox: see [submission, shared review and rollout](docs/certification-review-inbox.md). Apply pending migration `0008_certification_review_inbox` before starting this version; target execution requires separate approval.

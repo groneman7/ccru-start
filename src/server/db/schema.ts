@@ -12,6 +12,7 @@ import {
   time,
   timestamp,
   unique,
+  uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
 
@@ -341,6 +342,119 @@ export const organizationSettings = authz.table(
     check(
       'registration_mode_values',
       sql`${table.registrationMode} IN ('invitation-only', 'open')`,
+    ),
+  ],
+);
+
+export const commentsInAuthz = authz.table('comments', {
+  id: uuid()
+    .default(sql`uuid_generate_v7()`)
+    .primaryKey()
+    .notNull(),
+  authorId: uuid('author_id')
+    .notNull()
+    .references(() => userInBetterAuth.id),
+  body: text().notNull(),
+  createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+    .notNull()
+    .defaultNow(),
+  deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' }),
+});
+export const userCertificationsInAuthz = authz.table(
+  'user_certifications',
+  {
+    id: uuid()
+      .default(sql`uuid_generate_v7()`)
+      .primaryKey()
+      .notNull(),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => userInBetterAuth.id),
+    certificationId: uuid('certification_id')
+      .notNull()
+      .references(() => certificationsInAuthz.id),
+    status: text().notNull(),
+    version: integer().notNull().default(1),
+    reviewCommentId: uuid('review_comment_id').references(
+      () => commentsInAuthz.id,
+    ),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .defaultNow(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' }),
+  },
+  (table) => [
+    check(
+      'user_certification_status',
+      sql`${table.status} IN ('pending','verified','rejected')`,
+    ),
+    check('user_certification_version', sql`${table.version}>0`),
+    uniqueIndex('user_certification_live_unique')
+      .on(table.userId, table.certificationId)
+      .where(sql`${table.deletedAt} IS NULL`),
+  ],
+);
+export const notificationsInAuthz = authz.table(
+  'notifications',
+  {
+    id: uuid()
+      .default(sql`uuid_generate_v7()`)
+      .primaryKey()
+      .notNull(),
+    kind: text().notNull(),
+    audience: text().notNull(),
+    recipientId: uuid('recipient_id').references(() => userInBetterAuth.id),
+    userCertificationId: uuid('user_certification_id')
+      .notNull()
+      .references(() => userCertificationsInAuthz.id),
+    body: text().notNull(),
+    createdAt: timestamp('created_at', { withTimezone: true, mode: 'string' })
+      .notNull()
+      .defaultNow(),
+    resolvedAt: timestamp('resolved_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' }),
+  },
+  (table) => [
+    check(
+      'notification_audience',
+      sql`(${table.kind}='certification-review' AND ${table.audience}='user-management' AND ${table.recipientId} IS NULL) OR (${table.kind}='certification-rejected' AND ${table.audience}='personal' AND ${table.recipientId} IS NOT NULL)`,
+    ),
+    uniqueIndex('one_open_certification_review')
+      .on(table.userCertificationId)
+      .where(
+        sql`${table.kind}='certification-review' AND ${table.resolvedAt} IS NULL AND ${table.deletedAt} IS NULL`,
+      ),
+  ],
+);
+export const notificationRecipientsInAuthz = authz.table(
+  'notification_recipients',
+  {
+    id: uuid()
+      .default(sql`uuid_generate_v7()`)
+      .primaryKey()
+      .notNull(),
+    notificationId: uuid('notification_id')
+      .notNull()
+      .references(() => notificationsInAuthz.id),
+    userId: uuid('user_id')
+      .notNull()
+      .references(() => userInBetterAuth.id),
+    readAt: timestamp('read_at', { withTimezone: true, mode: 'string' }),
+    dismissedAt: timestamp('dismissed_at', {
+      withTimezone: true,
+      mode: 'string',
+    }),
+  },
+  (table) => [
+    unique('notification_recipient_unique').on(
+      table.notificationId,
+      table.userId,
     ),
   ],
 );

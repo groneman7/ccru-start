@@ -4,12 +4,23 @@ import { createFileRoute, useRouter } from '@tanstack/react-router';
 import { Button } from '~/components/ui';
 import { authSessionQueryKey } from '~/features/auth/queries';
 import { allUserTypesQuery } from '~/features/authz/queries';
+import { userCertificationsQuery } from '~/features/user-certifications/queries';
+import { UserCertificationSection } from '~/features/user-certifications/section';
 import { userServerFns } from '~/features/users/functions';
 import { ProfileEditor } from '~/features/users/profile-editor';
-import { allUsersQuery, userByIdQuery } from '~/features/users/queries';
+import {
+  allCertificationsQuery,
+  allUsersQuery,
+  userByIdQuery,
+} from '~/features/users/queries';
 import { getUserPermissions } from '~/server/permissions';
 
 export const Route = createFileRoute('/_authed/admin/users/$userId/profile')({
+  loader: ({ context: { queryClient }, params: { userId } }) =>
+    Promise.all([
+      queryClient.ensureQueryData(userCertificationsQuery(userId)),
+      queryClient.ensureQueryData(allCertificationsQuery()),
+    ]),
   component: ProfilePage,
 });
 
@@ -122,6 +133,7 @@ function ProfilePage() {
         )}
         onSave={(data) => save({ userId: user.id, data })}
       />
+      <UserCertificationSection userId={userId} currentUser={currentUser} />
     </section>
   );
 }

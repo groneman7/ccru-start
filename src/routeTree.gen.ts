@@ -18,6 +18,7 @@ import { Route as AuthSignInRouteImport } from './routes/_auth/sign-in'
 import { Route as AuthedIndexRouteImport } from './routes/_authed/index'
 import { Route as AuthedAdminRouteRouteImport } from './routes/_authed/admin/route'
 import { Route as AuthedDevToolsRouteRouteImport } from './routes/_authed/dev-tools/route'
+import { Route as AuthedInboxRouteImport } from './routes/_authed/inbox'
 import { Route as AuthedAdminIndexRouteImport } from './routes/_authed/admin/index'
 import { Route as AuthedAdminCertificationsRouteRouteImport } from './routes/_authed/admin/certifications/route'
 import { Route as AuthedAdminPositionsRouteRouteImport } from './routes/_authed/admin/positions/route'
@@ -87,6 +88,11 @@ const AuthedAdminRouteRoute = AuthedAdminRouteRouteImport.update({
 const AuthedDevToolsRouteRoute = AuthedDevToolsRouteRouteImport.update({
   id: '/dev-tools',
   path: '/dev-tools',
+  getParentRoute: () => AuthedRouteRoute,
+} as any)
+const AuthedInboxRoute = AuthedInboxRouteImport.update({
+  id: '/inbox',
+  path: '/inbox',
   getParentRoute: () => AuthedRouteRoute,
 } as any)
 const AuthedAdminIndexRoute = AuthedAdminIndexRouteImport.update({
@@ -249,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/dev-tools': typeof AuthedDevToolsRouteRouteWithChildren
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
+  '/inbox': typeof AuthedInboxRoute
   '/admin/certifications': typeof AuthedAdminCertificationsRouteRouteWithChildren
   '/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
   '/calendar/templates': typeof AuthedCalendarTemplatesRouteRouteWithChildren
@@ -283,6 +290,7 @@ export interface FileRoutesByTo {
   '/pending': typeof PendingRoute
   '/register': typeof AuthRegisterRoute
   '/sign-in': typeof AuthSignInRoute
+  '/inbox': typeof AuthedInboxRoute
   '/dev-tools/ui': typeof AuthedDevToolsUiRouteRoute
   '/admin/settings': typeof AuthedAdminSettingsRoute
   '/admin/user-types': typeof AuthedAdminUserTypesRoute
@@ -317,6 +325,7 @@ export interface FileRoutesById {
   '/_authed/dev-tools': typeof AuthedDevToolsRouteRouteWithChildren
   '/_auth/register': typeof AuthRegisterRoute
   '/_auth/sign-in': typeof AuthSignInRoute
+  '/_authed/inbox': typeof AuthedInboxRoute
   '/_authed/': typeof AuthedIndexRoute
   '/_authed/admin/certifications': typeof AuthedAdminCertificationsRouteRouteWithChildren
   '/_authed/admin/positions': typeof AuthedAdminPositionsRouteRouteWithChildren
@@ -356,6 +365,7 @@ export interface FileRouteTypes {
     | '/dev-tools'
     | '/register'
     | '/sign-in'
+    | '/inbox'
     | '/admin/certifications'
     | '/admin/positions'
     | '/calendar/templates'
@@ -390,6 +400,7 @@ export interface FileRouteTypes {
     | '/pending'
     | '/register'
     | '/sign-in'
+    | '/inbox'
     | '/dev-tools/ui'
     | '/admin/settings'
     | '/admin/user-types'
@@ -423,6 +434,7 @@ export interface FileRouteTypes {
     | '/_authed/dev-tools'
     | '/_auth/register'
     | '/_auth/sign-in'
+    | '/_authed/inbox'
     | '/_authed/'
     | '/_authed/admin/certifications'
     | '/_authed/admin/positions'
@@ -524,6 +536,13 @@ declare module '@tanstack/react-router' {
       path: '/dev-tools'
       fullPath: '/dev-tools'
       preLoaderRoute: typeof AuthedDevToolsRouteRouteImport
+      parentRoute: typeof AuthedRouteRoute
+    }
+    '/_authed/inbox': {
+      id: '/_authed/inbox'
+      path: '/inbox'
+      fullPath: '/inbox'
+      preLoaderRoute: typeof AuthedInboxRouteImport
       parentRoute: typeof AuthedRouteRoute
     }
     '/_authed/admin/': {
@@ -847,6 +866,7 @@ const AuthedCalendarTemplatesRouteRouteWithChildren =
 interface AuthedRouteRouteChildren {
   AuthedAdminRouteRoute: typeof AuthedAdminRouteRouteWithChildren
   AuthedDevToolsRouteRoute: typeof AuthedDevToolsRouteRouteWithChildren
+  AuthedInboxRoute: typeof AuthedInboxRoute
   AuthedIndexRoute: typeof AuthedIndexRoute
   AuthedCalendarTemplatesRouteRoute: typeof AuthedCalendarTemplatesRouteRouteWithChildren
   AuthedCalendarIndexRoute: typeof AuthedCalendarIndexRoute
@@ -858,6 +878,7 @@ interface AuthedRouteRouteChildren {
 const AuthedRouteRouteChildren: AuthedRouteRouteChildren = {
   AuthedAdminRouteRoute: AuthedAdminRouteRouteWithChildren,
   AuthedDevToolsRouteRoute: AuthedDevToolsRouteRouteWithChildren,
+  AuthedInboxRoute: AuthedInboxRoute,
   AuthedIndexRoute: AuthedIndexRoute,
   AuthedCalendarTemplatesRouteRoute:
     AuthedCalendarTemplatesRouteRouteWithChildren,

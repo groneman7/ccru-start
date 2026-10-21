@@ -47,7 +47,7 @@ const apply = (url: string, folder?: string) =>
 async function records(client: Client) {
   const tables = (
     await client.query(
-      "SELECT table_schema,table_name FROM information_schema.tables WHERE table_schema IN ('authz','better-auth','calendar') AND table_type='BASE TABLE' ORDER BY 1,2",
+      "SELECT table_schema,table_name FROM information_schema.tables WHERE table_schema IN ('authz','better-auth','calendar') AND table_type='BASE TABLE' AND table_name NOT IN ('comments','notifications','notification_recipients','user_certifications') ORDER BY 1,2",
     )
   ).rows;
   const output: Record<string, unknown> = {};

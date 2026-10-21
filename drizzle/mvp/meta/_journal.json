@@ -57,6 +57,13 @@
       "when": 1792607733561,
       "tag": "0007_retained_certification_catalog",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1792608841318,
+      "tag": "0008_certification_review_inbox",
+      "breakpoints": true
     }
   ]
 }

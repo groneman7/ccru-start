@@ -169,7 +169,7 @@ async function apply(url: string, folder?: string) {
 async function retainedRows(client: Client) {
   const tables = (
     await client.query(`SELECT table_schema,table_name FROM information_schema.tables
-    WHERE table_schema IN ('authz','better-auth','calendar') AND table_type='BASE TABLE' AND table_name <> 'organization_settings' ORDER BY 1,2`)
+    WHERE table_schema IN ('authz','better-auth','calendar') AND table_type='BASE TABLE' AND table_name NOT IN ('comments','notifications','notification_recipients','user_certifications') AND table_name <> 'organization_settings' ORDER BY 1,2`)
   ).rows;
   const rows: Record<string, unknown> = {};
   for (const { table_schema, table_name } of tables) {

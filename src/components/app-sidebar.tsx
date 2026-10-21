@@ -66,6 +66,29 @@ export function AppSidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton
+                  tooltip="Inbox"
+                  render={<Link to="/inbox" />}
+                >
+                  <IconCertificate2 />
+                  Inbox
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip="My profile"
+                  render={
+                    <Link
+                      to="/admin/users/$userId/profile"
+                      params={{ userId: currentUser.id }}
+                    />
+                  }
+                >
+                  <IconUserCircle />
+                  My profile
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+              <SidebarMenuItem>
+                <SidebarMenuButton
                   tooltip="Calendar"
                   render={<Link to="/calendar" />}
                 >
