@@ -54,6 +54,7 @@ export const userSchema = object({
   display: string().min(1),
   email: email().min(1),
   emailVerified: boolean(),
+  isDevAccount: boolean(),
   image: url().nullable(),
   nameFirst: string().min(1).nullable(),
   nameMiddle: string().nullable(),

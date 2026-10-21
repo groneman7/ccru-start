@@ -55,6 +55,15 @@ function ProfilePage() {
       userServerFns.updateUserType({ data: { userId, userTypeId } }),
     onSuccess: refreshProfile,
   });
+  const {
+    mutate: setDevAccount,
+    error: devAccountError,
+    isPending: savingDevAccount,
+  } = useMutation({
+    mutationFn: (isDevAccount: boolean) =>
+      userServerFns.updateDevAccount({ data: { userId, isDevAccount } }),
+    onSuccess: refreshProfile,
+  });
   const { data: user } = useQuery(userByIdQuery(userId));
   if (!user) return null;
   return (
@@ -125,6 +134,27 @@ function ProfilePage() {
         </form>
       )}
       {typeError && <p role="alert">{typeError.message}</p>}
+      {getUserPermissions(currentUser).can('update-dev-account', 'User') && (
+        <fieldset
+          disabled={savingDevAccount}
+          className="flex flex-col gap-1 text-sm"
+        >
+          <legend className="font-medium">Development testing</legend>
+          <label className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              checked={user.isDevAccount}
+              onChange={(event) => setDevAccount(event.target.checked)}
+            />
+            Development account
+          </label>
+          <p className="text-muted-foreground">
+            Skips verification and onboarding in development and preview when
+            bypasses are enabled. Production always requires normal onboarding.
+          </p>
+          {devAccountError && <p role="alert">{devAccountError.message}</p>}
+        </fieldset>
+      )}
       <ProfileEditor
         profile={user}
         canEdit={getUserPermissions(currentUser).can(

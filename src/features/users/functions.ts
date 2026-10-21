@@ -238,7 +238,24 @@ export const updateCapabilitiesServerFn = createServerFn({ method: 'POST' })
     return row;
   });
 
+export const updateDevAccountServerFn = createServerFn({ method: 'POST' })
+  .validator(object({ userId: uuidv7(), isDevAccount: boolean() }).strict())
+  .handler(async ({ data }) => {
+    await requirePermission('update-dev-account', 'User');
+    const [row] = await db
+      .update(users)
+      .set({
+        isDevAccount: data.isDevAccount,
+        timestampUpdatedAt: sql`CURRENT_TIMESTAMP`,
+      })
+      .where(and(eq(users.id, data.userId), isNull(users.deletedAt)))
+      .returning({ id: users.id, isDevAccount: users.isDevAccount });
+    if (!row) denyPermission('Profile not found', 404);
+    return row;
+  });
+
 export const userServerFns = {
+  updateDevAccount: updateDevAccountServerFn,
   updateProfile: updateProfileServerFn,
   updateCapabilities: updateCapabilitiesServerFn,
   all: allUsersServerFn,

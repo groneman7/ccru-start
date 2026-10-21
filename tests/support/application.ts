@@ -102,7 +102,7 @@ export async function startApplication(
     {
       env: {
         ...process.env,
-        DEV_ONBOARDING_BYPASS_EMAILS: '',
+        DEV_ONBOARDING_BYPASS_ENABLED: 'true',
         DATABASE_URL: databaseURL,
         CCRU_TEST_SQL_URL: `http://127.0.0.1:${address.port}/sql`,
         CCRU_TEST_GOOGLE_URL: `http://127.0.0.1:${address.port}/google-token`,

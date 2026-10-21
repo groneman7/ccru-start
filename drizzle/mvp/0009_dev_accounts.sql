@@ -1,0 +1,1 @@
+ALTER TABLE "better-auth"."user" ADD COLUMN "is_dev_account" boolean DEFAULT false NOT NULL;

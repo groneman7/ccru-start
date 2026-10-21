@@ -145,6 +145,7 @@ export const userInBetterAuth = betterAuth.table(
       .default(false)
       .notNull(),
     canManageUsers: boolean('can_manage_users').default(false).notNull(),
+    isDevAccount: boolean('is_dev_account').default(false).notNull(),
   },
   (table) => [
     foreignKey({

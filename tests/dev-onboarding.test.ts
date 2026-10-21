@@ -6,6 +6,7 @@ import { getUserPermissions } from '../src/server/permissions';
 const user = {
   id: 'test-user',
   email: 'tester@example.invalid',
+  isDevAccount: true,
   role: 'User',
   status: 'invited',
   emailVerified: false,
@@ -16,7 +17,7 @@ afterEach(() => vi.unstubAllEnvs());
 function configure(node: string, vercel?: string) {
   vi.stubEnv('NODE_ENV', node);
   vi.stubEnv('VERCEL_ENV', vercel);
-  vi.stubEnv('DEV_ONBOARDING_BYPASS_EMAILS', user.email);
+  vi.stubEnv('DEV_ONBOARDING_BYPASS_ENABLED', undefined);
 }
 
 test.each([
@@ -43,20 +44,41 @@ test.each([
   );
 });
 
-test('only explicitly selected emails bypass onboarding; defaults remain strict', () => {
+test('only flagged accounts bypass onboarding; the email allowlist is ignored', () => {
   configure('development');
+  vi.stubEnv('DEV_ONBOARDING_BYPASS_EMAILS', user.email);
   expect(
-    withOnboardingBypass({ ...user, email: 'real@example.org' })
-      .onboardingBypassed,
+    withOnboardingBypass({ ...user, isDevAccount: false }).onboardingBypassed,
   ).toBe(false);
-  vi.stubEnv('DEV_ONBOARDING_BYPASS_EMAILS', '');
-  expect(withOnboardingBypass(user).onboardingBypassed).toBe(false);
-  vi.stubEnv(
-    'DEV_ONBOARDING_BYPASS_EMAILS',
-    ` other@example.invalid, ${user.email.toUpperCase()} `,
-  );
-  expect(withOnboardingBypass(user).onboardingBypassed).toBe(true);
+  expect(
+    withOnboardingBypass({ isDevAccount: undefined }).onboardingBypassed,
+  ).toBe(false);
 });
+
+test.each([
+  [undefined, true],
+  ['true', true],
+  ['false', false],
+  ['', false],
+  ['unexpected', false],
+])('the environment switch %s enables bypass: %s', (value, allowed) => {
+  configure('development');
+  vi.stubEnv('DEV_ONBOARDING_BYPASS_ENABLED', value);
+  expect(withOnboardingBypass(user).onboardingBypassed).toBe(allowed);
+});
+
+test.each(['User', 'Officer', 'Administrator', 'Developer'])(
+  'only Developers can change development-account flags: %s',
+  (role) => {
+    configure('development');
+    const permissions = getUserPermissions(
+      withOnboardingBypass({ ...user, role }),
+    );
+    expect(permissions.can('update-dev-account', 'User')).toBe(
+      role === 'Developer',
+    );
+  },
+);
 
 test.each(['inactive', 'unknown'])(
   'bypass does not admit %s accounts',

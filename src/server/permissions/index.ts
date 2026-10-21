@@ -38,6 +38,7 @@ export type Permission =
         | 'update'
         | 'update-status'
         | 'update-type'
+        | 'update-dev-account'
         | 'complete-onboarding'
       ),
       UserSubject,
@@ -122,6 +123,7 @@ export function getUserPermissions(user?: PermissionUser | null) {
   }
   if (user.role === 'Developer') {
     allow('assign', 'SystemRole');
+    allow('update-dev-account', 'User');
     allow(['dev-tools', 'impersonate', 'manage-sessions'], 'System');
     allow('restore', [
       'CalendarEvent',

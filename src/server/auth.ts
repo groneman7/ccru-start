@@ -95,6 +95,7 @@ export const auth = betterAuth({
           'canManageUsers',
           'emailVerified',
           'onboardingBypassed',
+          'isDevAccount',
           'phoneNumberVerified',
           'timestampOnboardingCompleted',
           'timestampFirstLogin',
@@ -232,7 +233,13 @@ export const auth = betterAuth({
     sendOnSignUp: true,
     sendOnSignIn: true,
     sendVerificationEmail: async ({ user, url }) => {
-      if (shouldBypassOnboarding(user)) return;
+      // The email callback's base User type omits additional fields. Read the
+      // persisted flag rather than relying on a provider's user payload.
+      const profile = await db.query.userInBetterAuth.findFirst({
+        columns: { isDevAccount: true },
+        where: eq(userInBetterAuth.id, user.id),
+      });
+      if (profile && shouldBypassOnboarding(profile)) return;
       await sendAuthEmail({
         to: user.email,
         subject: 'Verify your email address',
@@ -289,6 +296,7 @@ export const auth = betterAuth({
         defaultValue: false,
       },
       canManageUsers: { type: 'boolean', input: false, defaultValue: false },
+      isDevAccount: { type: 'boolean', input: false, defaultValue: false },
       nameFirst: { type: 'string', input: true, required: false },
       nameMiddle: { type: 'string', input: true, required: false },
       nameLast: { type: 'string', input: true, required: false },
