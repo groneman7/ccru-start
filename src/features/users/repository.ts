@@ -94,7 +94,10 @@ export const userRepository = {
     const { userId } = input;
     const [row] = await db
       .update(users)
-      .set({ timestampOnboardingCompleted: sql`CURRENT_TIMESTAMP` })
+      .set({
+        timestampOnboardingCompleted: sql`CURRENT_TIMESTAMP`,
+        status: sql`CASE WHEN ${users.status} = 'invited' THEN 'active'::account_status ELSE ${users.status} END`,
+      })
       .where(and(eq(users.id, userId), isNull(users.deletedAt)))
       .returning({ id: users.id });
 

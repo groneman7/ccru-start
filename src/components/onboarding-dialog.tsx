@@ -2,7 +2,6 @@ import { IconCheck } from '@tabler/icons-react';
 import { useMutation } from '@tanstack/react-query';
 import { useNavigate, useRouteContext } from '@tanstack/react-router';
 import { useAppForm } from '~/components/form';
-import { ContactFieldGroup } from '~/components/form/field-groups/contact';
 import {
   Button,
   Combobox,
@@ -28,48 +27,43 @@ import {
   completeOnboardingMutation,
   updateOnboardingProfileMutation,
 } from '~/features/users/mutations';
+import { authClient } from '~/lib/auth-client';
 import { getChangedFields } from '~/lib/utils';
-
-// import { z } from 'zod';
+import { useState } from 'react';
 
 const POST_NOMINALS = ['MD', 'DO', 'PA-C', 'APRN', 'RN', 'PharmD', 'PhD'];
-// const onboardingSubmitSchema = z.object({
-//   nameFirst: z.preprocess(
-//     (value) => (typeof value === 'string' ? value.trim() : ''),
-//     z.string().min(1),
-//   ),
-//   nameMiddle: z.preprocess((value) => {
-//     if (typeof value !== 'string') return null;
-//     const trimmed = value.trim();
-//     return trimmed.length === 0 ? null : trimmed;
-//   }, z.string().nullable()),
-//   nameLast: z.preprocess(
-//     (value) => (typeof value === 'string' ? value.trim() : ''),
-//     z.string().min(1),
-//   ),
-//   postNominals: z.preprocess((value) => {
-//     if (!Array.isArray(value)) return [];
-//     return value
-//       .filter((item): item is string => typeof item === 'string')
-//       .map((item) => item.trim())
-//       .filter((item) => item.length > 0);
-//   }, z.array(z.string())),
-//   email: z.preprocess(
-//     (value) => (typeof value === 'string' ? value.trim() : ''),
-//     z.string().email(),
-//   ),
-//   phoneNumber: z.preprocess((value) => {
-//     if (typeof value !== 'string') return null;
-//     const trimmed = value.trim();
-//     return trimmed.length === 0 ? null : trimmed;
-//   }, z.string().nullable()),
-// });
 
 export function OnboardingDialog() {
   const { currentUser } = useRouteContext({ from: '/_authed' });
   const nav = useNavigate();
 
   const anchor = useComboboxAnchor();
+  const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
+  const [sendingVerification, setSendingVerification] = useState(false);
+
+  async function resendVerification() {
+    setSendingVerification(true);
+    setError(null);
+    try {
+      const result = await authClient.sendVerificationEmail({
+        email: currentUser.email,
+        callbackURL: '/',
+      });
+      if (result.error) throw new Error(result.error.message);
+      setNotice(
+        'Verification email requested. Check your inbox and spam folder.',
+      );
+    } catch (cause) {
+      setError(
+        cause instanceof Error
+          ? cause.message
+          : 'Unable to request verification email.',
+      );
+    } finally {
+      setSendingVerification(false);
+    }
+  }
 
   const form = useAppForm({
     defaultValues: {
@@ -82,46 +76,66 @@ export function OnboardingDialog() {
       image: currentUser.image ?? '',
     },
     onSubmit: async ({ value }) => {
-      // const parsed = onboardingSubmitSchema.parse(value);
-      const {
-        nameFirst,
-        nameMiddle,
-        nameLast,
-        postNominals,
-        email,
-        phoneNumber,
-      } = value;
-      const postNominalsString = postNominals.join(', ');
-      const display = `${nameFirst.trim()} ${nameLast.trim()}${postNominals.length > 0 ? `, ${postNominalsString}` : ''}`;
+      setError(null);
+      setNotice(null);
+      try {
+        const {
+          nameFirst,
+          nameMiddle,
+          nameLast,
+          postNominals,
+          email,
+          phoneNumber,
+        } = value;
+        const postNominalsString = postNominals.join(', ');
+        const display = `${nameFirst.trim()} ${nameLast.trim()}${postNominals.length > 0 ? `, ${postNominalsString}` : ''}`;
 
-      const nextProfile = {
-        display,
-        email,
-        nameFirst,
-        nameMiddle,
-        nameLast,
-        phoneNumber,
-        postNominals: postNominalsString,
-      };
-      const currentProfile = {
-        display: currentUser.display,
-        email: currentUser.email,
-        nameFirst: currentUser.nameFirst,
-        nameMiddle: currentUser.nameMiddle,
-        nameLast: currentUser.nameLast,
-        phoneNumber: currentUser.phoneNumber,
-        postNominals: currentUser.postNominals,
-      };
-      const changedFields = getChangedFields(nextProfile, currentProfile);
+        const nextProfile = {
+          display,
+          email,
+          nameFirst,
+          nameMiddle,
+          nameLast,
+          phoneNumber,
+          postNominals: postNominalsString,
+        };
+        const currentProfile = {
+          display: currentUser.display,
+          email: currentUser.email,
+          nameFirst: currentUser.nameFirst,
+          nameMiddle: currentUser.nameMiddle,
+          nameLast: currentUser.nameLast,
+          phoneNumber: currentUser.phoneNumber,
+          postNominals: currentUser.postNominals,
+        };
+        const changedFields = getChangedFields(nextProfile, currentProfile);
 
-      if (Object.keys(changedFields).length > 0) {
-        await updateOnboardingProfile({
-          userId: currentUser.id,
-          ...changedFields,
+        if (Object.keys(changedFields).length > 0) {
+          await updateOnboardingProfile({
+            userId: currentUser.id,
+            ...changedFields,
+          });
+        }
+
+        // The verification link may have been opened in another tab.
+        const session = await authClient.getSession({
+          query: { disableCookieCache: true },
         });
+        if (session.error) throw new Error(session.error.message);
+        if (!session.data?.user.emailVerified) {
+          setNotice(
+            'Profile saved. Verify your email, then click Save again to finish.',
+          );
+          return;
+        }
+        await completeOnboarding({ userId: currentUser.id });
+      } catch (cause) {
+        setError(
+          cause instanceof Error
+            ? cause.message
+            : 'Unable to save your profile.',
+        );
       }
-
-      await completeOnboarding({ userId: currentUser.id });
     },
   });
 
@@ -131,9 +145,6 @@ export function OnboardingDialog() {
 
   const { mutateAsync: completeOnboarding } = useMutation({
     ...completeOnboardingMutation(),
-    onMutate: async () => {
-      // Optimistic update logic here
-    },
     onSuccess: () => {
       nav({ reloadDocument: true });
     },
@@ -162,7 +173,10 @@ export function OnboardingDialog() {
                   <FieldGroup orientation="horizontal">
                     <form.AppField name="nameFirst">
                       {(nameFirstField) => (
-                        <nameFirstField.InputField label="First name" />
+                        <nameFirstField.InputField
+                          label="First name"
+                          required
+                        />
                       )}
                     </form.AppField>
                     <form.AppField name="nameMiddle">
@@ -174,7 +188,7 @@ export function OnboardingDialog() {
                   <FieldGroup orientation="horizontal">
                     <form.AppField name="nameLast">
                       {(nameLastField) => (
-                        <nameLastField.InputField label="Last name" />
+                        <nameLastField.InputField label="Last name" required />
                       )}
                     </form.AppField>
                     <form.AppField name="postNominals">
@@ -224,14 +238,51 @@ export function OnboardingDialog() {
                     </form.AppField>
                   </FieldGroup>
                 </FieldGroup>
-                <ContactFieldGroup
-                  form={form}
-                  fields={{ email: 'email', phoneNumber: 'phoneNumber' }}
-                />
-                <Button type="submit" variant="solid">
-                  <IconCheck />
-                  Save
-                </Button>
+                <form.AppField name="email">
+                  {(field) => (
+                    <field.InputField label="Email" type="email" readOnly />
+                  )}
+                </form.AppField>
+                {!currentUser.emailVerified && (
+                  <div className="grid gap-2">
+                    <p>
+                      Verify your email using the link in your inbox before
+                      finishing your profile.
+                    </p>
+                    <Button
+                      type="button"
+                      disabled={sendingVerification}
+                      onClick={resendVerification}
+                    >
+                      {sendingVerification
+                        ? 'Sending…'
+                        : 'Resend verification email'}
+                    </Button>
+                  </div>
+                )}
+                <form.AppField name="phoneNumber">
+                  {(field) => (
+                    <field.InputField
+                      label="Phone (with country code)"
+                      type="tel"
+                      required
+                    />
+                  )}
+                </form.AppField>
+                {error && <p role="alert">{error}</p>}
+                {notice && <p role="status">{notice}</p>}
+                <form.Subscribe selector={(state) => state.isSubmitting}>
+                  {(isSubmitting) => (
+                    <Button
+                      type="submit"
+                      variant="solid"
+                      disabled={isSubmitting}
+                    >
+                      <IconCheck />
+                      {isSubmitting ? 'Saving…' : 'Save'}
+                    </Button>
+                  )}
+                </form.Subscribe>
               </div>
             </div>
           </form>

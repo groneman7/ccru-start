@@ -14,9 +14,27 @@ import { admin /* , phoneNumber */ } from 'better-auth/plugins';
 import { defaultAc, userAc } from 'better-auth/plugins/admin/access';
 import { tanstackStartCookies } from 'better-auth/tanstack-start';
 import { config } from 'dotenv';
+import { Resend } from 'resend';
 import type { infer as Infer } from 'zod';
 
 config({ path: '.env.local' });
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+async function sendAuthEmail(input: {
+  to: string;
+  subject: string;
+  html: string;
+}) {
+  const { error } = await resend.emails.send({
+    from: 'no-reply@ccruoutreach.org',
+    ...input,
+  });
+  if (error) {
+    // Resend returns API failures as data rather than rejecting the promise.
+    throw new Error(`Authentication email failed: ${error.name}`);
+  }
+}
 
 export const auth = betterAuth({
   hooks: {
@@ -102,6 +120,23 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      await sendAuthEmail({
+        to: user.email,
+        subject: 'Reset your password',
+        html: `<p>Click <a href="${url}">here</a> to reset your password.</p>`,
+      });
+    },
+  },
+  emailVerification: {
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendAuthEmail({
+        to: user.email,
+        subject: 'Verify your email address',
+        html: `<p>Click <a href="${url}">here</a> to verify your email address.</p>`,
+      });
+    },
   },
   plugins: [
     admin({
@@ -158,6 +193,7 @@ export const auth = betterAuth({
         // IMPORTANT: Any changes to this enum need to be manually reflected in the database schema
         type: ['active', 'inactive', 'invited'],
         input: false,
+        defaultValue: 'invited',
       },
       timestampFirstLogin: {
         type: 'date',

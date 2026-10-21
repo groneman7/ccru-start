@@ -5,8 +5,18 @@ import { stripVTControlCharacters } from 'node:util';
 import { Pool } from 'pg';
 
 export async function startApplication(databaseURL: string) {
+  const emails: { to: string | string[]; subject: string; html: string }[] = [];
   const pool = new Pool({ connectionString: databaseURL });
   const proxy = createServer(async (request, response) => {
+    if (request.url === '/emails') {
+      const chunks: Buffer[] = [];
+      for await (const chunk of request) chunks.push(Buffer.from(chunk));
+      emails.push(JSON.parse(Buffer.concat(chunks).toString()));
+      response
+        .writeHead(200, { 'content-type': 'application/json' })
+        .end(JSON.stringify({ id: 'fixture-email' }));
+      return;
+    }
     if (request.headers['neon-connection-string'] !== databaseURL) {
       response.writeHead(400).end();
       return;
@@ -73,6 +83,8 @@ export async function startApplication(databaseURL: string) {
         ...process.env,
         DATABASE_URL: databaseURL,
         CCRU_TEST_SQL_URL: `http://127.0.0.1:${address.port}/sql`,
+        CCRU_TEST_EMAIL_URL: `http://127.0.0.1:${address.port}/emails`,
+        RESEND_API_KEY: 're_local_fixture',
         BETTER_AUTH_URL: 'http://localhost:3000',
         BETTER_AUTH_SECRET: 'local-migration-fixture-secret-not-production',
         GOOGLE_CLIENT_ID: 'fixture',
@@ -125,7 +137,7 @@ export async function startApplication(databaseURL: string) {
         reject(new Error(output));
       });
     });
-    return { baseURL, stop, output: () => output };
+    return { baseURL, stop, emails, output: () => output };
   } catch (error) {
     await stop();
     throw error;
