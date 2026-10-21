@@ -74,8 +74,8 @@ import {
   formatEventDate,
   formatEventTime,
 } from '~/features/calendar/event-time';
-import { EventTimeChoices } from '~/features/calendar/event-time-choices';
 import type { TimeOccurrence } from '~/features/calendar/event-time-choices';
+import { EventTimeChoiceFieldGroup } from '~/features/calendar/event-time-field-group';
 import {
   createEmptyLocation,
   formatLocationInline,
@@ -338,25 +338,18 @@ function EventDetails({
               timeEnd: 'timeEnd',
             }}
           />
-          <form.Subscribe
-            selector={(state) => [
-              state.values.date,
-              state.values.timeBegin,
-              state.values.timeEnd,
-            ]}
-          >
-            {([date, timeBegin, timeEnd]) => (
-              <EventTimeChoices
-                date={date ?? ''}
-                timeBegin={timeBegin ?? ''}
-                timeEnd={timeEnd ?? ''}
-                beginOccurrence={beginOccurrence}
-                endOccurrence={endOccurrence}
-                onBeginChange={setBeginOccurrence}
-                onEndChange={setEndOccurrence}
-              />
-            )}
-          </form.Subscribe>
+          <EventTimeChoiceFieldGroup
+            form={form}
+            fields={{
+              date: 'date',
+              timeBegin: 'timeBegin',
+              timeEnd: 'timeEnd',
+            }}
+            beginOccurrence={beginOccurrence}
+            endOccurrence={endOccurrence}
+            onBeginChange={setBeginOccurrence}
+            onEndChange={setEndOccurrence}
+          />
           {timeError && <p role="alert">{timeError}</p>}
           <AddressFieldGroup form={form} fields={{ location: 'location' }} />
           <DescriptionFieldGroup

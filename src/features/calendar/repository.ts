@@ -21,7 +21,6 @@ import {
   templatesInCalendar as templates,
   userInBetterAuth as users,
 } from '~/server/db/schema';
-//
 import { and, count, eq, gt, gte, isNull, lt } from 'drizzle-orm';
 import type { infer as Infer } from 'zod';
 import { throwEventError } from './event-errors';
@@ -92,12 +91,9 @@ export const eventRepository = {
       throw new Error(
         'Template needs valid start and end times before creating an event',
       );
-    if (
-      !validEventWindow(
-        eventLocalToInstant(date, templateRow.timeBegin),
-        eventLocalToInstant(date, templateRow.timeEnd),
-      )
-    )
+    const timeBegin = eventLocalToInstant(date, templateRow.timeBegin);
+    const timeEnd = eventLocalToInstant(date, templateRow.timeEnd);
+    if (!validEventWindow(timeBegin, timeEnd))
       throw new Error(
         'Event end must be later than start on the same America/New_York date',
       );
@@ -107,8 +103,8 @@ export const eventRepository = {
         name: templateRow.display,
         description: templateRow.description,
         location: templateRow.location,
-        timeBegin: eventLocalToInstant(date, templateRow.timeBegin),
-        timeEnd: eventLocalToInstant(date, templateRow.timeEnd!),
+        timeBegin,
+        timeEnd,
         createdBy,
       })
       .returning({ id: events.id });

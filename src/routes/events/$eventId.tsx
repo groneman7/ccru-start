@@ -2,7 +2,6 @@ import { useQuery } from '@tanstack/react-query';
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { PublicEventDetails } from '~/features/calendar/public-details';
 import { publicEventQuery } from '~/features/calendar/public-queries';
-import { useEventExpiry } from '~/features/calendar/use-event-expiry';
 import { uuidv7 } from 'zod';
 
 export const Route = createFileRoute('/events/$eventId')({
@@ -18,10 +17,8 @@ export const Route = createFileRoute('/events/$eventId')({
 function PublicEventPage() {
   const { eventId } = Route.useParams();
   const { data: event, error } = useQuery(publicEventQuery(eventId));
-  const now = useEventExpiry(event ? [event.timeEnd] : []);
   if (error)
     return <p role="alert">Unable to load this event. Please refresh.</p>;
-  if (!event || Date.parse(event.timeEnd) <= now)
-    return <p>This event is not available.</p>;
+  if (!event) return <p>This event is not available.</p>;
   return <PublicEventDetails event={event} />;
 }
