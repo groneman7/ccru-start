@@ -1,5 +1,5 @@
 // import { usePostHog } from '@posthog/react';
-import { IconCheck, IconSparkles } from '@tabler/icons-react';
+import { IconSparkles } from '@tabler/icons-react';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   createFileRoute,
@@ -8,7 +8,6 @@ import {
   useNavigate,
   useRouter,
 } from '@tanstack/react-router';
-import { useAppForm } from '~/components/form';
 import {
   Button,
   Card,
@@ -17,12 +16,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  Checkbox,
-  Field,
-  FieldGroup,
-  FieldLabel,
 } from '~/components/ui';
 import { authSessionQuery, authSessionQueryKey } from '~/features/auth/queries';
+import { EmailSignInForm } from '~/features/auth/sign-in-form';
 import { authClient } from '~/lib/auth-client';
 import { useState } from 'react';
 
@@ -49,39 +45,38 @@ function SignInPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
 
-  const form = useAppForm({
-    defaultValues: {
-      email: '',
-      password: '',
-      staySignedIn: false,
-    },
-    onSubmit: async ({ value }) => {
-      const { email, password, staySignedIn } = value;
-
-      await authClient.signIn.email(
-        {
-          email,
-          password,
-          rememberMe: staySignedIn,
+  async function signInEmail({
+    email,
+    password,
+    staySignedIn,
+  }: {
+    email: string;
+    password: string;
+    staySignedIn: boolean;
+  }) {
+    await authClient.signIn.email(
+      {
+        email,
+        password,
+        rememberMe: staySignedIn,
+      },
+      {
+        onRequest: () => {
+          setOtpLoading(true);
         },
-        {
-          onRequest: () => {
-            setOtpLoading(true);
-          },
-          onSuccess: async () => {
-            setOtpLoading(false);
-            queryClient.removeQueries({ queryKey: authSessionQueryKey });
-            await router.invalidate();
-            await nav({ to: '/' });
-          },
-          onError: (ctx) => {
-            setOtpLoading(false);
-            setError(ctx.error.message);
-          },
+        onSuccess: async () => {
+          setOtpLoading(false);
+          queryClient.removeQueries({ queryKey: authSessionQueryKey });
+          await router.invalidate();
+          await nav({ to: '/' });
         },
-      );
-    },
-  });
+        onError: (ctx) => {
+          setOtpLoading(false);
+          setError(ctx.error.message);
+        },
+      },
+    );
+  }
 
   const [otpLoading, setOtpLoading] = useState(false);
 
@@ -128,58 +123,7 @@ function SignInPage() {
           <CardDescription>Enter your email and password</CardDescription>
           <div className="h-px flex-1 bg-border"></div>
         </div> */}
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            form.handleSubmit();
-          }}
-          className="grid gap-4"
-        >
-          <form.AppField name="email">
-            {(emailField) => (
-              <emailField.InputField label="Email" type="email" />
-            )}
-          </form.AppField>
-          <form.AppField name="password">
-            {(passwordField) => (
-              <passwordField.InputField label="Password" type="password" />
-            )}
-          </form.AppField>
-          <FieldGroup className="justify-between" orientation="horizontal">
-            <form.AppField name="staySignedIn">
-              {(staySignedInField) => (
-                <Field orientation="horizontal">
-                  <Checkbox
-                    id={staySignedInField.name}
-                    name={staySignedInField.name}
-                    checked={staySignedInField.state.value}
-                    onCheckedChange={(checked) =>
-                      staySignedInField.handleChange(checked === true)
-                    }
-                  />
-                  <FieldLabel
-                    className="font-light"
-                    htmlFor={staySignedInField.name}
-                  >
-                    Stay signed in
-                  </FieldLabel>
-                </Field>
-              )}
-            </form.AppField>
-            <Button type="button" size="xs" variant="ghost">
-              Forgot password
-            </Button>
-          </FieldGroup>
-          <Button
-            className="mt-4"
-            disabled={otpLoading}
-            size="lg"
-            variant="solid"
-          >
-            <IconCheck />
-            Sign in
-          </Button>
-        </form>
+        <EmailSignInForm pending={otpLoading} onSubmit={signInEmail} />
         <div className="mt-8 mb-4 flex items-center gap-2">
           <div className="h-px flex-1 bg-border"></div>
           <CardDescription>Or continue with</CardDescription>

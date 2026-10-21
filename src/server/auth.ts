@@ -3,6 +3,7 @@ import {
   CONTACT_ORGANIZATION,
   registrationMode,
 } from '~/features/registration/policy';
+import { profileDisplayName } from '~/features/users/profile-name';
 import { profileFieldsSchema } from '~/features/users/schema';
 import { db } from '~/server/db';
 import {
@@ -61,13 +62,7 @@ export const auth = betterAuth({
             message: 'First and last names are required',
           });
         Object.assign(ctx.body!, parsed.data, {
-          name: [
-            parsed.data.nameFirst,
-            parsed.data.nameMiddle,
-            parsed.data.nameLast,
-          ]
-            .filter(Boolean)
-            .join(' '),
+          name: profileDisplayName(parsed.data),
         });
       }
       if (
@@ -153,9 +148,16 @@ export const auth = betterAuth({
             data: {
               ...user,
               name:
-                [user.nameFirst, user.nameMiddle, user.nameLast]
-                  .filter(Boolean)
-                  .join(' ') || user.name,
+                profileDisplayName({
+                  nameFirst:
+                    typeof user.nameFirst === 'string' ? user.nameFirst : null,
+                  nameMiddle:
+                    typeof user.nameMiddle === 'string'
+                      ? user.nameMiddle
+                      : null,
+                  nameLast:
+                    typeof user.nameLast === 'string' ? user.nameLast : null,
+                }) || user.name,
             },
           };
         },

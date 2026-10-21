@@ -1,4 +1,5 @@
 import { throwUserTypeError } from '~/features/authz/user-type-errors';
+import { profileDisplayName } from '~/features/users/profile-name';
 import { db } from '~/server/db';
 import {
   certificationsInAuthz as certifications,
@@ -23,9 +24,7 @@ export const userRepository = {
       .update(users)
       .set({
         ...data,
-        display: [data.nameFirst, data.nameMiddle, data.nameLast]
-          .filter(Boolean)
-          .join(' '),
+        display: profileDisplayName(data),
         timestampUpdatedAt: sql`CURRENT_TIMESTAMP`,
       })
       .where(and(eq(users.id, userId), isNull(users.deletedAt)))
@@ -88,9 +87,7 @@ export const userRepository = {
       .update(users)
       .set({
         ...data,
-        display: [data.nameFirst, data.nameMiddle, data.nameLast]
-          .filter(Boolean)
-          .join(' '),
+        display: profileDisplayName(data),
         timestampOnboardingCompleted: sql`COALESCE(${users.timestampOnboardingCompleted}, CURRENT_TIMESTAMP)`,
         timestampUpdatedAt: sql`CURRENT_TIMESTAMP`,
         status: sql`CASE WHEN ${users.status} = 'invited' THEN 'active'::account_status ELSE ${users.status} END`,

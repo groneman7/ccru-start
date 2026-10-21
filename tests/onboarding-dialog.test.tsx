@@ -116,3 +116,33 @@ test('registration mode control saves the selected mode and exposes failures', a
   );
   expect(saved).toEqual(['open']);
 });
+
+test('clicking the email sign-in button submits entered credentials and remember preference', async () => {
+  const { EmailSignInForm } = await import('../src/features/auth/sign-in-form');
+  const submitted: unknown[] = [];
+  render(
+    <EmailSignInForm
+      pending={false}
+      onSubmit={async (data) => {
+        submitted.push(data);
+      }}
+    />,
+  );
+  fireEvent.change(screen.getByLabelText('Email'), {
+    target: { value: 'retained@example.invalid' },
+  });
+  fireEvent.change(screen.getByLabelText('Password'), {
+    target: { value: 'fixture-password' },
+  });
+  fireEvent.click(screen.getByRole('checkbox', { name: 'Stay signed in' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Sign in' }));
+  await waitFor(() =>
+    expect(submitted).toEqual([
+      {
+        email: 'retained@example.invalid',
+        password: 'fixture-password',
+        staySignedIn: true,
+      },
+    ]),
+  );
+});
