@@ -72,8 +72,8 @@ export const userSchema = object({
 
 export const certificationSchema = object({
   id: uuidv7(),
-  name: string().min(1),
-  display: string().min(1),
+  name: string().trim().min(1).max(100),
+  display: string().trim().min(1).max(200),
   parent: nullable(uuidv7()),
 });
 
@@ -112,9 +112,9 @@ export const updateUserSchema = userSchema
   })
   .partial();
 
-export const createCertificationSchema = certificationSchema.omit({
-  id: true,
-});
+export const createCertificationSchema = certificationSchema
+  .omit({ id: true })
+  .strict();
 
 export const updateCertificationSchema = object({
   certificationId: uuidv7(),
@@ -123,7 +123,8 @@ export const updateCertificationSchema = object({
       id: true,
     })
     .partial()
+    .strict()
     .refine((data) => Object.keys(data).length > 0, {
       message: 'At least one field must be updated',
     }),
-});
+}).strict();

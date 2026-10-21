@@ -265,3 +265,5 @@ Use the [retained-data migration procedure](docs/database-migrations.md) before 
 [Profile and user-type management](docs/profile-management.md) requires migration `0005_retained_user_types` before starting this application version against an existing database. Feature implementation does not automatically apply it to that database.
 
 Registration/onboarding: see [registration policy and rollout](docs/registration.md). Apply pending migration `0006_registration_mode` before starting this application version; target execution requires separate approval.
+
+Certification catalog: see [hierarchy, retention and rollout](docs/certification-catalog.md). Apply pending migration `0007_retained_certification_catalog` before starting this version; target execution requires separate approval.

@@ -10,7 +10,6 @@ export function allCertificationsQuery() {
   return queryOptions({
     queryKey: ['allCertifications'],
     queryFn: () => certification.all(),
-    initialData: [],
   });
 }
 

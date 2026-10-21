@@ -50,6 +50,13 @@
       "when": 1792562126857,
       "tag": "0006_registration_mode",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1792607733561,
+      "tag": "0007_retained_certification_catalog",
+      "breakpoints": true
     }
   ]
 }

@@ -56,7 +56,7 @@ test('registration policy defaults closed and preserves every retained business 
         records.push(
           (
             await client.query(
-              `SELECT to_jsonb(t) AS data FROM "${table.table_schema}"."${table.table_name}" t ORDER BY id`,
+              `SELECT ${table.table_schema === 'authz' && table.table_name === 'certifications' ? "to_jsonb(t)-'deleted_at'" : 'to_jsonb(t)'} AS data FROM "${table.table_schema}"."${table.table_name}" t ORDER BY id`,
             )
           ).rows,
         );

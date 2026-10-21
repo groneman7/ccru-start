@@ -1,4 +1,5 @@
 import { throwUserTypeError } from '~/features/authz/user-type-errors';
+import { throwCertificationError } from '~/features/users/certification-errors';
 import { profileDisplayName } from '~/features/users/profile-name';
 import { db } from '~/server/db';
 import {
@@ -139,8 +140,26 @@ export const userRepository = {
 };
 
 export const certificationRepository = {
+  remove: async ({ certificationId }: { certificationId: string }) => {
+    const [row] = await db
+      .update(certifications)
+      .set({ deletedAt: sql`CURRENT_TIMESTAMP` })
+      .where(
+        and(
+          eq(certifications.id, certificationId),
+          isNull(certifications.deletedAt),
+        ),
+      )
+      .returning({ id: certifications.id })
+      .catch(throwCertificationError);
+    if (!row) throw new Error('Certification not found');
+    return row;
+  },
   all: async () => {
-    const rows = await db.select().from(certifications);
+    const rows = await db
+      .select()
+      .from(certifications)
+      .where(isNull(certifications.deletedAt));
 
     return rows;
   },
@@ -149,15 +168,21 @@ export const certificationRepository = {
     const [row] = await db
       .select()
       .from(certifications)
-      .where(eq(certifications.id, certificationId));
-
+      .where(
+        and(
+          eq(certifications.id, certificationId),
+          isNull(certifications.deletedAt),
+        ),
+      );
+    if (!row) throw new Error('Certification not found');
     return row;
   },
   create: async (input: Infer<typeof createCertificationSchema>) => {
     const [row] = await db
       .insert(certifications)
       .values(input)
-      .returning({ id: certifications.id });
+      .returning({ id: certifications.id })
+      .catch(throwCertificationError);
 
     return row;
   },
@@ -166,8 +191,15 @@ export const certificationRepository = {
     const [row] = await db
       .update(certifications)
       .set(data)
-      .where(eq(certifications.id, certificationId))
-      .returning({ id: certifications.id });
+      .where(
+        and(
+          eq(certifications.id, certificationId),
+          isNull(certifications.deletedAt),
+        ),
+      )
+      .returning({ id: certifications.id })
+      .catch(throwCertificationError);
+    if (!row) throw new Error('Certification not found');
 
     return row;
   },

@@ -33,6 +33,7 @@ export const userService = {
 };
 
 export const certificationService = {
+  remove: certification.remove,
   all: async () => {
     return await certification.all();
   },

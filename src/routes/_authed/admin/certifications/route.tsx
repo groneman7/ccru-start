@@ -7,22 +7,25 @@ import {
   useParams,
 } from '@tanstack/react-router';
 import { WorkspaceContent, WorkspaceHeader } from '~/components';
-import { Button } from '~/components/ui';
 import { buildCertificationTree } from '~/features/users/certifications';
 import { allCertificationsQuery } from '~/features/users/queries';
 import { cn } from '~/lib/utils';
+import { getUserPermissions } from '~/server/permissions';
 
 export const Route = createFileRoute('/_authed/admin/certifications')({
+  loader: ({ context: { queryClient } }) =>
+    queryClient.ensureQueryData(allCertificationsQuery()),
   component: CertificationsRouteLayout,
 });
 
 function CertificationsRouteLayout() {
+  const { currentUser } = Route.useRouteContext();
   const selectedId = useParams({
     from: '/_authed/admin/certifications/$certificationId',
     shouldThrow: false,
   })?.certificationId;
 
-  const { data: allCertifications } = useQuery(allCertificationsQuery());
+  const { data: allCertifications = [] } = useQuery(allCertificationsQuery());
   const orderedCertifications = buildCertificationTree(allCertifications);
 
   return (
@@ -30,12 +33,15 @@ function CertificationsRouteLayout() {
       <WorkspaceHeader>Certifications</WorkspaceHeader>
       <WorkspaceContent orientation="horizontal">
         <div className="flex w-xs flex-col overflow-clip rounded border">
-          <Link className="flex" to="/admin/certifications/new">
-            <Button className="m-1 flex-1" variant="ghost">
+          {getUserPermissions(currentUser).can('create', 'Certification') && (
+            <Link
+              className="m-1 flex items-center gap-2 rounded p-2 hover:bg-accent"
+              to="/admin/certifications/new"
+            >
               <IconPlus />
               Add certification
-            </Button>
-          </Link>
+            </Link>
+          )}
           {orderedCertifications.map(({ certification, depth }) => (
             <Link
               key={certification.id}
@@ -48,7 +54,7 @@ function CertificationsRouteLayout() {
               to="/admin/certifications/$certificationId"
               params={{ certificationId: certification.id }}
             >
-              <span className="block truncate">{certification.name}</span>
+              <span className="block truncate">{certification.display}</span>
               {depth > 0 && (
                 <span className="block text-xs text-muted-foreground">
                   child certification

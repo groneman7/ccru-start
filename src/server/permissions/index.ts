@@ -27,7 +27,7 @@ export type Permission =
   | ['create' | 'modify' | 'delete' | 'restore', 'Shift']
   | ['create' | 'read' | 'update' | 'delete' | 'restore', 'Slot']
   | ['read' | 'update' | 'restore', 'Template']
-  | ['read' | 'create' | 'update' | 'restore', 'Certification']
+  | ['read' | 'create' | 'update' | 'delete' | 'restore', 'Certification']
   | [
       (
         | 'read'
@@ -95,7 +95,7 @@ export function getUserPermissions(user?: PermissionUser | null) {
     (user.role === 'Officer' && user.canManageUsers === true)
   ) {
     allow(['update', 'update-status', 'update-type'], 'User');
-    allow(['create', 'update'], 'Certification');
+    allow(['create', 'update', 'delete'], 'Certification');
     allow(['create', 'update', 'delete'], 'UserType');
   }
   if (administrator) {

@@ -248,6 +248,7 @@ export const certificationsInAuthz = authz.table(
     name: text().notNull(),
     display: text().notNull(),
     parent: uuid(),
+    deletedAt: timestamp('deleted_at', { withTimezone: true, mode: 'string' }),
   },
   (table) => [
     foreignKey({

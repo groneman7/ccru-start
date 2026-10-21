@@ -57,6 +57,13 @@ export const updateCertificationServerFn = createServerFn({ method: 'POST' })
     return await certification.update(data);
   });
 
+export const removeCertificationServerFn = createServerFn({ method: 'POST' })
+  .validator(object({ certificationId: uuidv7() }).strict())
+  .handler(async ({ data }) => {
+    await requirePermission('delete', 'Certification');
+    return certification.remove(data);
+  });
+
 // Users ----------------------------------------------------------------------
 
 const updateProfileServerFn = createServerFn({ method: 'POST' })
@@ -188,6 +195,7 @@ export const updateUserTypeServerFn = createServerFn({ method: 'POST' })
   });
 
 export const certificationServerFns = {
+  remove: removeCertificationServerFn,
   all: allCertificationsServerFn,
   byId: getCertificationByIdServerFn,
   create: createCertificationServerFn,
